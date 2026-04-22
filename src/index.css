@@ -411,3 +411,22 @@ body {
     width: 100% !important;
   }
 }
+
+/* ── Page 4 sticky sub-navigation ───────────────────────────────────────────── */
+
+.page4-subnav-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #ffffff;
+  border-bottom: 1px solid #b1b4b6;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  padding: 0 30px;
+}
+
+/* Remove bottom border from the sub-navigation list inside the sticky wrapper
+   since the wrapper itself provides the border */
+.page4-subnav-sticky .moj-sub-navigation__list {
+  border-bottom: none;
+  margin-bottom: 0;
+}

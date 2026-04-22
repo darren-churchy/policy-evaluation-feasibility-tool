@@ -33,6 +33,12 @@ export default function Page4({ inputs, set, gatePassed, prospectiveOk }) {
   return (
     <div>
       <PageHeader title="Design-Specific Feasibility Questions" />
+
+      {/* Sticky within-page navigation — stays at top as content scrolls */}
+      <div className="page4-subnav-sticky">
+        <SubNavigation sections={prospectiveOk ? PAGE4_SECTIONS : PAGE4_SECTIONS.slice(1)} />
+      </div>
+
       <div className="page-content">
         <Alert type="blue" title="About this section">
           For each design family, a screening question determines whether the approach is worth
@@ -45,7 +51,6 @@ export default function Page4({ inputs, set, gatePassed, prospectiveOk }) {
             hidden. Update your answer on Page 1 if this changes.
           </Alert>
         </When>
-        <SubNavigation sections={prospectiveOk ? PAGE4_SECTIONS : PAGE4_SECTIONS.slice(1)} />
 
         {/* ── RANDOMISATION ── */}
         <When condition={prospectiveOk}>
