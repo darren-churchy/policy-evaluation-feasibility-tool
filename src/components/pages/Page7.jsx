@@ -2,18 +2,22 @@ import { useNavigate } from 'react-router-dom'
 import {
   Card, SectionTag, Alert, NavButtons, Button,
   RadioQuestion, When, LockedPage, TextArea,
+PageHeader,
 } from '../ui/GovukComponents.jsx'
 
 export default function Page7({ inputs, set, gatePassed }) {
   const navigate = useNavigate()
-  if (!gatePassed) return <><div style={{ background: '#fff', borderBottom: '4px solid #9c1b6d', padding: '20px 30px' }}><h1 className="govuk-heading-l" style={{ margin: 0 }}>Statistical Feasibility</h1></div><div style={{ padding: '30px' }}><LockedPage /></div></>
+  if (!gatePassed) return (
+    <>
+      <PageHeader title="Statistical Feasibility" />
+      <div className="page-content"><LockedPage /></div>
+    </>
+  )
 
   return (
     <div>
-      <div style={{ background: '#fff', borderBottom: '4px solid #9c1b6d', padding: '20px 30px' }}>
-        <h1 className="govuk-heading-l" style={{ margin: 0 }}>Statistical Feasibility</h1>
-      </div>
-      <div style={{ padding: '30px' }}>
+      <PageHeader title="Statistical Feasibility" />
+      <div className="page-content">
         <Alert type="blue" title="About this section">
           This section assesses the statistical feasibility of your evaluation. Your responses
           will inform the feasibility scoring — particularly for designs requiring large samples,
