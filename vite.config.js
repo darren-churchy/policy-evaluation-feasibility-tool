@@ -5,5 +5,5 @@ import react from '@vitejs/plugin-react'
 // This is required for GitHub Pages to resolve assets correctly
 export default defineConfig({
   plugins: [react()],
-  base: '/policy-evaluation-feasibility-tool/',
+  base: '/darren-churchy/policy-evaluation-feasibility-tool/',
 })
