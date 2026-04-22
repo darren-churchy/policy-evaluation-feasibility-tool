@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import {
   Card, CardTitle, SectionTag, Question, RadioQuestion,
   TextArea, TextInput, DateInput, Alert, NavButtons, Button, When,
+PageHeader,
 } from '../ui/GovukComponents.jsx'
 
 const PICOTS = [
@@ -18,10 +19,8 @@ export default function Page1({ inputs, set }) {
 
   return (
     <div>
-      <div style={{ background: '#fff', borderBottom: '4px solid #9c1b6d', padding: '20px 30px' }}>
-        <h1 className="govuk-heading-l" style={{ margin: 0 }}>Research Question &amp; Study Context</h1>
-      </div>
-      <div style={{ padding: '30px' }}>
+      <PageHeader title="Research Question & Study Context" />
+      <div className="page-content">
 
         <Alert type="blue" title="About this section">
           This section helps you clearly define your research question and policy context.
