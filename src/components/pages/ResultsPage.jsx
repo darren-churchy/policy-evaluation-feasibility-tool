@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
-import { Card, SectionTag, Alert, NavButtons, Button, Badge } from '../ui/GovukComponents.jsx'
+import { Card, SectionTag, Alert, NavButtons, Button, Badge, PageHeader,
+} from '../ui/GovukComponents.jsx'
 import { WEIGHTS, CATEGORY_CEILINGS } from '../../scoring/config.js'
 
 // ── Category colour map ───────────────────────────────────────────────────────
@@ -294,10 +295,8 @@ export default function ResultsPage({ inputs, results, flaggedNextSteps, topDesi
 
   return (
     <div>
-      <div style={{ background: '#fff', borderBottom: '4px solid #9c1b6d', padding: '20px 30px' }}>
-        <h1 className="govuk-heading-l" style={{ margin: 0 }}>Feasibility Assessment Results</h1>
-      </div>
-      <div style={{ padding: '30px' }}>
+      <PageHeader title="Feasibility Assessment Results" />
+      <div className="page-content">
 
         <Alert type="yellow" title="About these results">
           Scores update in real time as you change your answers on earlier pages. All
