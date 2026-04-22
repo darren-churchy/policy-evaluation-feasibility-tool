@@ -20,6 +20,9 @@ A decision-support web application for government social researchers assessing t
 - [Editing text and data content](#editing-text-and-data-content)
 - [Deploying to GitHub Pages](#deploying-to-github-pages)
 - [Contributing and peer review](#contributing-and-peer-review)
+- [Companion documents](#companion-documents)
+- [Acknowledgements](#acknowledgements)
+- [Licence](#licence)
 
 ---
 
@@ -54,10 +57,10 @@ The app is organised into seven sequential sections plus a results page:
 |---------|-------|-------------|
 | 1 | Research Question & Study Context | Research question, PICOTS framework, prospective evaluation filter, policy decision and timeline |
 | 2 | Target Trial Emulation | Seven TTE framework components — each with a feasibility edit prompt |
-| 3 | Causal Readiness *(gate)* | Intervention readiness (5 questions); causal identification assumptions |
-| 4 | Design-Specific Questions | Screening questions per design family; variant-specific feasibility questions |
+| 3 | Causal Readiness *(gate)* | Intervention readiness (5 questions); causal identification assumptions; gate failure report download |
+| 4 | Design-Specific Questions | Screening questions per design family; variant-specific feasibility questions; sticky within-page navigation |
 | 5 | Adjustment & DAG | Causal diagram description; variable classification (confounders, mediators, colliders, competing exposures) |
-| 6 | Data Sources | Dynamic data source inventory; linkage feasibility; missing data assessment |
+| 6 | Data Sources | Dynamic data source inventory (persists across navigation); linkage feasibility; missing data assessment |
 | 7 | Statistical Feasibility | Sample size, MDE, power calculation, pre-intervention data, analysis approach |
 | Results | Feasibility Assessment Results | Ranked table, top recommendation, next steps panel, HTML export |
 
@@ -73,7 +76,7 @@ Section 3 contains a hard gate based on five readiness questions. Three are desi
 - Is there a logic model or theory of change?
 - Has the intervention reached sufficient scale or maturity?
 
-If any critical question is answered **No**, Sections 4–7 and the Results page are locked, and the user is shown a signpost table of alternative evaluation approaches (process evaluation, developmental evaluation, contribution analysis, realist evaluation).
+If any critical question is answered **No**, Sections 4–7 and the Results page are locked, and the user is shown a signpost table of alternative evaluation approaches (process evaluation, developmental evaluation, contribution analysis, realist evaluation). A downloadable readiness assessment report is also provided, summarising why impact evaluation is not yet recommended and what steps to consider instead.
 
 The gate can be disabled for reviewer walkthroughs — see [Configuring the app](#configuring-the-app).
 
@@ -94,8 +97,8 @@ All 32 design variant scores recalculate in real time as the user changes their 
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR-ORG/evaluation-feasibility-tool.git
-cd evaluation-feasibility-tool
+git clone https://github.com/darren-churchy/policy-evaluation-feasibility-tool.git
+cd policy-evaluation-feasibility-tool
 
 # Install dependencies
 npm install
@@ -104,7 +107,7 @@ npm install
 npm run dev
 ```
 
-The app will open at `http://localhost:5173/evaluation-feasibility-tool/`.
+The app will open at `http://localhost:5173/policy-evaluation-feasibility-tool/`.
 
 Changes to any source file are reflected instantly in the browser without restarting the server.
 
@@ -121,7 +124,7 @@ The compiled static files are written to `dist/`. These can be served by any sta
 ## Repository structure
 
 ```
-evaluation-feasibility-tool/
+policy-evaluation-feasibility-tool/
 │
 ├── .github/
 │   └── workflows/
@@ -131,6 +134,7 @@ evaluation-feasibility-tool/
 │   └── index.html              # HTML shell — loads GOV.UK and MoJ CSS from CDN
 │
 ├── src/
+│   ├── index.css               # Global styles: font stack, sticky nav, GOV.UK/MoJ class definitions
 │   ├── main.jsx                # React entry point; HashRouter for GitHub Pages compatibility
 │   ├── App.jsx                 # Root component — routing and state wired to all pages
 │   │
@@ -144,11 +148,11 @@ evaluation-feasibility-tool/
 │   │   └── scoring.js          # Per-design scoring functions and results assembly
 │   │
 │   ├── hooks/
-│   │   └── useAppState.js      # Central state management; gate logic; live scoring
+│   │   └── useAppState.js      # Central state management; gate logic; live scoring; data row persistence
 │   │
 │   └── components/
 │       ├── layout/
-│       │   └── AppLayout.jsx   # MoJ header, sidebar navigation, footer
+│       │   └── AppLayout.jsx   # MoJ header, sticky sidebar with progress tracker, footer
 │       │
 │       ├── ui/
 │       │   └── GovukComponents.jsx  # Shared GOV.UK/MoJ Design System components
@@ -156,13 +160,15 @@ evaluation-feasibility-tool/
 │       └── pages/
 │           ├── Page1.jsx       # Research Question & Study Context
 │           ├── Page2.jsx       # Target Trial Emulation
-│           ├── Page3.jsx       # Causal Readiness (gate logic rendered here)
-│           ├── Page4.jsx       # Design-Specific Feasibility Questions
+│           ├── Page3.jsx       # Causal Readiness (gate logic; gate failure report download)
+│           ├── Page4.jsx       # Design-Specific Feasibility Questions (sticky within-page nav)
 │           ├── Page5.jsx       # Adjustment & DAG
 │           ├── Page6.jsx       # Data Sources
 │           ├── Page7.jsx       # Statistical Feasibility
 │           └── ResultsPage.jsx # Results table, top recommendation, next steps, export
 │
+├── ACKNOWLEDGEMENTS.md         # AI assistance acknowledgement
+├── LICENSE                     # GNU General Public License v3.0
 ├── package.json                # Project dependencies and build scripts
 └── vite.config.js              # Vite build configuration (set base to your repo name)
 ```
@@ -394,6 +400,7 @@ To suggest changes to scoring logic or category assignments, please raise a GitH
 
 | Document | Description |
 |----------|-------------|
+| `ACKNOWLEDGEMENTS.md` | AI assistance acknowledgement |
 | `REVIEWER_NOTES.md` | Design category boundary cases and open questions for peer review |
 | `scoring_reference.xlsx` | Per-design scoring map and answer-to-score lookup tables |
 | `spec_brief.docx` | Full specification document for non-technical reviewers |
@@ -401,9 +408,49 @@ To suggest changes to scoring logic or category assignments, please raise a GitH
 
 ---
 
+## Acknowledgements
+
+### AI assistance
+
+This project was developed with substantial assistance from [Claude](https://claude.ai) (claude-sonnet-4-5, Anthropic), accessed via Claude.ai during 2025–2026.
+
+Claude assisted with the following aspects of the project:
+
+- **Application architecture** — design of the React/Vite project structure, component hierarchy, and state management approach
+- **Code generation** — authoring of React components, the JavaScript scoring engine, CSS styling, and GitHub Actions deployment workflow
+- **R Shiny prototype** — development of the preceding R Shiny version of the tool, including the scoring logic subsequently ported to JavaScript
+- **Methodology documentation** — drafting of the specification document, scoring reference spreadsheet, design category framework, and reviewer notes
+- **Content** — hint text, question wording, next steps guidance, and the pre-assessment checklist
+
+All design decisions, methodological choices, scoring parameters, and content were directed, reviewed, and approved by the named author. The author takes full responsibility for the accuracy, appropriateness, and fitness for purpose of this work.
+
+Claude cannot be attributed as an author or co-author under current copyright law and does not hold any rights in this work.
+
+See [ACKNOWLEDGEMENTS.md](ACKNOWLEDGEMENTS.md) for the full acknowledgement.
+
+---
+
 ## Licence
 
-This project is developed by the Ministry of Justice for internal government use. Licensing terms to be confirmed before any public release.
+Copyright © 2026 Darren Churchy
+
+This project is licensed under the **GNU General Public License v3.0**.
+
+You are free to use, modify, and distribute this software under the terms of the GPL v3. Any modified versions distributed to others must also be released under GPL v3 with their source code made available.
+
+See the [LICENSE](LICENSE) file for the full licence text, or visit [https://www.gnu.org/licenses/gpl-3.0.html](https://www.gnu.org/licenses/gpl-3.0.html).
+
+### Dependencies
+
+This project makes use of the following open source packages, each under their own licence:
+
+| Package | Licence |
+|---------|---------|
+| [React](https://react.dev) | MIT |
+| [Vite](https://vitejs.dev) | MIT |
+| [React Router](https://reactrouter.com) | MIT |
+| [GOV.UK Frontend](https://frontend.design-system.service.gov.uk) | MIT |
+| [MoJ Frontend](https://design-patterns.service.justice.gov.uk) | MIT |
 
 ---
 
