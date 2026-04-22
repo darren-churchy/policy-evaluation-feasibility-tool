@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { TTE_COMPONENTS } from '../../data/tteComponents.js'
 import {
   Card, SectionTag, Alert, NavButtons, Button, RadioQuestion, When, TextArea,
+PageHeader,
 } from '../ui/GovukComponents.jsx'
 
 function TteCard({ comp, inputs, set }) {
@@ -61,10 +62,8 @@ export default function Page2({ inputs, set }) {
   const navigate = useNavigate()
   return (
     <div>
-      <div style={{ background: '#fff', borderBottom: '4px solid #9c1b6d', padding: '20px 30px' }}>
-        <h1 className="govuk-heading-l" style={{ margin: 0 }}>Target Trial Emulation</h1>
-      </div>
-      <div style={{ padding: '30px' }}>
+      <PageHeader title="Target Trial Emulation" />
+      <div className="page-content">
         <Alert type="yellow" title="Important framing for this section">
           The target trial emulation framework asks you to first design the ideal randomised
           trial to answer your research question — as if no practical, ethical, or financial
