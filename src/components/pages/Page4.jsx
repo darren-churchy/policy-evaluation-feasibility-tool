@@ -1,12 +1,27 @@
 import { useNavigate } from 'react-router-dom'
 import {
   Card, SectionTag, Alert, NavButtons, Button,
-  RadioQuestion, DesignCard, LockedPage, When,
+  RadioQuestion, DesignCard, LockedPage, When, SubNavigation, PageHeader,
 } from '../ui/GovukComponents.jsx'
+
+const PAGE4_SECTIONS = [
+  { id: 's-randomisation', label: 'Randomisation' },
+  { id: 's-did',           label: 'Difference-in-Differences' },
+  { id: 's-rd',            label: 'Regression Discontinuity' },
+  { id: 's-iv',            label: 'Instrumental Variables' },
+  { id: 's-its',           label: 'Interrupted Time Series' },
+  { id: 's-matching',      label: 'Matching & Weighting' },
+  { id: 's-gmethods',      label: 'G-Methods' },
+]
 
 export default function Page4({ inputs, set, gatePassed, prospectiveOk }) {
   const navigate = useNavigate()
-  if (!gatePassed) return <><div style={{ background: '#fff', borderBottom: '4px solid #9c1b6d', padding: '20px 30px' }}><h1 className="govuk-heading-l" style={{ margin: 0 }}>Design-Specific Feasibility Questions</h1></div><div style={{ padding: '30px' }}><LockedPage /></div></>
+  if (!gatePassed) return (
+    <>
+      <PageHeader title="Design-Specific Feasibility Questions" />
+      <div className="page-content"><LockedPage /></div>
+    </>
+  )
 
   const r = (id, label, hint, options, inline = false) => (
     <RadioQuestion id={id} label={label} hint={hint} value={inputs[id]}
@@ -17,10 +32,8 @@ export default function Page4({ inputs, set, gatePassed, prospectiveOk }) {
 
   return (
     <div>
-      <div style={{ background: '#fff', borderBottom: '4px solid #9c1b6d', padding: '20px 30px' }}>
-        <h1 className="govuk-heading-l" style={{ margin: 0 }}>Design-Specific Feasibility Questions</h1>
-      </div>
-      <div style={{ padding: '30px' }}>
+      <PageHeader title="Design-Specific Feasibility Questions" />
+      <div className="page-content">
         <Alert type="blue" title="About this section">
           For each design family, a screening question determines whether the approach is worth
           exploring. Design-specific feasibility questions then appear for relevant designs.
@@ -32,11 +45,12 @@ export default function Page4({ inputs, set, gatePassed, prospectiveOk }) {
             hidden. Update your answer on Page 1 if this changes.
           </Alert>
         </When>
+        <SubNavigation sections={prospectiveOk ? PAGE4_SECTIONS : PAGE4_SECTIONS.slice(1)} />
 
         {/* ── RANDOMISATION ── */}
         <When condition={prospectiveOk}>
           <Card>
-            <SectionTag>Randomisation</SectionTag>
+            <span id="s-randomisation" /><SectionTag>Randomisation</SectionTag>
             <Alert type="yellow" title="Consider carefully before ruling out randomisation">
               Randomisation is often dismissed too quickly. Work through the specific barriers
               below — many can be addressed through design adaptations.
@@ -84,7 +98,7 @@ export default function Page4({ inputs, set, gatePassed, prospectiveOk }) {
 
         {/* ── DiD ── */}
         <Card>
-          <SectionTag>Difference-in-Differences</SectionTag>
+          <span id="s-did" /><SectionTag>Difference-in-Differences</SectionTag>
           {yn('screen_did','Is there a plausible comparison group with pre-intervention outcome data?','DiD compares the change in outcomes over time in a treated group to the change in a comparable untreated group.')}
           <When condition={inputs.screen_did !== 'no'}>
             <DesignCard title="Standard DiD (2×2)" hint="One treated group, one control group, one pre-period, one post-period.">
@@ -109,7 +123,7 @@ export default function Page4({ inputs, set, gatePassed, prospectiveOk }) {
 
         {/* ── RD ── */}
         <Card>
-          <SectionTag>Regression Discontinuity</SectionTag>
+          <span id="s-rd" /><SectionTag>Regression Discontinuity</SectionTag>
           {yn('screen_rd','Is there a continuous assignment variable with a known threshold determining treatment eligibility?','RD exploits a discontinuity in treatment assignment at a known cutoff on a running variable.')}
           <When condition={inputs.screen_rd !== 'no'}>
             <DesignCard title="Sharp RD" hint="All units above the cutoff receive treatment; all below do not. Requires strict enforcement of the assignment rule.">
@@ -130,7 +144,7 @@ export default function Page4({ inputs, set, gatePassed, prospectiveOk }) {
 
         {/* ── IV ── */}
         <Card>
-          <SectionTag>Instrumental Variables</SectionTag>
+          <span id="s-iv" /><SectionTag>Instrumental Variables</SectionTag>
           {yn('screen_iv','Is there a plausible instrument — something affecting treatment uptake but with no direct effect on the outcome?','A valid instrument must satisfy: relevance, exclusion restriction, and independence.')}
           <When condition={inputs.screen_iv !== 'no'}>
             <DesignCard title="Standard IV / 2SLS" hint="Two-stage least squares estimates the causal effect of treatment instrumented by the IV. Produces a LATE for compliers.">
@@ -145,7 +159,7 @@ export default function Page4({ inputs, set, gatePassed, prospectiveOk }) {
 
         {/* ── ITS ── */}
         <Card>
-          <SectionTag>Interrupted Time Series</SectionTag>
+          <span id="s-its" /><SectionTag>Interrupted Time Series</SectionTag>
           {yn('screen_its','Is there a clear intervention date and sufficient time series data before and after?','ITS designs model the pre-intervention trend and test whether the intervention produced a change in level or slope.')}
           <When condition={inputs.screen_its !== 'no'}>
             <DesignCard title="Standard ITS" hint="Models outcome trends before and after a single intervention point. Vulnerable to confounding from concurrent events.">
@@ -166,7 +180,7 @@ export default function Page4({ inputs, set, gatePassed, prospectiveOk }) {
 
         {/* ── MATCHING ── */}
         <Card>
-          <SectionTag>Matching &amp; Propensity Score Methods</SectionTag>
+          <span id="s-matching" /><SectionTag>Matching &amp; Propensity Score Methods</SectionTag>
           {r('screen_match','Do you have rich covariate data on both treated and untreated units?','Matching methods construct a comparable control group from observational data. Validity rests on the assumption that all relevant confounders are measured.',
             [{ value: 'yes', label: 'Yes — rich covariate data' }, { value: 'maybe', label: 'Partially' }, { value: 'no', label: 'No — limited covariates' }], true)}
           <When condition={inputs.screen_match !== 'no'}>
@@ -195,7 +209,7 @@ export default function Page4({ inputs, set, gatePassed, prospectiveOk }) {
 
         {/* ── G-METHODS ── */}
         <Card>
-          <SectionTag>G-Methods (Time-Varying Confounding)</SectionTag>
+          <span id="s-gmethods" /><SectionTag>G-Methods (Time-Varying Confounding)</SectionTag>
           {yn('screen_gmethod','Do you have longitudinal data with time-varying exposures or confounders affected by prior treatment?','Standard regression is biased when confounders are affected by prior treatment. G-methods are designed for this setting.')}
           <When condition={inputs.screen_gmethod !== 'no'}>
             <DesignCard title="Marginal Structural Models (MSM)" hint="Uses time-varying IPW to create a pseudo-population free from time-varying confounding. Requires positivity at each time point.">
