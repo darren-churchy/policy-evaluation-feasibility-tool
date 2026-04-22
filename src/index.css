@@ -1,0 +1,413 @@
+/*
+ * Global stylesheet
+ * Fixes font fallback, reinforces GOV.UK/MoJ class usage,
+ * and provides app-level layout styles.
+ *
+ * GOV.UK Frontend and MoJ Frontend are loaded via CDN in index.html.
+ * This file handles anything they don't cover and overrides where needed.
+ */
+
+/* ── Font stack ────────────────────────────────────────────────────────────────
+ * GDS Transport is only licensed for use on gov.uk domains.
+ * On github.io the font request silently fails, leaving a browser serif fallback.
+ * Explicitly declaring the fallback stack here ensures consistency everywhere.
+ */
+body,
+.govuk-body,
+.govuk-body-s,
+.govuk-body-m,
+.govuk-body-l,
+.govuk-label,
+.govuk-hint,
+.govuk-heading-xl,
+.govuk-heading-l,
+.govuk-heading-m,
+.govuk-heading-s,
+.govuk-caption-xl,
+.govuk-caption-l,
+.govuk-caption-m,
+.govuk-table,
+.govuk-table__header,
+.govuk-table__cell,
+.govuk-radios__label,
+.govuk-checkboxes__label,
+.govuk-input,
+.govuk-textarea,
+.govuk-select,
+.govuk-button,
+.govuk-notification-banner,
+.govuk-inset-text,
+.govuk-tag,
+.moj-badge,
+.moj-primary-navigation,
+.moj-side-navigation,
+.moj-sub-navigation,
+.moj-progress-tracker,
+button,
+input,
+select,
+textarea {
+  font-family: "GDS Transport", Arial, "Helvetica Neue", Helvetica, sans-serif !important;
+}
+
+/* ── App shell ─────────────────────────────────────────────────────────────── */
+
+html, body, #root {
+  min-height: 100vh;
+}
+
+body {
+  margin: 0;
+  background-color: #f3f2f1;
+}
+
+/* ── Sticky sidebar ─────────────────────────────────────────────────────────── */
+
+.app-sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  flex-shrink: 0;
+  background: #0b0c0c;
+  scrollbar-width: thin;
+  scrollbar-color: #444 #0b0c0c;
+}
+
+.app-sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+.app-sidebar::-webkit-scrollbar-track {
+  background: #0b0c0c;
+}
+.app-sidebar::-webkit-scrollbar-thumb {
+  background: #444;
+}
+
+/* ── App body layout ─────────────────────────────────────────────────────────── */
+
+.app-body {
+  display: flex;
+  min-height: 100vh;
+}
+
+.app-main {
+  flex: 1;
+  min-width: 0;
+  background: #f3f2f1;
+}
+
+/* ── Page header band ────────────────────────────────────────────────────────── */
+
+.page-header {
+  background: #ffffff;
+  border-bottom: 4px solid #9c1b6d;
+  padding: 20px 30px;
+}
+
+.page-header .govuk-heading-l {
+  margin: 0;
+}
+
+/* ── Page content area ───────────────────────────────────────────────────────── */
+
+.page-content {
+  padding: 30px;
+}
+
+/* ── Card ────────────────────────────────────────────────────────────────────── */
+
+.app-card {
+  background: #ffffff;
+  border: 1px solid #b1b4b6;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.app-card .govuk-heading-m {
+  border-bottom: 2px solid #9c1b6d;
+  padding-bottom: 8px;
+  margin-bottom: 16px;
+}
+
+/* ── Section tag ─────────────────────────────────────────────────────────────── */
+
+.app-section-tag {
+  display: inline-block;
+  background-color: #9c1b6d;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 10px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+/* ── Nav buttons ─────────────────────────────────────────────────────────────── */
+
+.app-nav-buttons {
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid #b1b4b6;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* ── Alert variants ──────────────────────────────────────────────────────────── */
+
+.app-alert {
+  padding: 16px 20px;
+  margin-bottom: 20px;
+}
+.app-alert--blue   { border-left: 6px solid #1d70b8; background-color: #e8f0fb; }
+.app-alert--green  { border-left: 6px solid #00703c; background-color: #e3f3eb; }
+.app-alert--yellow { border-left: 6px solid #f47738; background-color: #fef3e8; }
+.app-alert--red    { border-left: 6px solid #d4351c; background-color: #fde8e6; }
+
+/* ── Design card (Page 4) ───────────────────────────────────────────────────── */
+
+.design-card {
+  background: #ffffff;
+  border: 1px solid #b1b4b6;
+  border-left: 4px solid #1d70b8;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.design-card .govuk-heading-s {
+  margin-bottom: 4px;
+}
+
+/* ── TTE card (Page 2) ───────────────────────────────────────────────────────── */
+
+.tte-card {
+  background: #ffffff;
+  border: 1px solid #b1b4b6;
+  border-left: 4px solid #9c1b6d;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+/* ── MoJ Badge ────────────────────────────────────────────────────────────────── */
+
+.app-badge {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 2px;
+  color: #ffffff;
+}
+.app-badge--A      { background: #00703c; }
+.app-badge--B      { background: #1d70b8; }
+.app-badge--C      { background: #f47738; }
+.app-badge--D      { background: #9c1b6d; }
+.app-badge--E      { background: #6f777b; }
+.app-badge--High   { background: #00703c; }
+.app-badge--Medium { background: #f47738; }
+.app-badge--Low    { background: #d4351c; }
+.app-badge--NA     { background: #6f777b; }
+
+/* ── MoJ Sub-navigation (within-page anchors) ────────────────────────────────── */
+
+.moj-sub-navigation__list {
+  list-style: none;
+  margin: 0 0 24px 0;
+  padding: 0;
+  border-bottom: 1px solid #b1b4b6;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+}
+
+.moj-sub-navigation__item {
+  margin: 0;
+}
+
+.moj-sub-navigation__link {
+  display: block;
+  padding: 10px 16px;
+  font-size: 16px;
+  color: #1d70b8;
+  text-decoration: none;
+  border-bottom: 4px solid transparent;
+  white-space: nowrap;
+}
+
+.moj-sub-navigation__link:hover {
+  color: #003078;
+  border-bottom-color: #b1b4b6;
+}
+
+.moj-sub-navigation__link--active {
+  color: #0b0c0c;
+  font-weight: 700;
+  border-bottom-color: #9c1b6d;
+}
+
+/* ── MoJ Progress tracker ────────────────────────────────────────────────────── */
+
+.moj-progress-tracker {
+  padding: 12px 0 0 0;
+}
+
+.moj-progress-tracker__list {
+  list-style: none;
+  margin: 0;
+  padding: 8px 0;
+}
+
+.moj-progress-tracker__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 16px;
+  border-left: 4px solid transparent;
+  color: #ffffff;
+  font-size: 13px;
+}
+
+.moj-progress-tracker__item--complete {
+  border-left-color: #00703c;
+  color: #aed6ae;
+}
+
+.moj-progress-tracker__item--active {
+  border-left-color: #9c1b6d;
+  color: #ffffff;
+  font-weight: 700;
+  background: #1a1a1a;
+}
+
+.moj-progress-tracker__item--locked {
+  color: #6f777b;
+  font-style: italic;
+}
+
+.moj-progress-tracker__status-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.moj-progress-tracker__status-icon--complete {
+  background: #00703c;
+  color: #fff;
+}
+
+.moj-progress-tracker__status-icon--active {
+  background: #9c1b6d;
+  color: #fff;
+}
+
+.moj-progress-tracker__status-icon--locked {
+  background: #444;
+  color: #6f777b;
+}
+
+.moj-progress-tracker__status-icon--todo {
+  background: #444;
+  color: #888;
+}
+
+/* ── Next steps item ─────────────────────────────────────────────────────────── */
+
+.next-steps-item {
+  background: #ffffff;
+  border: 1px solid #b1b4b6;
+  border-left: 4px solid #f47738;
+  padding: 16px 20px;
+  margin-bottom: 10px;
+}
+
+/* ── Locked page ─────────────────────────────────────────────────────────────── */
+
+.locked-page {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6f777b;
+}
+
+/* ── Data table (Page 6) ─────────────────────────────────────────────────────── */
+
+.data-source-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  overflow-x: auto;
+  display: block;
+}
+
+.data-source-table th {
+  background: #0b0c0c;
+  color: #ffffff;
+  padding: 8px 10px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.data-source-table td {
+  padding: 4px 6px;
+  vertical-align: top;
+}
+
+.data-source-table tr:nth-child(even) td {
+  background: #f8f8f8;
+}
+
+/* ── Results table ───────────────────────────────────────────────────────────── */
+
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.results-table th {
+  background: #0b0c0c;
+  color: #ffffff;
+  padding: 8px 10px;
+  text-align: left;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.results-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.results-table tr:nth-child(even) td {
+  background: #f8f8f8;
+}
+
+/* ── MoJ Date picker overrides ───────────────────────────────────────────────── */
+
+.moj-date-picker__input {
+  font-family: "GDS Transport", Arial, "Helvetica Neue", Helvetica, sans-serif !important;
+}
+
+/* ── Print styles ────────────────────────────────────────────────────────────── */
+
+@media print {
+  .app-sidebar,
+  .app-nav-buttons,
+  .govuk-header,
+  .govuk-footer {
+    display: none !important;
+  }
+  .app-main {
+    width: 100% !important;
+  }
+}

@@ -2,18 +2,22 @@ import { useNavigate } from 'react-router-dom'
 import {
   Card, SectionTag, Alert, NavButtons, Button,
   RadioQuestion, When, TextArea, LockedPage,
+PageHeader,
 } from '../ui/GovukComponents.jsx'
 
 export default function Page5({ inputs, set, gatePassed }) {
   const navigate = useNavigate()
-  if (!gatePassed) return <><div style={{ background: '#fff', borderBottom: '4px solid #9c1b6d', padding: '20px 30px' }}><h1 className="govuk-heading-l" style={{ margin: 0 }}>Adjustment Variables &amp; Causal Diagram</h1></div><div style={{ padding: '30px' }}><LockedPage /></div></>
+  if (!gatePassed) return (
+    <>
+      <PageHeader title="Adjustment Variables & Causal Diagram" />
+      <div className="page-content"><LockedPage /></div>
+    </>
+  )
 
   return (
     <div>
-      <div style={{ background: '#fff', borderBottom: '4px solid #9c1b6d', padding: '20px 30px' }}>
-        <h1 className="govuk-heading-l" style={{ margin: 0 }}>Adjustment Variables &amp; Causal Diagram</h1>
-      </div>
-      <div style={{ padding: '30px' }}>
+      <PageHeader title="Adjustment Variables & Causal Diagram" />
+      <div className="page-content">
         <Alert type="blue" title="About this section">
           This section asks you to describe the causal structure of your problem and classify
           variables. Clear thinking here is essential for identifying appropriate adjustment

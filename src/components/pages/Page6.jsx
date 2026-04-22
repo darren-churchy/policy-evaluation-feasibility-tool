@@ -1,23 +1,23 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Card, SectionTag, Alert, NavButtons, Button,
-  RadioQuestion, LockedPage,
+  RadioQuestion, LockedPage, PageHeader,
 } from '../ui/GovukComponents.jsx'
 
-const emptyRow = () => ({ name: '', type: '', period: '', geo: '', quality: '', linkable: '', hasExposure: '', hasOutcome: '' })
-
-export default function Page6({ inputs, set, gatePassed }) {
+export default function Page6({ inputs, set, gatePassed, dataRows, addDataRow, removeDataRow, updateDataRow }) {
   const navigate = useNavigate()
-  const [rows, setRows] = useState([emptyRow()])
+  const rows = dataRows
 
-  if (!gatePassed) return <><div style={{ background: '#fff', borderBottom: '4px solid #9c1b6d', padding: '20px 30px' }}><h1 className="govuk-heading-l" style={{ margin: 0 }}>Data Sources</h1></div><div style={{ padding: '30px' }}><LockedPage /></div></>
+  if (!gatePassed) return (
+    <>
+      <PageHeader title="Data Sources" />
+      <div className="page-content"><LockedPage /></div>
+    </>
+  )
 
-  const updateRow = (i, field, val) => {
-    setRows(prev => prev.map((r, idx) => idx === i ? { ...r, [field]: val } : r))
-  }
-  const addRow    = () => setRows(prev => [...prev, emptyRow()])
-  const removeRow = () => setRows(prev => prev.length > 1 ? prev.slice(0, -1) : prev)
+  const updateRow = updateDataRow
+  const addRow    = addDataRow
+  const removeRow = removeDataRow
 
   const thStyle = { background: '#0b0c0c', color: '#fff', padding: '8px 10px', textAlign: 'left', fontSize: '14px', whiteSpace: 'nowrap' }
   const tdStyle = { padding: '4px 6px', verticalAlign: 'top' }
@@ -36,10 +36,8 @@ export default function Page6({ inputs, set, gatePassed }) {
 
   return (
     <div>
-      <div style={{ background: '#fff', borderBottom: '4px solid #9c1b6d', padding: '20px 30px' }}>
-        <h1 className="govuk-heading-l" style={{ margin: 0 }}>Data Sources</h1>
-      </div>
-      <div style={{ padding: '30px' }}>
+      <PageHeader title="Data Sources" />
+      <div className="page-content">
         <Alert type="blue" title="About this section">
           Compile an inventory of the data sources you plan to use in your evaluation.
           Your responses will be used to assess whether sufficient data exist to support
@@ -53,7 +51,7 @@ export default function Page6({ inputs, set, gatePassed }) {
             linkage datasets. Be as specific as possible about coverage and quality.
           </p>
           <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
+            <table className="data-source-table">
               <thead>
                 <tr>
                   {['Data source','Type','Coverage period','Geography','Quality','Linkable?','Has exposure?','Has outcome?'].map(h => (
