@@ -430,3 +430,74 @@ body {
   border-bottom: none;
   margin-bottom: 0;
 }
+
+/* ── Collapsible sidebar ─────────────────────────────────────────────────────── */
+
+/* Header is now sticky — offset sticky sub-nav on Page 4 to sit below it */
+.page4-subnav-sticky {
+  top: 56px; /* matches header min-height */
+}
+
+/* ── Mobile responsive layout ───────────────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  /* Page content less horizontal padding on small screens */
+  .page-content {
+    padding: 16px;
+  }
+
+  /* Page header less padding on small screens */
+  .page-header {
+    padding: 14px 16px;
+  }
+
+  .page-header .govuk-heading-l {
+    font-size: 1.375rem;
+  }
+
+  /* App card less padding */
+  .app-card {
+    padding: 16px;
+  }
+
+  /* Results table — allow horizontal scroll on small screens */
+  .results-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Sub-navigation wraps on small screens */
+  .moj-sub-navigation__list {
+    flex-wrap: wrap;
+  }
+
+  .moj-sub-navigation__link {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+
+  /* Nav buttons stack vertically on small screens */
+  .app-nav-buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .app-nav-buttons .govuk-button {
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Inline radios stack on mobile */
+  .govuk-radios--inline .govuk-radios__item {
+    display: block;
+    margin-right: 0;
+  }
+}
+
+/* ── PWA: hide browser UI chrome affordances when installed ─────────────────── */
+@media (display-mode: standalone) {
+  /* App is installed — can adjust chrome if needed */
+  .govuk-header {
+    padding-top: env(safe-area-inset-top, 0);
+  }
+}
