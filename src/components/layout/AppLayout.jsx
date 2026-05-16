@@ -25,6 +25,22 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
   const navigate  = useNavigate()
   const [open, setOpen] = useState(() => window.innerWidth >= MOBILE_BREAKPOINT)
 
+  // PWA install prompt — captured here so it isn't lost when the landing page
+  // is shown (InstallPrompt only renders inside the sidebar, which is hidden there)
+  const [installPrompt, setInstallPrompt] = useState(null)
+  const [installed, setInstalled] = useState(false)
+
+  useEffect(() => {
+    const onBeforeInstall = (e) => { e.preventDefault(); setInstallPrompt(e) }
+    const onInstalled = () => { setInstalled(true); setInstallPrompt(null) }
+    window.addEventListener('beforeinstallprompt', onBeforeInstall)
+    window.addEventListener('appinstalled', onInstalled)
+    return () => {
+      window.removeEventListener('beforeinstallprompt', onBeforeInstall)
+      window.removeEventListener('appinstalled', onInstalled)
+    }
+  }, [])
+
   // Landing page — render children full-width with no sidebar
   const isLanding = location.pathname === '/'
 
@@ -234,7 +250,7 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
                   Sections 3–7 locked. Complete the Causal Readiness assessment to continue.
                 </div>
               )}
-              <InstallPrompt />
+              <InstallPrompt prompt={installPrompt} installed={installed} onInstall={setInstallPrompt} />
             </div>
           </nav>
         )}
@@ -264,17 +280,7 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
   )
 }
 
-function InstallPrompt() {
-  const [prompt, setPrompt] = useState(null)
-  const [installed, setInstalled] = useState(false)
-
-  useEffect(() => {
-    const handler = (e) => { e.preventDefault(); setPrompt(e) }
-    window.addEventListener('beforeinstallprompt', handler)
-    window.addEventListener('appinstalled', () => { setInstalled(true); setPrompt(null) })
-    return () => window.removeEventListener('beforeinstallprompt', handler)
-  }, [])
-
+function InstallPrompt({ prompt, installed, onInstall }) {
   if (installed || !prompt) return null
 
   return (
@@ -289,7 +295,7 @@ function InstallPrompt() {
         onClick={async () => {
           prompt.prompt()
           const { outcome } = await prompt.userChoice
-          if (outcome === 'accepted') setPrompt(null)
+          if (outcome === 'accepted') onInstall(null)
         }}
         style={{
           background: '#9c1b6d', color: '#fff', border: 'none',
