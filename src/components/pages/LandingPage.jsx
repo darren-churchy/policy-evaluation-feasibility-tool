@@ -4,10 +4,10 @@ import { useNavigate } from 'react-router-dom'
 // These files should be placed in public/ so Vite copies them to dist/.
 // Update paths if tools are hosted elsewhere.
 const TOOL_LINKS = {
-  questionFramework: '/policy-evaluation-feasibility-tool/research-question-framework.html',
-  quantTree:         '/policy-evaluation-feasibility-tool/quant-decision-tree.html',
-  qualTree:          '/policy-evaluation-feasibility-tool/qual-decision-tree.html',
-  designFinder:      '/policy-evaluation-feasibility-tool/design-finder.html',
+  questionFramework: '/policy-evaluation-feasibility-tool/questionFramework.html',
+  quantTree:         '/policy-evaluation-feasibility-tool/quantTree.html',
+  qualTree:          '/policy-evaluation-feasibility-tool/qualTree.html',
+  designFinder:      '/policy-evaluation-feasibility-tool/designFinder.html',
 }
 
 // ── Sub-components ─────────────────────────────────────────────────────────
