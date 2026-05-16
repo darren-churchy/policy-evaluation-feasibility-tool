@@ -29,6 +29,10 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
   const isLanding = location.pathname === '/'
 
   useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [location.pathname])
+
+  useEffect(() => {
     if (window.innerWidth < MOBILE_BREAKPOINT) setOpen(false)
   }, [location.pathname])
 
