@@ -234,7 +234,7 @@ export function LockedPage() {
     <div className="locked-page">
       <h3 className="govuk-heading-m">This section is locked</h3>
       <p className="govuk-body">
-        Complete the Causal Readiness assessment (Section 3) and ensure all critical
+        Complete the Causal Readiness assessment (Section 2) and ensure all critical
         readiness conditions are met before proceeding.
       </p>
       <p className="govuk-body-s">
