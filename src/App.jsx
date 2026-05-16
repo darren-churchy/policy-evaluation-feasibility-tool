@@ -1,14 +1,15 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAppState } from './hooks/useAppState.js'
-import AppLayout    from './components/layout/AppLayout.jsx'
-import Page1        from './components/pages/Page1.jsx'
-import Page2        from './components/pages/Page2.jsx'
-import Page3        from './components/pages/Page3.jsx'
-import Page4        from './components/pages/Page4.jsx'
-import Page5        from './components/pages/Page5.jsx'
-import Page6        from './components/pages/Page6.jsx'
-import Page7        from './components/pages/Page7.jsx'
-import ResultsPage  from './components/pages/ResultsPage.jsx'
+import AppLayout        from './components/layout/AppLayout.jsx'
+import LandingPage      from './components/pages/LandingPage.jsx'
+import Page1            from './components/pages/Page1.jsx'
+import PageCausalReadiness from './components/pages/PageCausalReadiness.jsx'
+import PageIdealTrial   from './components/pages/PageIdealTrial.jsx'
+import Page4            from './components/pages/Page4.jsx'
+import Page5            from './components/pages/Page5.jsx'
+import Page6            from './components/pages/Page6.jsx'
+import Page7            from './components/pages/Page7.jsx'
+import ResultsPage      from './components/pages/ResultsPage.jsx'
 
 export default function App() {
   const {
@@ -25,17 +26,28 @@ export default function App() {
   return (
     <AppLayout gatePassed={gatePassed} completedSections={completedSections}>
       <Routes>
-        <Route path="/"        element={<Navigate to="/page1" replace />} />
-        <Route path="/page1"   element={<Page1 {...pageProps} />} />
-        <Route path="/page2"   element={<Page2 {...pageProps} />} />
-        <Route path="/page3"   element={
-          <Page3 {...pageProps} gatePassed={gatePassed} gateFailures={gateFailures} />
+        {/* Landing page — no sidebar, full-width */}
+        <Route path="/"                  element={<LandingPage />} />
+
+        {/* Assessment sections — sidebar visible */}
+        <Route path="/research-question" element={<Page1 {...pageProps} />} />
+        <Route path="/causal-readiness"  element={
+          <PageCausalReadiness
+            {...pageProps}
+            gatePassed={gatePassed}
+            gateFailures={gateFailures}
+          />
         } />
-        <Route path="/page4"   element={
+        <Route path="/ideal-trial"       element={
+          <PageIdealTrial {...pageProps} gatePassed={gatePassed} />
+        } />
+        <Route path="/design-questions"  element={
           <Page4 {...pageProps} gatePassed={gatePassed} prospectiveOk={prospectiveOk} />
         } />
-        <Route path="/page5"   element={<Page5 {...pageProps} gatePassed={gatePassed} />} />
-        <Route path="/page6"   element={
+        <Route path="/adjustment"        element={
+          <Page5 {...pageProps} gatePassed={gatePassed} />
+        } />
+        <Route path="/data-sources"      element={
           <Page6
             {...pageProps}
             gatePassed={gatePassed}
@@ -45,8 +57,10 @@ export default function App() {
             updateDataRow={updateDataRow}
           />
         } />
-        <Route path="/page7"   element={<Page7 {...pageProps} gatePassed={gatePassed} />} />
-        <Route path="/results" element={
+        <Route path="/statistical"       element={
+          <Page7 {...pageProps} gatePassed={gatePassed} />
+        } />
+        <Route path="/results"           element={
           <ResultsPage
             inputs={inputs}
             results={results}
@@ -54,7 +68,17 @@ export default function App() {
             topDesign={topDesign}
           />
         } />
-        <Route path="*" element={<Navigate to="/page1" replace />} />
+
+        {/* Legacy redirects — preserve old page URLs */}
+        <Route path="/page1"   element={<Navigate to="/research-question" replace />} />
+        <Route path="/page2"   element={<Navigate to="/causal-readiness"  replace />} />
+        <Route path="/page3"   element={<Navigate to="/ideal-trial"       replace />} />
+        <Route path="/page4"   element={<Navigate to="/design-questions"  replace />} />
+        <Route path="/page5"   element={<Navigate to="/adjustment"        replace />} />
+        <Route path="/page6"   element={<Navigate to="/data-sources"      replace />} />
+        <Route path="/page7"   element={<Navigate to="/statistical"       replace />} />
+
+        <Route path="*"        element={<Navigate to="/" replace />} />
       </Routes>
     </AppLayout>
   )

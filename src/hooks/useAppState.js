@@ -3,26 +3,27 @@ import { assembleResults } from '../scoring/scoring.js'
 import { NEXT_STEPS } from '../data/nextSteps.js'
 import { GATE_ENABLED } from '../scoring/config.js'
 
-const DEFAULT_STATE = {}
 const DEFAULT_DATA_ROW = () => ({
   name: '', type: '', period: '', geo: '',
   quality: '', linkable: '', hasExposure: '', hasOutcome: '',
 })
 
+// Section completion — uses semantic paths matching new App.jsx routes
 function getCompletedSections(inputs) {
   const completed = new Set()
-  if (inputs.p1_rq && inputs.p1_prospective) completed.add('/page1')
-  if (inputs.tte_eligibility && inputs.tte_outcome) completed.add('/page2')
-  if (inputs.p3_defined && inputs.p3_toc && inputs.p3_scale) completed.add('/page3')
-  if (inputs.screen_did || inputs.screen_rd || inputs.screen_its || inputs.screen_iv || inputs.screen_match) completed.add('/page4')
-  if (inputs.p5_dag) completed.add('/page5')
-  if (inputs.p6_linkage) completed.add('/page6')
-  if (inputs.p7_n || inputs.p7_predata) completed.add('/page7')
+  if (inputs.p1_rq && inputs.p1_prospective)        completed.add('/research-question')
+  if (inputs.p3_defined && inputs.p3_toc && inputs.p3_scale) completed.add('/causal-readiness')
+  if (inputs.tte_eligibility && inputs.tte_outcome)  completed.add('/ideal-trial')
+  if (inputs.screen_did || inputs.screen_rd || inputs.screen_its ||
+      inputs.screen_iv  || inputs.screen_match)       completed.add('/design-questions')
+  if (inputs.p5_dag)                                 completed.add('/adjustment')
+  if (inputs.p6_linkage)                             completed.add('/data-sources')
+  if (inputs.p7_n || inputs.p7_predata)              completed.add('/statistical')
   return completed
 }
 
 export function useAppState() {
-  const [inputs, setInputs] = useState(DEFAULT_STATE)
+  const [inputs, setInputs] = useState({})
   const [dataRows, setDataRows] = useState([DEFAULT_DATA_ROW()])
 
   const set = useCallback((id, value) => {
@@ -47,12 +48,14 @@ export function useAppState() {
     ))
   }, [])
 
+  // Gate — now checks definition AND ToC as separate conditions
   const gatePassed = useMemo(() => {
     if (!GATE_ENABLED) return true
     const critical = ['p3_defined', 'p3_toc', 'p3_scale']
     return !critical.some(id => inputs[id] === 'no')
   }, [inputs])
 
+  // Gate failures — specific failed condition labels for targeted messaging
   const gateFailures = useMemo(() => {
     const LABELS = {
       p3_defined: 'Intervention is not clearly defined and documented',
