@@ -116,8 +116,8 @@ export default function Page6({ inputs, set, gatePassed, dataRows, addDataRow, r
         </Card>
 
         <NavButtons>
-          <Button variant="secondary" onClick={() => navigate('/page5')}>← Previous: Adjustment &amp; DAG</Button>
-          <Button onClick={() => navigate('/page7')}>Next: Statistical Feasibility →</Button>
+          <Button variant="secondary" onClick={() => navigate('/adjustment')}>← Previous: Adjustment &amp; DAG</Button>
+          <Button onClick={() => navigate('/statistical')}>Next: Statistical Feasibility →</Button>
         </NavButtons>
       </div>
     </div>
