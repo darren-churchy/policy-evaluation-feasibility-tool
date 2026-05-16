@@ -231,7 +231,7 @@ export default function Page4({ inputs, set, gatePassed, prospectiveOk }) {
         </Card>
 
         <NavButtons>
-          <Button variant="secondary" onClick={() => navigate('/ideal-trial')}>← Previous: Causal Readiness</Button>
+          <Button variant="secondary" onClick={() => navigate('/ideal-trial')}>← Previous: Ideal Trial</Button>
           <Button onClick={() => navigate('/adjustment')}>Next: Adjustment &amp; DAG →</Button>
         </NavButtons>
       </div>
