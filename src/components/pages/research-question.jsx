@@ -148,7 +148,7 @@ export default function Page1({ inputs, set }) {
         </Card>
 
         <NavButtons>
-          <Button onClick={() => navigate('/causal-readiness')}>Next: Target Trial →</Button>
+          <Button onClick={() => navigate('/causal-readiness')}>Next: Causal Readiness →</Button>
         </NavButtons>
       </div>
     </div>
