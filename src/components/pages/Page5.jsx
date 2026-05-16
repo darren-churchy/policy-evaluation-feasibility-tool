@@ -105,8 +105,8 @@ export default function Page5({ inputs, set, gatePassed }) {
         </Card>
 
         <NavButtons>
-          <Button variant="secondary" onClick={() => navigate('/page4')}>← Previous: Design Questions</Button>
-          <Button onClick={() => navigate('/page6')}>Next: Data Sources →</Button>
+          <Button variant="secondary" onClick={() => navigate('/design-questions')}>← Previous: Design Questions</Button>
+          <Button onClick={() => navigate('/data-sources')}>Next: Data Sources →</Button>
         </NavButtons>
       </div>
     </div>
