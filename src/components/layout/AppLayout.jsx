@@ -24,6 +24,7 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
   const location  = useLocation()
   const navigate  = useNavigate()
   const [open, setOpen] = useState(() => window.innerWidth >= MOBILE_BREAKPOINT)
+  const [showInstallInfo, setShowInstallInfo] = useState(false)
 
   // PWA install prompt — captured here so it isn't lost when the landing page
   // is shown (InstallPrompt only renders inside the sidebar, which is hidden there)
@@ -158,6 +159,65 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
             <strong className="govuk-tag govuk-tag--orange" style={{ fontSize: '11px', flexShrink: 0 }}>
               PROTOTYPE
             </strong>
+
+            {/* Install button — always shown in header (only install entry point on landing page) */}
+            {!installed && (
+              <div style={{ position: 'relative' }}>
+                <button
+                  onClick={async () => {
+                    if (installPrompt) {
+                      installPrompt.prompt()
+                      const { outcome } = await installPrompt.userChoice
+                      if (outcome === 'accepted') { setInstallPrompt(null); setShowInstallInfo(false) }
+                    } else {
+                      setShowInstallInfo(v => !v)
+                    }
+                  }}
+                  aria-label={installPrompt ? 'Install app' : 'How to install this app'}
+                  style={{
+                    background: installPrompt ? '#9c1b6d' : 'none',
+                    border: '1px solid rgba(255,255,255,.35)',
+                    color: '#fff',
+                    padding: '4px 10px',
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    fontFamily: 'inherit',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '5px',
+                    flexShrink: 0,
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  <span aria-hidden="true">⊕</span>
+                  {installPrompt ? 'Install' : 'Install ↓'}
+                </button>
+                {showInstallInfo && !installPrompt && (
+                  <div style={{
+                    position: 'absolute', right: 0, top: 'calc(100% + 8px)',
+                    background: '#fff', border: '1px solid #b1b4b6',
+                    padding: '14px 16px', zIndex: 300, width: '260px',
+                    boxShadow: '0 4px 16px rgba(0,0,0,.2)',
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
+                      <strong style={{ fontSize: '13px', color: '#0b0c0c' }}>Install this app</strong>
+                      <button
+                        onClick={() => setShowInstallInfo(false)}
+                        aria-label="Close"
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6f777b', fontSize: '16px', padding: 0, lineHeight: 1 }}
+                      >✕</button>
+                    </div>
+                    <p style={{ fontSize: '12px', color: '#6f777b', margin: '0 0 8px', lineHeight: 1.5 }}>
+                      <strong style={{ color: '#0b0c0c' }}>Chrome / Edge:</strong> click the ⊕ icon in the address bar, or open the browser menu and select "Install app".
+                    </p>
+                    <p style={{ fontSize: '12px', color: '#6f777b', margin: 0, lineHeight: 1.5 }}>
+                      <strong style={{ color: '#0b0c0c' }}>iOS Safari:</strong> tap the Share button (↑ box), then tap "Add to Home Screen".
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </header>
@@ -269,8 +329,32 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
       {/* ── Footer ── */}
       <footer className="govuk-footer" style={{ flexShrink: 0 }}>
         <div style={{ padding: '16px 20px' }}>
+          {/* Feedback strip */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap',
+            marginBottom: '10px', paddingBottom: '10px', borderBottom: '1px solid #b1b4b6',
+          }}>
+            <span className="govuk-body-s" style={{ color: '#6f777b', margin: 0 }}>
+              Feedback on this tool?
+            </span>
+            <a
+              href="mailto:FEEDBACK_EMAIL_PLACEHOLDER?subject=Impact%20Evaluation%20Feasibility%20Tool%20%E2%80%94%20feedback"
+              className="govuk-link govuk-body-s"
+            >
+              Email us
+            </a>
+            <span className="govuk-body-s" style={{ color: '#6f777b', margin: 0 }}>or</span>
+            <a
+              href="https://github.com/darren-churchy/policy-evaluation-feasibility-tool/issues/new"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="govuk-link govuk-body-s"
+            >
+              raise a GitHub issue ↗
+            </a>
+          </div>
           <span className="govuk-body-s" style={{ color: '#6f777b' }}>
-            Impact Evaluation Feasibility Tool — Prototype v0.6 — Ministry of Justice |
+            Impact Evaluation Feasibility Tool — Prototype v0.7 — Ministry of Justice |
             Government Social Research. This tool should be used to inform — not replace —
             professional methodological judgement.
           </span>
