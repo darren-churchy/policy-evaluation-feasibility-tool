@@ -139,10 +139,10 @@ Standalone HTML tools hosted at the same GitHub Pages URL. No build step require
 
 | File | Tool | Linked from |
 |---|---|---|
-| `public/research-question-framework.html` | Research Question Framework | Landing page Section 1 |
-| `public/quant-decision-tree.html` | Quantitative Decision Tree | Landing page Section 1 |
-| `public/qual-decision-tree.html` | Qualitative Decision Tree | Landing page Section 1 |
-| `public/design-finder.html` | Evaluation Design Finder (v0.7) | Landing page Section 2 |
+| `public/questionFramework.html` | Research Question Framework | Landing page Section 1 |
+| `public/quantTree.html` | Quantitative Decision Tree | Landing page Section 1 |
+| `public/qualTree.html` | Qualitative Decision Tree | Landing page Section 1 |
+| `public/designFinder.html` | Evaluation Design Finder | Landing page Section 2 |
 
 Tool link constants are defined at the top of `LandingPage.jsx` as `TOOL_LINKS` — update paths there if filenames change.
 
@@ -184,32 +184,10 @@ Configured via `vite-plugin-pwa` with `autoUpdate` service worker strategy. All 
 
 ---
 
-## Pending items (as of v0.7 branch)
+## PWA install button
 
-These changes were developed in a Claude chat session and are packaged in `feasibility_updates.zip`. They need to be applied to the repo before the Claude Code session begins:
+The sidebar shows an "Install app" button when the browser fires the `beforeinstallprompt` event (Chrome/Edge on desktop and Android). When that event isn't available (iOS Safari, Firefox, dev mode, or already installed), a "How to install ↓" toggle appears instead with browser-specific instructions.
 
-### File renames required in src/components/pages/
-- `Page1.jsx` → `PageResearchQuestion.jsx`
-- `Page4.jsx` → `PageDesignQuestions.jsx`
-- `Page5.jsx` → `PageAdjustment.jsx`
-- `Page6.jsx` → `PageDataSources.jsx`
-- `Page7.jsx` → delete; use `PageStatistical.jsx` from zip
+The `beforeinstallprompt` listener is held in `AppLayout` (not inside `InstallPrompt`) so the event is captured even when the user is on the landing page where the sidebar is hidden.
 
-### New files to add
-- `src/components/pages/LandingPage.jsx`
-- `src/components/pages/PageCausalReadiness.jsx`
-- `src/components/pages/PageIdealTrial.jsx`
-- `src/components/pages/PageStatistical.jsx`
-
-### Files to replace
-- `src/App.jsx`
-- `src/hooks/useAppState.js`
-- `src/components/layout/AppLayout.jsx`
-- `src/data/nextSteps.js`
-
-### Manual edits still needed in existing page files
-- `PageResearchQuestion.jsx`: Next button `navigate('/page2')` → `navigate('/causal-readiness')`; label `'Next: Target Trial →'` → `'Next: Causal Readiness →'`
-- `PageDesignQuestions.jsx`: Prev button `navigate('/page3')` → `navigate('/ideal-trial')`; label `'← Previous: Causal Readiness'` → `'← Previous: Ideal Trial'`; Next `navigate('/page5')` → `navigate('/adjustment')`
-- `PageAdjustment.jsx`: Prev `navigate('/page4')` → `navigate('/design-questions')`; Next `navigate('/page6')` → `navigate('/data-sources')`
-- `PageDataSources.jsx`: Prev `navigate('/page5')` → `navigate('/adjustment')`; Next `navigate('/page7')` → `navigate('/statistical')`
-- `src/components/ui/GovukComponents.jsx`: LockedPage text `'Section 3'` → `'Section 2'`
+> **Note:** Do not add a file at `public/index.html`. Vite copies everything in `public/` verbatim to `dist/` after processing the root `index.html`, so `public/index.html` would silently overwrite the built file and strip the PWA manifest link and service worker registration injected by `vite-plugin-pwa`.

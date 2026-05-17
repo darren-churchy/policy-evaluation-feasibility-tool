@@ -281,7 +281,9 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
 }
 
 function InstallPrompt({ prompt, installed, onInstall }) {
-  if (installed || !prompt) return null
+  const [showHelp, setShowHelp] = useState(false)
+
+  if (installed) return null
 
   return (
     <div style={{
@@ -289,22 +291,47 @@ function InstallPrompt({ prompt, installed, onInstall }) {
       background: 'rgba(255,255,255,.07)', borderLeft: '3px solid #9c1b6d',
     }}>
       <p style={{ color: 'rgba(255,255,255,.8)', fontSize: '12px', margin: '0 0 8px', lineHeight: 1.4 }}>
-        Install this tool to your device for offline use and faster loading.
+        Install for offline use and faster loading.
       </p>
-      <button
-        onClick={async () => {
-          prompt.prompt()
-          const { outcome } = await prompt.userChoice
-          if (outcome === 'accepted') onInstall(null)
-        }}
-        style={{
-          background: '#9c1b6d', color: '#fff', border: 'none',
-          padding: '6px 12px', fontSize: '12px', fontWeight: 700,
-          cursor: 'pointer', fontFamily: 'inherit', width: '100%',
-        }}
-      >
-        Install app
-      </button>
+      {prompt ? (
+        <button
+          onClick={async () => {
+            prompt.prompt()
+            const { outcome } = await prompt.userChoice
+            if (outcome === 'accepted') onInstall(null)
+          }}
+          style={{
+            background: '#9c1b6d', color: '#fff', border: 'none',
+            padding: '6px 12px', fontSize: '12px', fontWeight: 700,
+            cursor: 'pointer', fontFamily: 'inherit', width: '100%',
+          }}
+        >
+          Install app
+        </button>
+      ) : (
+        <>
+          <button
+            onClick={() => setShowHelp(h => !h)}
+            style={{
+              background: 'transparent', color: 'rgba(255,255,255,.6)',
+              border: '1px solid rgba(255,255,255,.2)', padding: '6px 12px',
+              fontSize: '12px', fontWeight: 600, cursor: 'pointer',
+              fontFamily: 'inherit', width: '100%', textAlign: 'left',
+            }}
+          >
+            How to install {showHelp ? '↑' : '↓'}
+          </button>
+          {showHelp && (
+            <div style={{ marginTop: '8px', fontSize: '11px', color: 'rgba(255,255,255,.55)', lineHeight: 1.6 }}>
+              <strong style={{ color: 'rgba(255,255,255,.7)', display: 'block', marginBottom: '2px' }}>Chrome / Edge:</strong>
+              Click the install icon (⊕) in the address bar, or open the browser menu and select "Install app".
+              <br /><br />
+              <strong style={{ color: 'rgba(255,255,255,.7)', display: 'block', marginBottom: '2px' }}>iOS Safari:</strong>
+              Tap the Share button (↑ box), then tap "Add to Home Screen".
+            </div>
+          )}
+        </>
+      )}
     </div>
   )
 }

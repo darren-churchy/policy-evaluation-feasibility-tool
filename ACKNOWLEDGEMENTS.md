@@ -3,8 +3,8 @@
 ## AI Assistance
 
 This project was developed with substantial assistance from
-[Claude](https://claude.ai) (claude-sonnet-4-5, Anthropic), accessed via
-Claude.ai during 2025–2026.
+[Claude](https://claude.ai) (Anthropic), accessed via Claude.ai (claude-sonnet-4-5)
+and Claude Code (claude-sonnet-4-6) during 2025–2026.
 
 Claude assisted with the following aspects of the project:
 
@@ -12,6 +12,9 @@ Claude assisted with the following aspects of the project:
   component hierarchy, and state management approach
 - **Code generation** — authoring of React components, the JavaScript scoring
   engine, CSS styling, and GitHub Actions deployment workflow
+- **v0.7 updates** — landing page, semantic routing, collapsible sidebar,
+  Test and Learn framework integration, Bayesian panel, PWA install button,
+  bug fixes, and documentation updates
 - **R Shiny prototype** — development of the preceding R Shiny version of the
   tool, including the scoring logic subsequently ported to JavaScript
 - **Methodology documentation** — drafting of the specification document,
