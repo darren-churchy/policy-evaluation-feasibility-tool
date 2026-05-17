@@ -2,7 +2,7 @@
 
 A decision-support web application for government social researchers assessing the feasibility of different impact evaluation designs. Built with React and Vite, hosted as a static site on GitHub Pages.
 
-> **Status:** Prototype v0.6 — for methodological peer review. Not for public release.
+> **Status:** Prototype v0.7 — for methodological peer review. Not for public release.
 > Ministry of Justice | Government Social Research
 
 ---
@@ -30,7 +30,7 @@ A decision-support web application for government social researchers assessing t
 
 The tool guides analysts through a structured feasibility assessment for impact evaluation, helping them:
 
-- Specify their research question and policy context using established frameworks (PICOTS, Target Trial Emulation)
+- Specify their research question and policy context using established frameworks (PICOTS, Ideal Trial Specification)
 - Assess whether their intervention is ready for impact evaluation
 - Work through design-specific feasibility questions across 32 evaluation design variants
 - Receive a ranked feasibility table with scores, category ratings, and blocker explanations
@@ -51,17 +51,18 @@ The tool does not replace methodological expertise or peer review. It structures
 
 ## How the app works
 
-The app is organised into seven sequential sections plus a results page:
+The app starts from a landing page that links to companion tools and provides entry to the full assessment. The assessment itself has seven sequential sections plus a results page:
 
+| — | Landing page | Companion tools (Research Question Framework, Decision Trees, Design Finder); entry point to the assessment |
 | Section | Title | Key content |
 |---------|-------|-------------|
-| 1 | Research Question & Study Context | Research question, PICOTS framework, prospective evaluation filter, policy decision and timeline |
-| 2 | Target Trial Emulation | Seven TTE framework components — each with a feasibility edit prompt |
-| 3 | Causal Readiness *(gate)* | Intervention readiness (5 questions); causal identification assumptions; gate failure report download |
+| 1 | Research Question | Research question, PICOTS framework, prospective evaluation filter, policy decision and timeline |
+| 2 | Causal Readiness *(gate)* | Three critical intervention readiness conditions; live T&L stage inference; causal identification assumptions |
+| 3 | Ideal Trial Specification | Seven components specifying the ideal trial to clarify the causal estimand before choosing a design |
 | 4 | Design-Specific Questions | Screening questions per design family; variant-specific feasibility questions; sticky within-page navigation |
 | 5 | Adjustment & DAG | Causal diagram description; variable classification (confounders, mediators, colliders, competing exposures) |
 | 6 | Data Sources | Dynamic data source inventory (persists across navigation); linkage feasibility; missing data assessment |
-| 7 | Statistical Feasibility | Sample size, MDE, power calculation, pre-intervention data, analysis approach |
+| 7 | Statistical Feasibility | Sample size, MDE, power calculation, pre-intervention data, analysis approach; Bayesian panel for small samples |
 | Results | Feasibility Assessment Results | Ranked table, top recommendation, next steps panel, HTML export |
 
 ### Prospective evaluation filter
@@ -70,13 +71,13 @@ The first question on Section 1 asks whether a prospective evaluation is possibl
 
 ### Intervention readiness gate
 
-Section 3 contains a hard gate based on five readiness questions. Three are designated critical:
+Section 2 contains a hard gate based on three critical conditions:
 
 - Is the intervention clearly defined and documented?
-- Is there a logic model or theory of change?
-- Has the intervention reached sufficient scale or maturity?
+- Is there a theory of change or logic model describing the causal mechanism?
+- Has the intervention reached sufficient scale or maturity for impact evaluation?
 
-If any critical question is answered **No**, Sections 4–7 and the Results page are locked, and the user is shown a signpost table of alternative evaluation approaches (process evaluation, developmental evaluation, contribution analysis, realist evaluation). A downloadable readiness assessment report is also provided, summarising why impact evaluation is not yet recommended and what steps to consider instead.
+If any condition is answered **No**, Sections 3–7 and the Results page are locked. The page infers the user's Magenta Book Test and Learn stage from their answers and displays a table of appropriate alternative approaches (process evaluation, developmental evaluation, contribution analysis, realist evaluation).
 
 The gate can be disabled for reviewer walkthroughs — see [Configuring the app](#configuring-the-app).
 
@@ -128,49 +129,56 @@ policy-evaluation-feasibility-tool/
 │
 ├── .github/
 │   └── workflows/
-│       └── deploy.yml          # GitHub Actions: auto-build and deploy on push to main
+│       └── deploy.yml              # GitHub Actions: auto-build and deploy on push to main
 │
-├── public/
-│   └── index.html              # HTML shell — loads GOV.UK and MoJ CSS from CDN
+├── public/                         # Static assets — copied verbatim to dist/ (no build step)
+│   ├── questionFramework.html      # Research Question Framework companion tool
+│   ├── quantTree.html              # Quantitative Decision Tree companion tool
+│   ├── qualTree.html               # Qualitative Decision Tree companion tool
+│   ├── designFinder.html           # Evaluation Design Finder companion tool
+│   └── icons/                      # PWA icons (192px, 512px, apple-touch, svg, favicon)
 │
 ├── src/
-│   ├── index.css               # Global styles: font stack, sticky nav, GOV.UK/MoJ class definitions
-│   ├── main.jsx                # React entry point; HashRouter for GitHub Pages compatibility
-│   ├── App.jsx                 # Root component — routing and state wired to all pages
+│   ├── index.css                   # Global styles: font stack, GOV.UK/MoJ class definitions
+│   ├── main.jsx                    # React entry point; HashRouter for GitHub Pages compatibility
+│   ├── App.jsx                     # Root component — routing and state wired to all pages
 │   │
-│   ├── data/                   # ── EDITABLE CONTENT (no code knowledge required) ──
-│   │   ├── designs.js          # Design taxonomy: all 32 variants, categories, ceiling keys
-│   │   ├── tteComponents.js    # Target Trial Emulation component titles, hints, placeholders
-│   │   └── nextSteps.js        # Next steps registry: flagged questions and guidance text
+│   ├── data/                       # ── EDITABLE CONTENT (no code knowledge required) ──
+│   │   ├── designs.js              # Design taxonomy: all 32 variants, categories, ceiling keys
+│   │   ├── tteComponents.js        # Ideal Trial Specification component titles, hints, placeholders
+│   │   └── nextSteps.js            # Next steps registry: flagged questions and guidance text
 │   │
-│   ├── scoring/                # ── SCORING ENGINE ──
-│   │   ├── config.js           # All configurable parameters: weights, thresholds, ceilings
-│   │   └── scoring.js          # Per-design scoring functions and results assembly
+│   ├── scoring/                    # ── SCORING ENGINE ──
+│   │   ├── config.js               # All configurable parameters: weights, thresholds, ceilings
+│   │   └── scoring.js              # Per-design scoring functions and results assembly
 │   │
 │   ├── hooks/
-│   │   └── useAppState.js      # Central state management; gate logic; live scoring; data row persistence
+│   │   └── useAppState.js          # Central state management; gate logic; live scoring; data row persistence
 │   │
 │   └── components/
 │       ├── layout/
-│       │   └── AppLayout.jsx   # MoJ header, sticky sidebar with progress tracker, footer
+│       │   └── AppLayout.jsx       # MoJ header, collapsible sidebar with progress tracker, footer
 │       │
 │       ├── ui/
-│       │   └── GovukComponents.jsx  # Shared GOV.UK/MoJ Design System components
+│       │   └── GovukComponents.jsx # Shared GOV.UK/MoJ Design System components
 │       │
 │       └── pages/
-│           ├── Page1.jsx       # Research Question & Study Context
-│           ├── Page2.jsx       # Target Trial Emulation
-│           ├── Page3.jsx       # Causal Readiness (gate logic; gate failure report download)
-│           ├── Page4.jsx       # Design-Specific Feasibility Questions (sticky within-page nav)
-│           ├── Page5.jsx       # Adjustment & DAG
-│           ├── Page6.jsx       # Data Sources
-│           ├── Page7.jsx       # Statistical Feasibility
-│           └── ResultsPage.jsx # Results table, top recommendation, next steps, export
+│           ├── LandingPage.jsx         # Landing page with companion tool links and assessment entry
+│           ├── PageResearchQuestion.jsx # 1. Research Question & Study Context
+│           ├── PageCausalReadiness.jsx  # 2. Causal Readiness (gate logic; T&L stage inference)
+│           ├── PageIdealTrial.jsx       # 3. Ideal Trial Specification
+│           ├── PageDesignQuestions.jsx  # 4. Design-Specific Feasibility Questions
+│           ├── PageAdjustment.jsx       # 5. Adjustment & DAG
+│           ├── PageDataSources.jsx      # 6. Data Sources
+│           ├── PageStatistical.jsx      # 7. Statistical Feasibility (Bayesian panel)
+│           └── ResultsPage.jsx          # Results table, top recommendation, next steps, export
 │
-├── ACKNOWLEDGEMENTS.md         # AI assistance acknowledgement
-├── LICENSE                     # GNU General Public License v3.0
-├── package.json                # Project dependencies and build scripts
-└── vite.config.js              # Vite build configuration (set base to your repo name)
+├── index.html                      # App shell — PWA meta tags, GOV.UK/MoJ CSS from CDN
+├── ACKNOWLEDGEMENTS.md             # AI assistance acknowledgement
+├── CLAUDE.md                       # Guidance for AI coding assistants
+├── LICENSE                         # GNU General Public License v3.0
+├── package.json                    # Project dependencies and build scripts
+└── vite.config.js                  # Vite build configuration (set REPO_NAME to your repo name)
 ```
 
 ---
@@ -208,7 +216,7 @@ Computed from two components multiplied together:
 
 1. **Design-specific feasibility score (0–1):** derived from the answers to that design's questions on Section 4 — e.g. whether parallel trends is plausible for DiD, whether a valid instrument exists for IV.
 
-2. **Global assumption score (0–1):** the mean of the three causal identification assumption ratings from Section 3 (exchangeability, positivity, consistency). Applied to all quantitative designs. Theory-based designs use a parallel set of criteria instead (theory of change quality, intervention definition).
+2. **Global assumption score (0–1):** the mean of the three causal identification assumption ratings from Section 2 (exchangeability, positivity, consistency). Applied to all quantitative designs. Theory-based designs use a parallel set of criteria instead (theory of change quality, intervention definition).
 
 The combined score is then **capped by the design's category validity ceiling** — see [Design category framework](#design-category-framework) below.
 
@@ -295,7 +303,7 @@ All configurable parameters are in **`src/scoring/config.js`**. No other files n
 ```js
 // src/scoring/config.js
 
-// Disable the Section 3 gate for reviewer walkthroughs
+// Disable the Section 2 gate for reviewer walkthroughs
 export const GATE_ENABLED = true
 
 // Scoring weights — must sum to 1
@@ -331,7 +339,7 @@ Controls the design taxonomy — which variants exist, which family they belong 
 
 ### `src/data/tteComponents.js`
 
-Controls the seven Target Trial Emulation component cards on Section 2 — titles, hint text, and placeholder text. Edit to update the framing or guidance without touching the page component.
+Controls the seven Ideal Trial Specification component cards on Section 3 — titles, hint text, and placeholder text. Edit to update the framing or guidance without touching the page component.
 
 ### `src/data/nextSteps.js`
 
@@ -370,7 +378,8 @@ Push any change to `main` and the site rebuilds and redeploys automatically with
 
 The app uses `HashRouter`, so page URLs take the form:
 ```
-https://YOUR-ORG.github.io/your-repository-name/#/page1
+https://YOUR-ORG.github.io/your-repository-name/#/research-question
+https://YOUR-ORG.github.io/your-repository-name/#/causal-readiness
 https://YOUR-ORG.github.io/your-repository-name/#/results
 ```
 
@@ -384,13 +393,13 @@ This prototype is circulated for methodological peer review. The most important 
 
 **On scoring weights and thresholds** — are the default weights (data 50%, causal validity 50%) appropriate? Should causal validity be weighted more heavily?
 
-**On design category assignments** — the four boundary cases noted above. See `REVIEWER_NOTES.md`.
+**On design category assignments** — the four boundary cases: (1) Encouragement design as A vs B; (2) Standard ITS as C vs D; (3) Controlled ITS as B vs C; (4) G-methods as D vs D+.
 
 **On category validity ceilings** — are the ceiling values appropriately spaced? Should the gap between D and C be wider?
 
 **On question coverage and wording** — are the right questions being asked for each design family? Is the hint text well-calibrated for the intended user group?
 
-**On gate logic** — are the five intervention readiness questions the right conditions for the gate? Is a hard gate the right approach, or would a soft gate with strong warnings be preferable?
+**On gate logic** — are the three intervention readiness conditions the right conditions for the gate? Is a hard gate the right approach, or would a soft gate with strong warnings be preferable?
 
 To suggest changes to scoring logic or category assignments, please raise a GitHub Issue with the label `methodology-review`. To suggest changes to wording or guidance text, edit the relevant file in `src/data/` and open a pull request.
 
@@ -401,7 +410,11 @@ To suggest changes to scoring logic or category assignments, please raise a GitH
 | Document | Description |
 |----------|-------------|
 | `ACKNOWLEDGEMENTS.md` | AI assistance acknowledgement |
-| `REVIEWER_NOTES.md` | Design category boundary cases and open questions for peer review |
+| `CLAUDE.md` | Guidance for AI coding assistants working in this repository |
+| `public/questionFramework.html` | Research Question Framework — standalone companion tool |
+| `public/quantTree.html` | Quantitative Decision Tree — standalone companion tool |
+| `public/qualTree.html` | Qualitative Decision Tree — standalone companion tool |
+| `public/designFinder.html` | Evaluation Design Finder — standalone companion tool |
 | `scoring_reference.xlsx` | Per-design scoring map and answer-to-score lookup tables |
 | `spec_brief.docx` | Full specification document for non-technical reviewers |
 | `checklist.pdf` / `checklist.docx` | Pre-assessment checklist for users to complete before opening the app |
@@ -412,7 +425,7 @@ To suggest changes to scoring logic or category assignments, please raise a GitH
 
 ### AI assistance
 
-This project was developed with substantial assistance from [Claude](https://claude.ai) (claude-sonnet-4-5, Anthropic), accessed via Claude.ai during 2025–2026.
+This project was developed with substantial assistance from [Claude](https://claude.ai) (claude-sonnet-4-5, Anthropic) via Claude.ai, and Claude Code (claude-sonnet-4-6, Anthropic) during 2025–2026.
 
 Claude assisted with the following aspects of the project:
 
@@ -454,5 +467,5 @@ This project makes use of the following open source packages, each under their o
 
 ---
 
-*Impact Evaluation Feasibility Tool — Prototype v0.6 — Ministry of Justice | Government Social Research*
+*Impact Evaluation Feasibility Tool — Prototype v0.7 — Ministry of Justice | Government Social Research*
 *This tool should be used to inform — not replace — professional methodological judgement.*
