@@ -191,16 +191,16 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
                   }}
                 >
                   <span aria-hidden="true">⊕</span>
-                  {installPrompt ? 'Install' : 'Install ↓'}
+                  {installPrompt ? 'Install app' : 'Install ↓'}
                 </button>
                 {showInstallInfo && !installPrompt && (
                   <div style={{
                     position: 'absolute', right: 0, top: 'calc(100% + 8px)',
                     background: '#fff', border: '1px solid #b1b4b6',
-                    padding: '14px 16px', zIndex: 300, width: '260px',
+                    padding: '14px 16px', zIndex: 300, width: '270px',
                     boxShadow: '0 4px 16px rgba(0,0,0,.2)',
                   }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
                       <strong style={{ fontSize: '13px', color: '#0b0c0c' }}>Install this app</strong>
                       <button
                         onClick={() => setShowInstallInfo(false)}
@@ -208,11 +208,14 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
                         style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6f777b', fontSize: '16px', padding: 0, lineHeight: 1 }}
                       >✕</button>
                     </div>
+                    <p style={{ fontSize: '12px', color: '#6f777b', margin: '0 0 10px', lineHeight: 1.5 }}>
+                      Your browser doesn't support automatic install. Follow the steps for your browser below.
+                    </p>
                     <p style={{ fontSize: '12px', color: '#6f777b', margin: '0 0 8px', lineHeight: 1.5 }}>
                       <strong style={{ color: '#0b0c0c' }}>Chrome / Edge:</strong> click the ⊕ icon in the address bar, or open the browser menu and select "Install app".
                     </p>
                     <p style={{ fontSize: '12px', color: '#6f777b', margin: 0, lineHeight: 1.5 }}>
-                      <strong style={{ color: '#0b0c0c' }}>iOS Safari:</strong> tap the Share button (↑ box), then tap "Add to Home Screen".
+                      <strong style={{ color: '#0b0c0c' }}>iOS Safari:</strong> tap the Share button (□↑), then tap "Add to Home Screen".
                     </p>
                   </div>
                 )}
