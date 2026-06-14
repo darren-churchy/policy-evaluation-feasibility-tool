@@ -38,7 +38,7 @@ export default defineConfig({
       manifest: {
         name: 'Impact Evaluation Feasibility Tool',
         short_name: 'Eval Feasibility',
-        description: 'Decision-support tool for assessing impact evaluation design feasibility. Ministry of Justice | Government Social Research.',
+        description: 'Decision-support tool for assessing impact evaluation design feasibility.',
         theme_color: '#9C1B6D',
         background_color: '#0B0C0C',
         display: 'standalone',

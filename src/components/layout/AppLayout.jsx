@@ -129,10 +129,6 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
             <span style={{ color: '#fff', fontSize: '22px', lineHeight: 1, flexShrink: 0 }}
               aria-hidden="true">⚖</span>
             <div style={{ minWidth: 0 }}>
-              <div className="govuk-body-s"
-                style={{ color: 'rgba(255,255,255,.65)', margin: 0, lineHeight: 1.2 }}>
-                Ministry of Justice
-              </div>
               <button
                 onClick={() => navigate('/')}
                 style={{
@@ -357,8 +353,7 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
             </a>
           </div>
           <span className="govuk-body-s" style={{ color: '#6f777b' }}>
-            Impact Evaluation Feasibility Tool — Prototype v0.7 — Ministry of Justice |
-            Government Social Research. This tool should be used to inform — not replace —
+            Impact Evaluation Feasibility Tool — Prototype v0.7. This tool should be used to inform — not replace —
             professional methodological judgement.
           </span>
         </div>

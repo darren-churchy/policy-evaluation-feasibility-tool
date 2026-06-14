@@ -107,9 +107,6 @@ export default function LandingPage() {
         padding: '48px 40px',
       }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-          <div style={{ fontSize: '11px', color: 'rgba(255,255,255,.5)', textTransform: 'uppercase', letterSpacing: '.8px', marginBottom: '12px' }}>
-            Ministry of Justice | Government Social Research
-          </div>
           <h1 style={{
             fontFamily: "'DM Serif Display', Georgia, serif",
             fontSize: 'clamp(28px, 4vw, 44px)',
