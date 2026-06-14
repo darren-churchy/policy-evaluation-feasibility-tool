@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { QUESTIONS, FAMILIES, BAYES_BULLETS } from '../../../data/designFinderData.js'
+import { downloadToolResult } from '../../../utils/exportToolResult.js'
 
 const MOJ = '#9C1B6D'
 const MOJ_DK = '#6b1249'
@@ -611,7 +612,31 @@ export default function PageDesignFinder() {
               </div>
             </div>
 
-            <div style={{ textAlign: 'center', marginTop: '32px', paddingBottom: '8px' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px', flexWrap: 'wrap', marginTop: '32px', paddingBottom: '8px' }}>
+              <button
+                onClick={() => {
+                  const breadcrumb = QUESTIONS
+                    .filter(q => answers[q.id] !== undefined)
+                    .map(q => ({ question: QLAB[q.id] || q.heading, chosen: q.options.find(o => o.value === answers[q.id])?.label || answers[q.id] }))
+                  const resultHtml = `
+<h2 style="font-size:18px">Your evaluation design shortlist</h2>
+<p>${sorted.length} design ${sorted.length === 1 ? 'family' : 'families'} recommended based on your answers.</p>
+${sorted.map(([key, priority]) => `
+<h3 style="font-size:15px;margin-top:20px">${FAMILIES[key].name} <span style="font-size:12px;font-weight:400">— ${PRIORITY_LABEL[priority]}</span></h3>
+<p style="font-size:13px;font-style:italic">${FAMILIES[key].designs.join(', ')}</p>
+<p>${getRationale(key, answers)}</p>
+<p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px">Key questions to investigate</p>
+<ul>${FAMILIES[key].investigate.map(item => `<li>${item}</li>`).join('')}</ul>`).join('')}
+${Object.keys(removed).length > 0 ? `
+<h3 style="font-size:14px;margin-top:24px">Removed from consideration</h3>
+<ul>${Object.entries(removed).map(([key, reason]) => `<li>${FAMILIES[key].name} — ${reason}</li>`).join('')}</ul>` : ''}
+<p style="margin-top:20px"><strong>Suggested T&amp;L stage:</strong> ${tlInfo.stages.join(', ')}</p>`
+                  downloadToolResult({ toolName: 'Evaluation Design Finder', breadcrumb, resultHtml })
+                }}
+                style={{ background: MOJ, color: '#fff', border: 'none', fontFamily: 'inherit', fontSize: '13px', fontWeight: 600, padding: '9px 18px', cursor: 'pointer' }}
+              >
+                ↓ Download summary
+              </button>
               <button onClick={restart} style={{ background: 'none', border: 'none', fontFamily: 'inherit', fontSize: '13px', color: GREY_4, cursor: 'pointer', textDecoration: 'underline' }}>
                 ← Start again with different answers
               </button>

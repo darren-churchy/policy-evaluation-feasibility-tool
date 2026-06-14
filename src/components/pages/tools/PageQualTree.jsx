@@ -1,17 +1,31 @@
 import DecisionTree, { TlBadge } from '../../ui/DecisionTree.jsx'
 import { tree, namedNodes, results } from '../../../data/qualTreeData.js'
+import { downloadToolResult } from '../../../utils/exportToolResult.js'
 
 function hexToRgba(hex, alpha) {
   const r = parseInt(hex.slice(1,3), 16), g = parseInt(hex.slice(3,5), 16), b = parseInt(hex.slice(5,7), 16)
   return `rgba(${r},${g},${b},${alpha})`
 }
 
-function renderQualResult(key, reset) {
+function renderQualResult(key, reset, path) {
   const r = results[key]
   if (!r) return null
 
   const ab = hexToRgba(r.accent, 0.13)
   const abo = hexToRgba(r.accent, 0.33)
+
+  function handleDownload() {
+    const resultHtml = `
+<h2 style="font-size:18px">${r.type}</h2>
+<p>${r.summary}</p>
+<h3 style="font-size:14px">Suggested approaches</h3>
+<ul>${r.approaches.map(a => `<li>${a}</li>`).join('')}</ul>
+<h3 style="font-size:14px">Example question</h3>
+<p style="font-style:italic">${r.example}</p>
+<p><strong>Watch out:</strong> ${r.watchOut}</p>
+<p><strong>Next step:</strong> ${r.signpost}</p>`
+    downloadToolResult({ toolName: 'Qualitative Decision Tree', breadcrumb: path, resultHtml })
+  }
 
   return (
     <div style={{ background: '#fff', borderLeft: `5px solid ${r.accent}`, borderRadius: '0 6px 6px 0', padding: '1.5rem' }}>
@@ -25,9 +39,14 @@ function renderQualResult(key, reset) {
             {r.tlStages.map(s => <TlBadge key={s} stage={s} />)}
           </div>
         </div>
-        <button onClick={reset} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.75rem', background: 'none', border: '1px solid #ccc', borderRadius: '3px', padding: '0.35rem 0.75rem', cursor: 'pointer', color: '#666', alignSelf: 'flex-start' }}>
-          ↩ Start again
-        </button>
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignSelf: 'flex-start' }}>
+          <button onClick={reset} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.75rem', background: 'none', border: '1px solid #ccc', borderRadius: '3px', padding: '0.35rem 0.75rem', cursor: 'pointer', color: '#666' }}>
+            ↩ Start again
+          </button>
+          <button onClick={handleDownload} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.75rem', background: '#1a3a5c', border: 'none', borderRadius: '3px', padding: '0.35rem 0.75rem', cursor: 'pointer', color: '#fff' }}>
+            ↓ Download summary
+          </button>
+        </div>
       </div>
 
       <p style={{ fontSize: '0.9rem', lineHeight: 1.65, color: '#444', marginBottom: '1.25rem' }}>{r.summary}</p>

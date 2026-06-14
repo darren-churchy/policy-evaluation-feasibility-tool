@@ -129,8 +129,12 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
                 ))}
               </button>
             )}
-            <span style={{ color: '#fff', fontSize: '22px', lineHeight: 1, flexShrink: 0 }}
-              aria-hidden="true">⚖</span>
+            <img
+              src="/policy-evaluation-feasibility-tool/icons/icon.svg"
+              alt=""
+              aria-hidden="true"
+              style={{ width: '28px', height: '28px', flexShrink: 0 }}
+            />
             <div style={{ minWidth: 0 }}>
               <button
                 onClick={() => navigate('/')}
