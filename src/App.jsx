@@ -10,6 +10,10 @@ import Page5            from './components/pages/PageAdjustment.jsx'
 import Page6            from './components/pages/PageDataSources.jsx'
 import Page7            from './components/pages/PageStatistical.jsx'
 import ResultsPage      from './components/pages/ResultsPage.jsx'
+import PageQuantTree       from './components/pages/tools/PageQuantTree.jsx'
+import PageQualTree        from './components/pages/tools/PageQualTree.jsx'
+import PageDesignFinder    from './components/pages/tools/PageDesignFinder.jsx'
+import PageQuestionFramework from './components/pages/tools/PageQuestionFramework.jsx'
 
 export default function App() {
   const {
@@ -68,6 +72,12 @@ export default function App() {
             topDesign={topDesign}
           />
         } />
+
+        {/* Companion tool pages */}
+        <Route path="/quant-tree"          element={<PageQuantTree />} />
+        <Route path="/qual-tree"           element={<PageQualTree />} />
+        <Route path="/design-finder"       element={<PageDesignFinder />} />
+        <Route path="/question-framework"  element={<PageQuestionFramework />} />
 
         {/* Legacy redirects — preserve old page URLs */}
         <Route path="/page1"   element={<Navigate to="/research-question" replace />} />

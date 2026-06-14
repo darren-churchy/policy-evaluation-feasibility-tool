@@ -1,37 +1,36 @@
 import { useNavigate } from 'react-router-dom'
 
-// ── External tool paths ────────────────────────────────────────────────────
-// These files should be placed in public/ so Vite copies them to dist/.
-// Update paths if tools are hosted elsewhere.
+// ── Tool routes ─────────────────────────────────────────────────────────────
 const TOOL_LINKS = {
-  questionFramework: '/policy-evaluation-feasibility-tool/questionFramework.html',
-  quantTree:         '/policy-evaluation-feasibility-tool/quantTree.html',
-  qualTree:          '/policy-evaluation-feasibility-tool/qualTree.html',
-  designFinder:      '/policy-evaluation-feasibility-tool/designFinder.html',
+  questionFramework: '#/question-framework',
+  quantTree:         '#/quant-tree',
+  qualTree:          '#/qual-tree',
+  designFinder:      '#/design-finder',
 }
 
 // ── Sub-components ─────────────────────────────────────────────────────────
 
-function ToolCard({ title, description, href, tag, tagColor = '#1d70b8', external = true }) {
-  const isExternal = external && href.endsWith('.html')
-  return (
-    <a
-      href={href}
-      target={isExternal ? '_blank' : undefined}
-      rel={isExternal ? 'noopener noreferrer' : undefined}
-      style={{
-        display: 'block',
-        background: '#ffffff',
-        border: '1px solid #b1b4b6',
-        borderTop: `4px solid ${tagColor}`,
-        padding: '20px',
-        textDecoration: 'none',
-        color: '#0b0c0c',
-        transition: 'box-shadow .15s, transform .1s',
-      }}
-      onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,.12)'; e.currentTarget.style.transform = 'translateY(-2px)' }}
-      onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'none' }}
-    >
+function ToolCard({ title, description, href, tag, tagColor = '#1d70b8' }) {
+  const navigate = useNavigate()
+  const isInternal = href && href.startsWith('#/')
+
+  const sharedStyle = {
+    display: 'block',
+    background: '#ffffff',
+    border: '1px solid #b1b4b6',
+    borderTop: `4px solid ${tagColor}`,
+    padding: '20px',
+    textDecoration: 'none',
+    color: '#0b0c0c',
+    cursor: 'pointer',
+    transition: 'box-shadow .15s, transform .1s',
+    width: '100%',
+    textAlign: 'left',
+    fontFamily: 'inherit',
+  }
+
+  const inner = (
+    <>
       {tag && (
         <span style={{
           display: 'inline-block',
@@ -52,6 +51,33 @@ function ToolCard({ title, description, href, tag, tagColor = '#1d70b8', externa
       <div style={{ marginTop: '12px', fontSize: '13px', color: tagColor, fontWeight: 600 }}>
         Open tool →
       </div>
+    </>
+  )
+
+  const hoverOn = e => { e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,.12)'; e.currentTarget.style.transform = 'translateY(-2px)' }
+  const hoverOff = e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'none' }
+
+  if (isInternal) {
+    return (
+      <button
+        onClick={() => navigate(href.slice(1))}
+        style={sharedStyle}
+        onMouseEnter={hoverOn}
+        onMouseLeave={hoverOff}
+      >
+        {inner}
+      </button>
+    )
+  }
+
+  return (
+    <a
+      href={href}
+      style={sharedStyle}
+      onMouseEnter={hoverOn}
+      onMouseLeave={hoverOff}
+    >
+      {inner}
     </a>
   )
 }
@@ -244,10 +270,8 @@ export default function LandingPage() {
                   before committing to the full feasibility assessment below.
                 </p>
               </div>
-              <a
-                href={TOOL_LINKS.designFinder}
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                onClick={() => navigate('/design-finder')}
                 style={{
                   display: 'inline-block',
                   background: '#00703c',
@@ -255,13 +279,15 @@ export default function LandingPage() {
                   padding: '10px 20px',
                   fontSize: '14px',
                   fontWeight: 600,
-                  textDecoration: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontFamily: 'inherit',
                   whiteSpace: 'nowrap',
                   flexShrink: 0,
                 }}
               >
                 Open Design Finder →
-              </a>
+              </button>
             </div>
           </div>
         </div>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { GATE_ENABLED } from '../../scoring/config.js'
+import PrivacyBanner from '../ui/PrivacyBanner.jsx'
 
 const NAV_ITEMS = [
   { path: '/research-question', label: '1. Research Question'       },
@@ -42,7 +43,9 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
     }
   }, [])
 
-  // Landing page — render children full-width with no sidebar
+  // Landing page and tool pages — render full-width with no sidebar
+  const TOOL_PATHS = ['/question-framework', '/quant-tree', '/qual-tree', '/design-finder']
+  const isNoSidebar = location.pathname === '/' || TOOL_PATHS.includes(location.pathname)
   const isLanding = location.pathname === '/'
 
   useEffect(() => {
@@ -97,8 +100,8 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
           gap: '12px',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-            {/* Hamburger — hidden on landing page */}
-            {!isLanding && (
+            {/* Hamburger — hidden on landing/tool pages */}
+            {!isNoSidebar && (
               <button
                 onClick={() => setOpen(o => !o)}
                 aria-expanded={open}
@@ -143,7 +146,7 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
-            {!isLanding && !open && currentLabel && (
+            {!isNoSidebar && !open && currentLabel && (
               <span style={{
                 color: 'rgba(255,255,255,.6)', fontSize: '13px',
                 maxWidth: '140px', overflow: 'hidden',
@@ -225,7 +228,7 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
       <div className="app-body" style={{ flex: 1, position: 'relative' }}>
 
         {/* Overlay on mobile */}
-        {!isLanding && open && (
+        {!isNoSidebar && open && (
           <div
             onClick={() => setOpen(false)}
             style={{
@@ -237,8 +240,8 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
           />
         )}
 
-        {/* Sidebar — hidden on landing page */}
-        {!isLanding && (
+        {/* Sidebar — hidden on landing/tool pages */}
+        {!isNoSidebar && (
           <nav
             id="app-sidebar"
             className="app-sidebar"
@@ -316,11 +319,12 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
 
         {/* Main content */}
         <main
-          className={isLanding ? '' : 'app-main govuk-main-wrapper'}
+          className={isNoSidebar ? '' : 'app-main govuk-main-wrapper'}
           id="main-content"
           tabIndex={-1}
           style={{ flex: 1, padding: 0, minWidth: 0 }}
         >
+          <PrivacyBanner />
           {children}
         </main>
       </div>
