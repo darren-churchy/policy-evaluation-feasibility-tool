@@ -83,7 +83,7 @@ export default function DecisionTree({ tree, namedNodes = {}, renderResult, acce
             ))}
           </div>
         )}
-        {renderResult(resultKey, reset)}
+        {renderResult(resultKey, reset, path)}
       </div>
     )
   }

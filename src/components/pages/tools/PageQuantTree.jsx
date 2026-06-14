@@ -1,14 +1,40 @@
 import DecisionTree, { TlBadge } from '../../ui/DecisionTree.jsx'
 import { tree, namedNodes, results } from '../../../data/quantTreeData.js'
+import { downloadToolResult } from '../../../utils/exportToolResult.js'
 
 function hexToRgba(hex, alpha) {
   const r = parseInt(hex.slice(1,3), 16), g = parseInt(hex.slice(3,5), 16), b = parseInt(hex.slice(5,7), 16)
   return `rgba(${r},${g},${b},${alpha})`
 }
 
-function renderQuantResult(key, reset) {
+function renderQuantResult(key, reset, path) {
   const r = results[key]
   if (!r) return null
+
+  function handleDownload() {
+    let resultHtml
+    if (r.isWarning) {
+      resultHtml = `
+<h2 style="font-size:18px;color:#7a4a1a">${r.head}</h2>
+<p>${r.summary}</p>
+<h3 style="font-size:14px">Options</h3>
+<p><strong>Option A — reframe as prediction:</strong> Report associations honestly using language of association, not causation. Useful for profiling and targeting but not causal evaluation.</p>
+<p><strong>Option B — build a causal design:</strong> Identify whether a natural experiment, threshold, or instrument is available. If so, return to the start and select a causal design.</p>
+<p><strong>Watch out:</strong> ${r.watchOut}</p>
+<p><strong>Next step:</strong> ${r.signpost}</p>`
+    } else {
+      resultHtml = `
+<h2 style="font-size:18px">${r.type}</h2>
+<p>${r.summary}</p>
+<h3 style="font-size:14px">Methods &amp; designs</h3>
+<ul>${r.methods.map(m => `<li><strong>${m.name}</strong> — ${m.note}</li>`).join('')}</ul>
+<h3 style="font-size:14px">Key assumptions</h3>
+<ul>${r.assumptions.map(a => `<li><strong>${a.label}:</strong> ${a.note}</li>`).join('')}</ul>
+<p><strong>Watch out:</strong> ${r.watchOut}</p>
+<p><strong>Next step:</strong> ${r.signpost}</p>`
+    }
+    downloadToolResult({ toolName: 'Quantitative Decision Tree', breadcrumb: path, resultHtml })
+  }
 
   if (r.isWarning) {
     return (
@@ -32,9 +58,14 @@ function renderQuantResult(key, reset) {
         <div style={{ background: '#f4f0fa', border: '1px solid #c8b8e8', borderRadius: '4px', padding: '0.75rem 1rem', fontFamily: "'DM Sans', sans-serif", fontSize: '0.8rem', lineHeight: 1.6, color: '#3a2a5a', display: 'flex', gap: '0.6rem', alignItems: 'flex-start', marginBottom: '1rem' }}>
           <span>⬧</span><span>{r.signpost}</span>
         </div>
-        <button onClick={reset} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.75rem', background: 'none', border: '1px solid #ccc', borderRadius: '3px', padding: '0.35rem 0.75rem', cursor: 'pointer', color: '#666' }}>
-          ↩ Start again
-        </button>
+        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <button onClick={reset} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.75rem', background: 'none', border: '1px solid #ccc', borderRadius: '3px', padding: '0.35rem 0.75rem', cursor: 'pointer', color: '#666' }}>
+            ↩ Start again
+          </button>
+          <button onClick={handleDownload} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.75rem', background: '#1c3f5e', border: 'none', borderRadius: '3px', padding: '0.35rem 0.75rem', cursor: 'pointer', color: '#fff' }}>
+            ↓ Download summary
+          </button>
+        </div>
       </div>
     )
   }
@@ -54,9 +85,14 @@ function renderQuantResult(key, reset) {
             {r.tlStages.map(s => <TlBadge key={s} stage={s} />)}
           </div>
         </div>
-        <button onClick={reset} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.75rem', background: 'none', border: '1px solid #ccc', borderRadius: '3px', padding: '0.35rem 0.75rem', cursor: 'pointer', color: '#666', alignSelf: 'flex-start' }}>
-          ↩ Start again
-        </button>
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignSelf: 'flex-start' }}>
+          <button onClick={reset} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.75rem', background: 'none', border: '1px solid #ccc', borderRadius: '3px', padding: '0.35rem 0.75rem', cursor: 'pointer', color: '#666' }}>
+            ↩ Start again
+          </button>
+          <button onClick={handleDownload} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.75rem', background: '#1c3f5e', border: 'none', borderRadius: '3px', padding: '0.35rem 0.75rem', cursor: 'pointer', color: '#fff' }}>
+            ↓ Download summary
+          </button>
+        </div>
       </div>
 
       <p style={{ fontSize: '0.9rem', lineHeight: 1.65, color: '#444', marginBottom: '1.25rem' }}>{r.summary}</p>
