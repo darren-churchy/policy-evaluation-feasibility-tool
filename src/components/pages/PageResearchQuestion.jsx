@@ -4,6 +4,7 @@ import {
   TextArea, TextInput, DateInput, Alert, NavButtons, Button, When,
 PageHeader,
 } from '../ui/GovukComponents.jsx'
+import { T } from '../../styles/tokens.js'
 
 const PICOTS = [
   { key: 'picots_p', element: 'P — Population',   desc: 'Who are the participants? Define inclusion and exclusion criteria.' },
@@ -134,7 +135,7 @@ export default function Page1({ inputs, set }) {
               {PICOTS.map(row => (
                 <tr className="govuk-table__row" key={row.key}>
                   <td className="govuk-table__cell" style={{ verticalAlign: 'top' }}>
-                    <strong style={{ color: '#9c1b6d' }}>{row.element}</strong>
+                    <strong style={{ color: T.purple }}>{row.element}</strong>
                     <div className="govuk-hint" style={{ marginBottom: 0, fontSize: '13px' }}>{row.desc}</div>
                   </td>
                   <td className="govuk-table__cell">

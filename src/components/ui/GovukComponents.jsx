@@ -1,6 +1,7 @@
 // Reusable GOV.UK / MoJ Design System components
 // Uses govuk-* and moj-* CSS classes throughout.
 // Inline styles are used only for values that cannot be expressed as design system classes.
+import { T } from '../../styles/tokens.js'
 
 // ── Form inputs ───────────────────────────────────────────────────────────────
 
@@ -119,7 +120,7 @@ export function Card({ children, style = {} }) {
 
 export function CardTitle({ children }) {
   return (
-    <h3 className="govuk-heading-m" style={{ borderBottom: '2px solid #9c1b6d', paddingBottom: '8px', marginBottom: '16px' }}>
+    <h3 className="govuk-heading-m" style={{ borderBottom: `2px solid ${T.purple}`, paddingBottom: '8px', marginBottom: '16px' }}>
       {children}
     </h3>
   )
@@ -155,7 +156,7 @@ export function Button({ onClick, children, variant = 'primary', disabled = fals
   }[variant] ?? 'govuk-button'
 
   const extraStyle = variant === 'moj'
-    ? { background: '#9c1b6d', boxShadow: '0 2px 0 #5c1040' }
+    ? { background: T.purple, boxShadow: `0 2px 0 ${T.purple25}` }
     : {}
 
   return (

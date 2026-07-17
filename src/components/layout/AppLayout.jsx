@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { GATE_ENABLED } from '../../scoring/config.js'
+import { T } from '../../styles/tokens.js'
 import PrivacyBanner from '../ui/PrivacyBanner.jsx'
 
 const NAV_ITEMS = [
@@ -27,8 +28,6 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
   const [open, setOpen] = useState(() => window.innerWidth >= MOBILE_BREAKPOINT)
   const [showInstallInfo, setShowInstallInfo] = useState(false)
 
-  // PWA install prompt — captured here so it isn't lost when the landing page
-  // is shown (InstallPrompt only renders inside the sidebar, which is hidden there)
   const [installPrompt, setInstallPrompt] = useState(null)
   const [installed, setInstalled] = useState(false)
 
@@ -43,7 +42,6 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
     }
   }, [])
 
-  // Landing page and tool pages — render full-width with no sidebar
   const TOOL_PATHS = ['/question-framework', '/quant-tree', '/qual-tree', '/design-finder']
   const isNoSidebar = location.pathname === '/' || TOOL_PATHS.includes(location.pathname)
   const isLanding = location.pathname === '/'
@@ -82,10 +80,10 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
 
-      {/* ── MoJ Header ── */}
+      {/* ── Header ── */}
       <header className="govuk-header" style={{
-        background: '#0b0c0c',
-        borderBottom: '10px solid #9c1b6d',
+        background: '#ffffff',
+        borderBottom: `6px solid ${T.purple}`,
         flexShrink: 0,
         position: 'sticky',
         top: 0,
@@ -116,7 +114,7 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
                 {[0, 1, 2].map(i => (
                   <span key={i} style={{
                     display: 'block', width: '22px', height: '2px',
-                    background: '#fff', borderRadius: '1px',
+                    background: T.ink, borderRadius: '1px',
                     transition: 'transform 0.2s, opacity 0.2s',
                     transformOrigin: 'center',
                     transform: open
@@ -140,7 +138,7 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
                 onClick={() => navigate('/')}
                 style={{
                   background: 'none', border: 'none', padding: 0, cursor: 'pointer',
-                  color: '#fff', fontWeight: 700, lineHeight: 1.2, fontFamily: 'inherit',
+                  color: T.ink, fontWeight: 700, lineHeight: 1.2, fontFamily: 'inherit',
                   fontSize: 'clamp(14px, 2vw, 18px)',
                   whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
                 }}
@@ -152,7 +150,7 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
             {!isNoSidebar && !open && currentLabel && (
               <span style={{
-                color: 'rgba(255,255,255,.6)', fontSize: '13px',
+                color: T.greyText, fontSize: '13px',
                 maxWidth: '140px', overflow: 'hidden',
                 textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               }}>
@@ -163,7 +161,7 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
               PROTOTYPE
             </strong>
 
-            {/* Install button — always shown in header (only install entry point on landing page) */}
+            {/* Install button */}
             {!installed && (
               <div style={{ position: 'relative' }}>
                 <button
@@ -178,9 +176,9 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
                   }}
                   aria-label={installPrompt ? 'Install app' : 'How to install this app'}
                   style={{
-                    background: installPrompt ? '#9c1b6d' : 'none',
-                    border: '1px solid rgba(255,255,255,.35)',
-                    color: '#fff',
+                    background: installPrompt ? T.purple : 'none',
+                    border: '1px solid rgba(0,0,0,.25)',
+                    color: installPrompt ? '#fff' : T.ink,
                     padding: '4px 10px',
                     fontSize: '12px',
                     fontWeight: 600,
@@ -204,21 +202,21 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
                     boxShadow: '0 4px 16px rgba(0,0,0,.2)',
                   }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
-                      <strong style={{ fontSize: '13px', color: '#0b0c0c' }}>Install this app</strong>
+                      <strong style={{ fontSize: '13px', color: T.ink }}>Install this app</strong>
                       <button
                         onClick={() => setShowInstallInfo(false)}
                         aria-label="Close"
-                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6f777b', fontSize: '16px', padding: 0, lineHeight: 1 }}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.greyText, fontSize: '16px', padding: 0, lineHeight: 1 }}
                       >✕</button>
                     </div>
-                    <p style={{ fontSize: '12px', color: '#6f777b', margin: '0 0 10px', lineHeight: 1.5 }}>
+                    <p style={{ fontSize: '12px', color: T.greyText, margin: '0 0 10px', lineHeight: 1.5 }}>
                       Your browser doesn't support automatic install. Follow the steps for your browser below.
                     </p>
-                    <p style={{ fontSize: '12px', color: '#6f777b', margin: '0 0 8px', lineHeight: 1.5 }}>
-                      <strong style={{ color: '#0b0c0c' }}>Chrome / Edge:</strong> click the ⊕ icon in the address bar, or open the browser menu and select "Install app".
+                    <p style={{ fontSize: '12px', color: T.greyText, margin: '0 0 8px', lineHeight: 1.5 }}>
+                      <strong style={{ color: T.ink }}>Chrome / Edge:</strong> click the ⊕ icon in the address bar, or open the browser menu and select "Install app".
                     </p>
-                    <p style={{ fontSize: '12px', color: '#6f777b', margin: 0, lineHeight: 1.5 }}>
-                      <strong style={{ color: '#0b0c0c' }}>iOS Safari:</strong> tap the Share button (□↑), then tap "Add to Home Screen".
+                    <p style={{ fontSize: '12px', color: T.greyText, margin: 0, lineHeight: 1.5 }}>
+                      <strong style={{ color: T.ink }}>iOS Safari:</strong> tap the Share button (□↑), then tap "Add to Home Screen".
                     </p>
                   </div>
                 )}
@@ -263,7 +261,7 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
           >
             <div style={{ width: '272px', paddingTop: '4px' }}>
               <p style={{
-                color: 'rgba(255,255,255,.45)', padding: '12px 16px 4px',
+                color: T.greyText, padding: '12px 16px 4px',
                 margin: 0, textTransform: 'uppercase', fontSize: '11px',
                 letterSpacing: '.5px', whiteSpace: 'nowrap',
               }}>
@@ -297,7 +295,7 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
                             font: 'inherit', fontSize: '14px', cursor: 'pointer',
                             padding: 0, textAlign: 'left', whiteSpace: 'nowrap',
                             textDecoration: state === 'active' ? 'none' : 'underline',
-                            textDecorationColor: 'rgba(255,255,255,.3)',
+                            textDecorationColor: T.greyLine,
                           }}
                         >
                           {item.label}
@@ -310,8 +308,8 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
               {!gatePassed && (
                 <div style={{
                   margin: '8px 12px 12px', padding: '8px 12px',
-                  background: 'rgba(212,53,28,.15)', borderLeft: '3px solid #d4351c',
-                  fontSize: '12px', color: '#ff8c7a',
+                  background: T.magentaTint, borderLeft: `3px solid ${T.magenta}`,
+                  fontSize: '12px', color: T.ink,
                 }}>
                   Sections 3–7 locked. Complete the Causal Readiness assessment to continue.
                 </div>
@@ -336,12 +334,11 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
       {/* ── Footer ── */}
       <footer className="govuk-footer" style={{ flexShrink: 0 }}>
         <div style={{ padding: '16px 20px' }}>
-          {/* Feedback strip */}
           <div style={{
             display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap',
             marginBottom: '10px', paddingBottom: '10px', borderBottom: '1px solid #b1b4b6',
           }}>
-            <span className="govuk-body-s" style={{ color: '#6f777b', margin: 0 }}>
+            <span className="govuk-body-s" style={{ color: T.greyText, margin: 0 }}>
               Feedback on this tool?
             </span>
             <a
@@ -350,7 +347,7 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
             >
               Email us
             </a>
-            <span className="govuk-body-s" style={{ color: '#6f777b', margin: 0 }}>or</span>
+            <span className="govuk-body-s" style={{ color: T.greyText, margin: 0 }}>or</span>
             <a
               href="https://github.com/darren-churchy/policy-evaluation-feasibility-tool/issues/new"
               target="_blank"
@@ -360,7 +357,7 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
               raise a GitHub issue ↗
             </a>
           </div>
-          <span className="govuk-body-s" style={{ color: '#6f777b' }}>
+          <span className="govuk-body-s" style={{ color: T.greyText }}>
             Impact Evaluation Feasibility Tool — Prototype v0.7. This tool should be used to inform — not replace —
             professional methodological judgement.
           </span>
@@ -378,9 +375,9 @@ function InstallPrompt({ prompt, installed, onInstall }) {
   return (
     <div style={{
       margin: '16px 12px', padding: '12px',
-      background: 'rgba(255,255,255,.07)', borderLeft: '3px solid #9c1b6d',
+      background: `rgba(84,49,159,.06)`, borderLeft: `3px solid ${T.purple}`,
     }}>
-      <p style={{ color: 'rgba(255,255,255,.8)', fontSize: '12px', margin: '0 0 8px', lineHeight: 1.4 }}>
+      <p style={{ color: T.ink, fontSize: '12px', margin: '0 0 8px', lineHeight: 1.4 }}>
         Install for offline use and faster loading.
       </p>
       {prompt ? (
@@ -391,7 +388,7 @@ function InstallPrompt({ prompt, installed, onInstall }) {
             if (outcome === 'accepted') onInstall(null)
           }}
           style={{
-            background: '#9c1b6d', color: '#fff', border: 'none',
+            background: T.purple, color: '#fff', border: 'none',
             padding: '6px 12px', fontSize: '12px', fontWeight: 700,
             cursor: 'pointer', fontFamily: 'inherit', width: '100%',
           }}
@@ -403,8 +400,8 @@ function InstallPrompt({ prompt, installed, onInstall }) {
           <button
             onClick={() => setShowHelp(h => !h)}
             style={{
-              background: 'transparent', color: 'rgba(255,255,255,.6)',
-              border: '1px solid rgba(255,255,255,.2)', padding: '6px 12px',
+              background: 'transparent', color: T.greyText,
+              border: `1px solid ${T.greyLine}`, padding: '6px 12px',
               fontSize: '12px', fontWeight: 600, cursor: 'pointer',
               fontFamily: 'inherit', width: '100%', textAlign: 'left',
             }}
@@ -412,11 +409,11 @@ function InstallPrompt({ prompt, installed, onInstall }) {
             How to install {showHelp ? '↑' : '↓'}
           </button>
           {showHelp && (
-            <div style={{ marginTop: '8px', fontSize: '11px', color: 'rgba(255,255,255,.55)', lineHeight: 1.6 }}>
-              <strong style={{ color: 'rgba(255,255,255,.7)', display: 'block', marginBottom: '2px' }}>Chrome / Edge:</strong>
+            <div style={{ marginTop: '8px', fontSize: '11px', color: T.greyText, lineHeight: 1.6 }}>
+              <strong style={{ color: T.ink, display: 'block', marginBottom: '2px' }}>Chrome / Edge:</strong>
               Click the install icon (⊕) in the address bar, or open the browser menu and select "Install app".
               <br /><br />
-              <strong style={{ color: 'rgba(255,255,255,.7)', display: 'block', marginBottom: '2px' }}>iOS Safari:</strong>
+              <strong style={{ color: T.ink, display: 'block', marginBottom: '2px' }}>iOS Safari:</strong>
               Tap the Share button (↑ box), then tap "Add to Home Screen".
             </div>
           )}

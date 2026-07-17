@@ -2,34 +2,19 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { QUESTIONS, FAMILIES, BAYES_BULLETS } from '../../../data/designFinderData.js'
 import { downloadToolResult } from '../../../utils/exportToolResult.js'
-
-const MOJ = '#9C1B6D'
-const MOJ_DK = '#6b1249'
-const MOJ_LT = '#f5e8f1'
-const GREEN = '#00703C'
-const GREEN_LT = '#e3f3eb'
-const RED = '#D4351C'
-const ORANGE = '#F47738'
-const ORANGE_LT = '#fef3e8'
-const PURPLE = '#4C2C92'
-const PURPLE_LT = '#f0ebfa'
-const DARK = '#0B0C0C'
-const GREY_1 = '#F3F2F1'
-const GREY_2 = '#E8E8E8'
-const GREY_3 = '#B1B4B6'
-const GREY_4 = '#6F777B'
+import { T } from '../../../styles/tokens.js'
 
 const TL_STYLES = {
-  Test: { background: '#f5eaf8', color: '#5a1a6a' },
-  Grow: { background: '#fef0e0', color: '#6a3a1a' },
-  Explore: { background: '#e8f4e8', color: '#1a5a2a' },
-  'Co-design': { background: '#e8eef8', color: '#1a3a6a' },
+  Test:        { background: T.purpleTint,  color: T.purple25  },
+  Grow:        { background: T.tealTint,    color: T.teal25    },
+  Explore:     { background: T.greyBg,      color: T.greyText  },
+  'Co-design': { background: T.magentaTint, color: T.magenta25 },
 }
 
-function TlBadge({ stage, cls }) {
+function TlBadge({ stage }) {
   const s = TL_STYLES[stage] || {}
   return (
-    <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '2px', fontFamily: "'DM Sans', system-ui, sans-serif", ...s }}>
+    <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '2px', ...s }}>
       {stage}
     </span>
   )
@@ -101,10 +86,10 @@ function getRationale(key, a) {
 
 function buildConstraintNote(c, s) {
   const msgs = {
-    time: { icon: '⏱', title: 'Constraint: Time', body: 'Designs with shorter lead times have been prioritised. ITS and observational designs using existing administrative data can typically be implemented faster than prospective experimental designs.' },
-    data: { icon: '📋', title: 'Constraint: Data availability', body: 'Designs with lower data demands have been prioritised. Theory-based approaches and simpler observational designs are highlighted where data access is limited.' },
-    budget: { icon: '💷', title: 'Constraint: Resources', body: 'Lower-cost designs using existing administrative data have been prioritised over designs requiring primary data collection or large-scale fieldwork.' },
-    ethics: { icon: '⚖', title: 'Constraint: Ethical concerns', body: 'Designs where all participants eventually receive the intervention (stepped-wedge, waitlist) or where treatment is not withheld have been given higher priority.' },
+    time:   { icon: '⏱', title: 'Constraint: Time',              body: 'Designs with shorter lead times have been prioritised. ITS and observational designs using existing administrative data can typically be implemented faster than prospective experimental designs.' },
+    data:   { icon: '📋', title: 'Constraint: Data availability', body: 'Designs with lower data demands have been prioritised. Theory-based approaches and simpler observational designs are highlighted where data access is limited.' },
+    budget: { icon: '💷', title: 'Constraint: Resources',         body: 'Lower-cost designs using existing administrative data have been prioritised over designs requiring primary data collection or large-scale fieldwork.' },
+    ethics: { icon: '⚖',  title: 'Constraint: Ethical concerns',  body: 'Designs where all participants eventually receive the intervention (stepped-wedge, waitlist) or where treatment is not withheld have been given higher priority.' },
   }
   const sn = s === 'small' ? '<br><br><strong>Small sample note:</strong> RCT remains the priority design where feasible. A formal power calculation is essential. Cluster RCT variants are unlikely to be viable with fewer than 100 units. See the Bayesian consideration panel below.' : ''
   if (!msgs[c] && !sn) return null
@@ -123,9 +108,9 @@ function buildWarnings(a) {
 
 const PRIORITY_LABEL = { 1: 'Investigate first', 2: 'Worth exploring', 3: 'Consider if others are not feasible' }
 const PRIORITY_COLORS = {
-  1: { border: GREEN, badge_bg: GREEN_LT, badge_fg: GREEN },
-  2: { border: '#1D70B8', badge_bg: '#e8f0fb', badge_fg: '#1D70B8' },
-  3: { border: ORANGE, badge_bg: ORANGE_LT, badge_fg: '#b35900' },
+  1: { border: T.green,   badge_bg: T.greenTint,   badge_fg: T.green   },
+  2: { border: T.purple,  badge_bg: T.purpleTint,  badge_fg: T.purple  },
+  3: { border: T.magenta, badge_bg: T.magentaTint, badge_fg: T.magenta25 },
 }
 
 export default function PageDesignFinder() {
@@ -186,7 +171,6 @@ export default function PageDesignFinder() {
   const TAGS = ['Intervention readiness', 'Evaluation timing', 'Randomisation', 'Data availability', 'Design-specific', 'Statistical feasibility', 'Primary constraint']
   const seenTags = new Set(history.map(i => QUESTIONS[i].tag))
 
-  // Build result
   function buildResult() {
     const a = answers
     const failures = gateFailures(a)
@@ -259,46 +243,46 @@ export default function PageDesignFinder() {
   const QLAB = { q_defined:'Intervention clearly defined?', q_toc:'Theory of change exists?', q_scale:'Sufficient scale / maturity?', q_prospective:'Prospective evaluation possible?', q_randomisation:'Barriers to randomisation?', q_predata:'Pre-intervention data available?', q_comparison:'Comparison group available?', q_stagger:'Staggered rollout?', q_threshold:'Assignment threshold or cutoff?', q_instrument:'Plausible instrument available?', q_covariates:'Rich covariate data available?', q_sample:'Approximate study size?', q_constraint:'Primary constraint?' }
 
   return (
-    <div style={{ background: GREY_1, minHeight: '100%', fontFamily: "'DM Sans', system-ui, sans-serif" }}>
+    <div style={{ background: T.greyBg, minHeight: '100%' }}>
 
       {/* ── INTRO ── */}
       {phase === 'intro' && (
         <div style={{ width: '100%', maxWidth: '680px', margin: '0 auto', padding: '40px 16px 64px' }}>
-          <div style={{ fontSize: '11px', fontWeight: 600, color: MOJ, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '12px' }}>
+          <div style={{ fontSize: '11px', fontWeight: 600, color: T.purple, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '12px' }}>
             Evaluation Design Finder
           </div>
-          <h1 style={{ fontFamily: "'DM Serif Display', Georgia, serif", fontSize: 'clamp(28px, 5vw, 40px)', lineHeight: 1.15, color: DARK, marginBottom: '20px' }}>
-            Find the right <em style={{ fontStyle: 'italic', color: MOJ }}>evaluation design</em> for your study
+          <h1 style={{ fontSize: 'clamp(28px, 5vw, 40px)', fontWeight: 700, letterSpacing: '-0.5px', lineHeight: 1.15, color: T.ink, marginBottom: '20px' }}>
+            Find the right <em style={{ fontStyle: 'italic', color: T.teal }}>evaluation design</em> for your study
           </h1>
-          <div style={{ width: '48px', height: '3px', background: MOJ, marginBottom: '24px' }} />
-          <p style={{ fontSize: '16px', color: GREY_4, lineHeight: 1.7, marginBottom: '20px' }}>
+          <div style={{ width: '48px', height: '3px', background: T.purple, marginBottom: '24px' }} />
+          <p style={{ fontSize: '16px', color: T.greyText, lineHeight: 1.7, marginBottom: '20px' }}>
             Answer 10–12 questions about your intervention, data, and context. In about 3 minutes you'll receive a shortlist of the most promising evaluation design families to explore — along with the key questions to investigate before committing to a design.
           </p>
-          <div style={{ background: '#fff', border: `1px solid ${GREY_2}`, borderLeft: `4px solid #1D70B8`, padding: '14px 18px', marginBottom: '28px', fontSize: '13px', color: GREY_4, lineHeight: 1.6 }}>
-            <strong style={{ color: DARK }}>Where this tool fits.</strong> This tool is for impact evaluation — causal questions about whether an intervention works. It is most appropriate at the <strong>Test</strong> or <strong>Grow</strong> stages of the Magenta Book Test and Learn cycle, once your intervention is defined, has a theory of change, and is running at sufficient scale.
+          <div style={{ background: T.purpleTint, borderLeft: `4px solid ${T.purple}`, padding: '14px 18px', marginBottom: '28px', fontSize: '13px', color: T.ink, lineHeight: 1.6 }}>
+            <strong>Where this tool fits.</strong> This tool is for impact evaluation — causal questions about whether an intervention works. It is most appropriate at the <strong>Test</strong> or <strong>Grow</strong> stages of the Magenta Book Test and Learn cycle, once your intervention is defined, has a theory of change, and is running at sufficient scale.
             <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: '8px', alignItems: 'center' }}>
-              <span style={{ fontSize: '12px', color: GREY_4 }}>T&amp;L stages covered:&nbsp;</span>
+              <span style={{ fontSize: '12px', color: T.greyText }}>T&amp;L stages covered:&nbsp;</span>
               <TlBadge stage="Test" /><TlBadge stage="Grow" />
             </div>
-            <div style={{ marginTop: '8px', fontSize: '12px', color: GREY_4 }}>At the <strong>Explore</strong> or <strong>Co-design</strong> stage, start with the <em>Research Question Framework</em> or the decision trees to clarify your question type before selecting a design.</div>
+            <div style={{ marginTop: '8px', fontSize: '12px', color: T.greyText }}>At the <strong>Explore</strong> or <strong>Co-design</strong> stage, start with the <em>Research Question Framework</em> or the decision trees to clarify your question type before selecting a design.</div>
           </div>
           <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', marginBottom: '36px' }}>
             {['10–12 questions','~3 minutes','No login required'].map(item => (
-              <div key={item} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: GREY_4 }}>
-                <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: MOJ, flexShrink: 0, display: 'inline-block' }} />
+              <div key={item} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: T.greyText }}>
+                <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: T.purple, flexShrink: 0, display: 'inline-block' }} />
                 {item}
               </div>
             ))}
           </div>
           <button
             onClick={startQuiz}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: MOJ, color: '#fff', border: 'none', padding: '14px 28px', fontFamily: "'DM Sans', system-ui, sans-serif", fontSize: '16px', fontWeight: 600, cursor: 'pointer' }}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: T.purple, color: '#fff', border: 'none', padding: '14px 28px', fontSize: '16px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', boxShadow: `0 3px 0 ${T.purple25}` }}
           >
             Start →
           </button>
-          <p style={{ marginTop: '16px', fontSize: '13px', color: GREY_4 }}>
+          <p style={{ marginTop: '16px', fontSize: '13px', color: T.greyText }}>
             Already know your design family?{' '}
-            <button onClick={() => navigate('/research-question')} style={{ background: 'none', border: 'none', color: '#1D70B8', cursor: 'pointer', fontFamily: 'inherit', fontSize: '13px', padding: 0, textDecoration: 'underline' }}>
+            <button onClick={() => navigate('/research-question')} style={{ background: 'none', border: 'none', color: T.teal, cursor: 'pointer', fontFamily: 'inherit', fontSize: '13px', padding: 0, textDecoration: 'underline' }}>
               Use the full feasibility tool
             </button>{' '}
             for a detailed scored assessment of all 32 design variants.
@@ -311,32 +295,32 @@ export default function PageDesignFinder() {
         <div style={{ width: '100%', maxWidth: '680px', margin: '0 auto', padding: '40px 16px 64px' }}>
           <div style={{ marginBottom: '28px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-              <span style={{ fontSize: '12px', color: GREY_4, fontWeight: 500 }}>Question {pos}</span>
-              <span style={{ fontSize: '13px', fontWeight: 700, color: MOJ }}>{pos} of ~{total}</span>
+              <span style={{ fontSize: '12px', color: T.greyText, fontWeight: 500 }}>Question {pos}</span>
+              <span style={{ fontSize: '13px', fontWeight: 700, color: T.purple }}>{pos} of ~{total}</span>
             </div>
-            <div style={{ height: '3px', background: GREY_2, borderRadius: '2px' }}>
-              <div style={{ height: '100%', background: MOJ, borderRadius: '2px', width: pct + '%', transition: 'width 0.4s' }} />
+            <div style={{ height: '3px', background: T.greyLine, borderRadius: '2px' }}>
+              <div style={{ height: '100%', background: T.purple, borderRadius: '2px', width: pct + '%', transition: 'width 0.4s' }} />
             </div>
           </div>
 
           {/* Breadcrumb */}
           <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginBottom: '24px', alignItems: 'center' }}>
             {TAGS.filter(t => seenTags.has(t) || t === q.tag).map(t => (
-              <div key={t} style={{ fontSize: '11px', color: t === q.tag ? DARK : GREY_4, fontWeight: t === q.tag ? 600 : 400, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                {t}{t !== TAGS[TAGS.length - 1] && <span style={{ color: GREY_3, fontSize: '10px', marginLeft: '4px' }}>→</span>}
+              <div key={t} style={{ fontSize: '11px', color: t === q.tag ? T.ink : T.greyText, fontWeight: t === q.tag ? 600 : 400, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                {t}{t !== TAGS[TAGS.length - 1] && <span style={{ color: T.greyLine, fontSize: '10px', marginLeft: '4px' }}>→</span>}
               </div>
             ))}
           </div>
 
-          <div style={{ background: '#fff', borderTop: `4px solid ${MOJ}`, padding: '32px 36px', marginBottom: '20px', boxShadow: '0 1px 4px rgba(0,0,0,.07)' }}>
+          <div style={{ background: '#fff', borderTop: `4px solid ${T.purple}`, padding: '32px 36px', marginBottom: '20px', boxShadow: '0 1px 4px rgba(0,0,0,.07)' }}>
             {q.isGate && (
-              <div style={{ fontSize: '11px', fontWeight: 700, color: RED, textTransform: 'uppercase', letterSpacing: '.5px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <div style={{ fontSize: '11px', fontWeight: 700, color: T.magenta, textTransform: 'uppercase', letterSpacing: '.5px', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '5px' }}>
                 ⚠ Gate condition
               </div>
             )}
-            <div style={{ fontSize: '11px', fontWeight: 600, color: MOJ, textTransform: 'uppercase', letterSpacing: '.8px', marginBottom: '10px' }}>{q.tag}</div>
-            <h2 style={{ fontFamily: "'DM Serif Display', Georgia, serif", fontSize: 'clamp(18px, 3vw, 24px)', lineHeight: 1.3, color: DARK, marginBottom: '10px' }}>{q.heading}</h2>
-            <div style={{ fontSize: '14px', color: GREY_4, lineHeight: 1.6, marginBottom: '28px', paddingLeft: '14px', borderLeft: `3px solid ${GREY_2}` }}>{q.hint}</div>
+            <div style={{ fontSize: '11px', fontWeight: 600, color: T.purple, textTransform: 'uppercase', letterSpacing: '.8px', marginBottom: '10px' }}>{q.tag}</div>
+            <h2 style={{ fontSize: 'clamp(18px, 3vw, 24px)', fontWeight: 700, lineHeight: 1.3, color: T.ink, marginBottom: '10px' }}>{q.heading}</h2>
+            <div style={{ fontSize: '14px', color: T.greyText, lineHeight: 1.6, marginBottom: '28px', paddingLeft: '14px', borderLeft: `3px solid ${T.greyLine}` }}>{q.hint}</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {q.options.map(opt => (
                 <button
@@ -344,16 +328,16 @@ export default function PageDesignFinder() {
                   onClick={() => selectOption(opt.value)}
                   style={{
                     display: 'flex', alignItems: 'flex-start', gap: '14px',
-                    background: selected === opt.value ? MOJ_LT : '#fff',
-                    border: `2px solid ${selected === opt.value ? MOJ : GREY_2}`,
+                    background: selected === opt.value ? T.purpleTint : '#fff',
+                    border: `2px solid ${selected === opt.value ? T.purple : T.greyLine}`,
                     padding: '15px 18px', cursor: 'pointer',
-                    fontFamily: "'DM Sans', system-ui, sans-serif", width: '100%', textAlign: 'left',
+                    fontFamily: 'inherit', width: '100%', textAlign: 'left',
                   }}
                 >
                   <div style={{
                     width: '22px', height: '22px', borderRadius: '50%',
-                    border: `2px solid ${selected === opt.value ? MOJ : GREY_3}`,
-                    background: selected === opt.value ? MOJ : 'transparent',
+                    border: `2px solid ${selected === opt.value ? T.purple : T.greyLine}`,
+                    background: selected === opt.value ? T.purple : 'transparent',
                     flexShrink: 0, marginTop: '1px',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>
@@ -364,8 +348,8 @@ export default function PageDesignFinder() {
                     )}
                   </div>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: '15px', fontWeight: 600, color: DARK, marginBottom: '2px' }}>{opt.label}</div>
-                    {opt.desc && <div style={{ fontSize: '13px', color: GREY_4, lineHeight: 1.5 }}>{opt.desc}</div>}
+                    <div style={{ fontSize: '15px', fontWeight: 600, color: T.ink, marginBottom: '2px' }}>{opt.label}</div>
+                    {opt.desc && <div style={{ fontSize: '13px', color: T.greyText, lineHeight: 1.5 }}>{opt.desc}</div>}
                   </div>
                 </button>
               ))}
@@ -376,7 +360,7 @@ export default function PageDesignFinder() {
             <button
               onClick={goBack}
               disabled={!history.length}
-              style={{ background: 'none', border: 'none', fontFamily: 'inherit', fontSize: '14px', color: GREY_4, cursor: history.length ? 'pointer' : 'default', display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 0', opacity: history.length ? 1 : 0.3 }}
+              style={{ background: 'none', border: 'none', fontFamily: 'inherit', fontSize: '14px', color: T.greyText, cursor: history.length ? 'pointer' : 'default', display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 0', opacity: history.length ? 1 : 0.3 }}
             >
               ← Back
             </button>
@@ -384,7 +368,7 @@ export default function PageDesignFinder() {
               onClick={goNext}
               disabled={selected == null}
               style={{
-                background: selected != null ? DARK : GREY_3,
+                background: selected != null ? T.ink : T.greyLine,
                 color: '#fff', border: 'none',
                 fontFamily: 'inherit', fontSize: '15px', fontWeight: 600,
                 padding: '11px 26px', cursor: selected != null ? 'pointer' : 'not-allowed',
@@ -396,38 +380,38 @@ export default function PageDesignFinder() {
         </div>
       )}
 
-      {/* ── RESULT ── */}
+      {/* ── RESULT: not ready ── */}
       {phase === 'result' && result && result.type === 'notready' && (
         <div style={{ width: '100%', maxWidth: '760px', margin: '0 auto', padding: '40px 16px 64px' }}>
-          <div style={{ background: DARK, padding: '28px 32px', marginBottom: '24px', borderLeft: `6px solid ${RED}` }}>
-            <h2 style={{ fontFamily: "'DM Serif Display', Georgia, serif", fontSize: '22px', color: '#fff', marginBottom: '8px' }}>Impact evaluation is premature at this stage</h2>
-            <p style={{ fontSize: '14px', color: 'rgba(255,255,255,.7)', lineHeight: 1.6 }}>One or more critical readiness conditions are not yet met. Evaluating impact before these conditions are in place risks producing findings that reflect the immaturity of the intervention rather than its true effectiveness.</p>
+          <div style={{ background: T.magentaTint, padding: '28px 32px', marginBottom: '24px', borderLeft: `6px solid ${T.magenta}` }}>
+            <h2 style={{ fontSize: '22px', fontWeight: 700, color: T.ink, marginBottom: '8px' }}>Impact evaluation is premature at this stage</h2>
+            <p style={{ fontSize: '14px', color: T.ink, lineHeight: 1.6 }}>One or more critical readiness conditions are not yet met. Evaluating impact before these conditions are in place risks producing findings that reflect the immaturity of the intervention rather than its true effectiveness.</p>
           </div>
 
           {result.failures.map(f => (
-            <div key={f.id} style={{ background: '#fff', border: `1px solid ${GREY_2}`, borderLeft: `5px solid ${RED}`, padding: '22px 24px', boxShadow: '0 1px 3px rgba(0,0,0,.05)', marginBottom: '16px' }}>
+            <div key={f.id} style={{ background: '#fff', border: `1px solid ${T.greyLine}`, borderLeft: `5px solid ${T.magenta}`, padding: '22px 24px', boxShadow: '0 1px 3px rgba(0,0,0,.05)', marginBottom: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', marginBottom: '10px' }}>
                 <div>
-                  <div style={{ fontSize: '17px', fontWeight: 700, color: RED, marginBottom: '4px' }}>⚠ {f.label} not yet in place</div>
-                  <div style={{ fontSize: '12px', color: GREY_4 }}>Suggested T&amp;L stage: <TlBadge stage={f.stage} /></div>
+                  <div style={{ fontSize: '17px', fontWeight: 700, color: T.magenta, marginBottom: '4px' }}>⚠ {f.label} not yet in place</div>
+                  <div style={{ fontSize: '12px', color: T.greyText }}>Suggested T&amp;L stage: <TlBadge stage={f.stage} /></div>
                 </div>
               </div>
-              <p style={{ fontSize: '13px', color: GREY_4, lineHeight: 1.6, marginBottom: '12px' }}>{f.reason}</p>
-              <div style={{ background: GREY_1, padding: '12px 14px', borderLeft: `3px solid ${GREY_3}` }}>
-                <p style={{ fontSize: '12px', fontWeight: 700, color: DARK, marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '.4px' }}>Recommended action</p>
-                <p style={{ fontSize: '13px', color: GREY_4, lineHeight: 1.6 }} dangerouslySetInnerHTML={{ __html: f.action }} />
+              <p style={{ fontSize: '13px', color: T.greyText, lineHeight: 1.6, marginBottom: '12px' }}>{f.reason}</p>
+              <div style={{ background: T.greyBg, padding: '12px 14px', borderLeft: `3px solid ${T.greyLine}` }}>
+                <p style={{ fontSize: '12px', fontWeight: 700, color: T.ink, marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '.4px' }}>Recommended action</p>
+                <p style={{ fontSize: '13px', color: T.greyText, lineHeight: 1.6 }} dangerouslySetInnerHTML={{ __html: f.action }} />
               </div>
             </div>
           ))}
 
-          <div style={{ background: '#fff', border: `1px solid ${GREY_2}`, borderLeft: `5px solid ${ORANGE}`, padding: '22px 24px', marginBottom: '24px' }}>
+          <div style={{ background: '#fff', border: `1px solid ${T.greyLine}`, borderLeft: `5px solid ${T.magenta}`, padding: '22px 24px', marginBottom: '24px' }}>
             <div style={{ fontSize: '17px', fontWeight: 700, marginBottom: '10px' }}>Alternative evaluation approaches appropriate at this stage</div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '12px' }}>
               {['Process evaluation','Developmental evaluation','Contribution analysis','Realist evaluation'].map(d => (
-                <span key={d} style={{ fontSize: '12px', padding: '3px 10px', background: GREY_1, border: `1px solid ${GREY_2}`, color: DARK }}>{d}</span>
+                <span key={d} style={{ fontSize: '12px', padding: '3px 10px', background: T.greyBg, border: `1px solid ${T.greyLine}`, color: T.ink }}>{d}</span>
               ))}
             </div>
-            <ul style={{ paddingLeft: '16px', fontSize: '13px', color: GREY_4, lineHeight: 1.75 }}>
+            <ul style={{ paddingLeft: '16px', fontSize: '13px', color: T.greyText, lineHeight: 1.75 }}>
               <li>A <strong>process evaluation</strong> documents how the intervention is delivered, by whom, and with what fidelity</li>
               <li>A <strong>developmental evaluation</strong> supports real-time adaptation during programme development</li>
               <li><strong>Contribution analysis</strong> builds a structured causal narrative without requiring a counterfactual design</li>
@@ -435,36 +419,37 @@ export default function PageDesignFinder() {
             </ul>
           </div>
 
-          <div style={{ background: DARK, padding: '24px 28px', marginBottom: '24px' }}>
-            <h3 style={{ fontFamily: "'DM Serif Display', Georgia, serif", fontSize: '20px', color: '#fff', marginBottom: '8px' }}>Return when ready</h3>
-            <p style={{ fontSize: '13px', color: 'rgba(255,255,255,.65)', lineHeight: 1.6 }}>Once the intervention is clearly defined, has a theory of change, and is operating at sufficient scale (Test or Grow stage), return to this tool to identify the most promising impact evaluation designs.</p>
+          <div style={{ background: T.purple25, padding: '24px 28px', marginBottom: '24px' }}>
+            <h3 style={{ fontSize: '20px', fontWeight: 700, color: '#fff', marginBottom: '8px' }}>Return when ready</h3>
+            <p style={{ fontSize: '13px', color: 'rgba(255,255,255,.8)', lineHeight: 1.6 }}>Once the intervention is clearly defined, has a theory of change, and is operating at sufficient scale (Test or Grow stage), return to this tool to identify the most promising impact evaluation designs.</p>
           </div>
 
           <div style={{ textAlign: 'center', marginTop: '32px' }}>
-            <button onClick={restart} style={{ background: 'none', border: 'none', fontFamily: 'inherit', fontSize: '13px', color: GREY_4, cursor: 'pointer', textDecoration: 'underline' }}>
+            <button onClick={restart} style={{ background: 'none', border: 'none', fontFamily: 'inherit', fontSize: '13px', color: T.greyText, cursor: 'pointer', textDecoration: 'underline' }}>
               ← Start again with different answers
             </button>
           </div>
         </div>
       )}
 
+      {/* ── RESULT: ready ── */}
       {phase === 'result' && result && result.type === 'ready' && (() => {
         const { sorted, removed, showBayes, tlInfo, constraintInfo, warnings } = result
         const a = answers
         return (
           <div style={{ width: '100%', maxWidth: '760px', margin: '0 auto', padding: '40px 16px 64px' }}>
             <div style={{ marginBottom: '28px' }}>
-              <div style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '10px', color: GREEN }}>Assessment complete</div>
-              <h2 style={{ fontFamily: "'DM Serif Display', Georgia, serif", fontSize: 'clamp(24px, 4vw, 34px)', lineHeight: 1.2, color: DARK, marginBottom: '8px' }}>Your evaluation design shortlist</h2>
-              <p style={{ fontSize: '15px', color: GREY_4, lineHeight: 1.6 }}>Based on your answers, {sorted.length} design {sorted.length === 1 ? 'family is' : 'families are'} worth exploring. Review the key investigation questions for each before committing to a design.</p>
+              <div style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '10px', color: T.green }}>Assessment complete</div>
+              <h2 style={{ fontSize: 'clamp(24px, 4vw, 34px)', fontWeight: 700, letterSpacing: '-0.5px', lineHeight: 1.2, color: T.ink, marginBottom: '8px' }}>Your evaluation design shortlist</h2>
+              <p style={{ fontSize: '15px', color: T.greyText, lineHeight: 1.6 }}>Based on your answers, {sorted.length} design {sorted.length === 1 ? 'family is' : 'families are'} worth exploring. Review the key investigation questions for each before committing to a design.</p>
             </div>
 
             {/* T&L stage panel */}
-            <div style={{ background: DARK, padding: '18px 22px', marginBottom: '24px', display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
+            <div style={{ background: T.purpleTint, borderLeft: `4px solid ${T.purple}`, padding: '18px 22px', marginBottom: '24px', display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
               <div style={{ fontSize: '20px', flexShrink: 0 }}>📋</div>
               <div>
-                <h3 style={{ fontSize: '13px', fontWeight: 700, color: '#fff', marginBottom: '4px' }}>Magenta Book Test and Learn stage</h3>
-                <p style={{ fontSize: '13px', color: 'rgba(255,255,255,.65)', lineHeight: 1.6, marginBottom: '8px' }} dangerouslySetInnerHTML={{ __html: tlInfo.note }} />
+                <h3 style={{ fontSize: '13px', fontWeight: 700, color: T.purple25, marginBottom: '4px' }}>Magenta Book Test and Learn stage</h3>
+                <p style={{ fontSize: '13px', color: T.ink, lineHeight: 1.6, marginBottom: '8px' }} dangerouslySetInnerHTML={{ __html: tlInfo.note }} />
                 <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                   {tlInfo.stages.map(s => <TlBadge key={s} stage={s} />)}
                 </div>
@@ -473,25 +458,25 @@ export default function PageDesignFinder() {
 
             {/* Constraint callout */}
             {constraintInfo && (
-              <div style={{ background: DARK, color: '#fff', padding: '18px 22px', marginBottom: '24px', display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
+              <div style={{ background: T.purpleTint, borderLeft: `4px solid ${T.purple}`, padding: '18px 22px', marginBottom: '24px', display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
                 <div style={{ fontSize: '20px', flexShrink: 0 }}>{constraintInfo.icon}</div>
                 <div>
-                  {constraintInfo.title && <h3 style={{ fontSize: '14px', fontWeight: 700, marginBottom: '4px' }}>{constraintInfo.title}</h3>}
-                  <p style={{ fontSize: '13px', color: 'rgba(255,255,255,.7)', lineHeight: 1.6 }} dangerouslySetInnerHTML={{ __html: constraintInfo.body }} />
+                  {constraintInfo.title && <h3 style={{ fontSize: '14px', fontWeight: 700, color: T.purple25, marginBottom: '4px' }}>{constraintInfo.title}</h3>}
+                  <p style={{ fontSize: '13px', color: T.ink, lineHeight: 1.6 }} dangerouslySetInnerHTML={{ __html: constraintInfo.body }} />
                 </div>
               </div>
             )}
 
             {/* Bayesian callout */}
             {showBayes && (
-              <div style={{ background: PURPLE_LT, border: `1px solid #c8b0e8`, borderLeft: `5px solid ${PURPLE}`, padding: '16px 20px', marginBottom: '24px' }}>
-                <h3 style={{ fontSize: '13px', fontWeight: 700, color: PURPLE, marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>𝔅 Consider Bayesian analysis approaches</h3>
-                <p style={{ fontSize: '13px', color: '#3a2a5a', lineHeight: 1.6, marginBottom: '8px' }}>
+              <div style={{ background: T.purpleTint, border: `1px solid ${T.purpleTintMid}`, borderLeft: `4px solid ${T.purple}`, padding: '16px 20px', marginBottom: '24px' }}>
+                <h3 style={{ fontSize: '13px', fontWeight: 700, color: T.purple25, marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>𝔅 Consider Bayesian analysis approaches</h3>
+                <p style={{ fontSize: '13px', color: T.purple25, lineHeight: 1.6, marginBottom: '8px' }}>
                   {a.q_sample === 'tiny'
                     ? 'With a very small sample, classical frequentist methods will have very limited power and wide confidence intervals. Bayesian analysis is particularly valuable here: it can incorporate prior information from similar interventions or contexts, produce honest posterior uncertainty rather than binary significance decisions, and update as data accumulate.'
                     : 'With a small sample (20–99 units), statistical power will be a constraint for all designs. Bayesian approaches offer two concrete advantages: informative priors from prior evidence can improve precision without additional data collection; and Bayesian adaptive designs (for RCTs) can stop early for efficacy or futility, reducing sample requirements.'}
                 </p>
-                <ul style={{ fontSize: '13px', color: '#3a2a5a', paddingLeft: '18px', lineHeight: 1.75, marginTop: '6px' }}>
+                <ul style={{ fontSize: '13px', color: T.purple25, paddingLeft: '18px', lineHeight: 1.75, marginTop: '6px' }}>
                   <li>Ask your statistician whether informative priors are defensible from existing evidence on similar interventions</li>
                   <li>For RCTs: consider whether a Bayesian adaptive design or sequential analysis is appropriate</li>
                   <li>For observational methods: Bayesian sensitivity analysis for unmeasured confounding provides a more honest quantification of uncertainty</li>
@@ -504,7 +489,7 @@ export default function PageDesignFinder() {
             {warnings.length > 0 && (
               <div style={{ marginBottom: '20px' }}>
                 {warnings.map((w, i) => (
-                  <div key={i} style={{ background: '#fff', border: `1px solid ${GREY_2}`, borderLeft: `5px solid ${ORANGE}`, padding: '14px 18px', marginBottom: '10px', fontSize: '13px', color: GREY_4, lineHeight: 1.6 }}>
+                  <div key={i} style={{ background: '#fff', border: `1px solid ${T.greyLine}`, borderLeft: `5px solid ${T.magenta}`, padding: '14px 18px', marginBottom: '10px', fontSize: '13px', color: T.greyText, lineHeight: 1.6 }}>
                     ⚠ {w}
                   </div>
                 ))}
@@ -517,11 +502,11 @@ export default function PageDesignFinder() {
                 const f = FAMILIES[key]
                 const pc = PRIORITY_COLORS[priority] || PRIORITY_COLORS[3]
                 return (
-                  <div key={key} style={{ background: '#fff', border: `1px solid ${GREY_2}`, borderLeft: `5px solid ${pc.border}`, padding: '22px 24px', boxShadow: '0 1px 3px rgba(0,0,0,.05)' }}>
+                  <div key={key} style={{ background: '#fff', border: `1px solid ${T.greyLine}`, borderLeft: `5px solid ${pc.border}`, padding: '22px 24px', boxShadow: '0 1px 3px rgba(0,0,0,.05)' }}>
                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', marginBottom: '10px' }}>
                       <div>
-                        <div style={{ fontSize: '17px', fontWeight: 700, color: DARK }}>{f.name}</div>
-                        <div style={{ fontSize: '12px', color: GREY_4, marginTop: '2px' }}>{f.catLabel}</div>
+                        <div style={{ fontSize: '17px', fontWeight: 700, color: T.ink }}>{f.name}</div>
+                        <div style={{ fontSize: '12px', color: T.greyText, marginTop: '2px' }}>{f.catLabel}</div>
                       </div>
                       <span style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.5px', padding: '3px 9px', flexShrink: 0, whiteSpace: 'nowrap', background: pc.badge_bg, color: pc.badge_fg }}>
                         {PRIORITY_LABEL[priority]}
@@ -529,13 +514,13 @@ export default function PageDesignFinder() {
                     </div>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '12px' }}>
                       {f.designs.map(d => (
-                        <span key={d} style={{ fontSize: '12px', padding: '3px 10px', background: GREY_1, border: `1px solid ${GREY_2}`, color: DARK }}>{d}</span>
+                        <span key={d} style={{ fontSize: '12px', padding: '3px 10px', background: T.greyBg, border: `1px solid ${T.greyLine}`, color: T.ink }}>{d}</span>
                       ))}
                     </div>
-                    <p style={{ fontSize: '13px', color: GREY_4, lineHeight: 1.6, marginBottom: '14px' }}>{getRationale(key, a)}</p>
-                    <div style={{ background: GREY_1, padding: '12px 14px', borderLeft: `3px solid ${GREY_3}` }}>
-                      <p style={{ fontSize: '12px', fontWeight: 700, color: DARK, marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '.4px' }}>Key questions to investigate</p>
-                      <ul style={{ paddingLeft: '16px', fontSize: '13px', color: GREY_4, lineHeight: 1.75 }}>
+                    <p style={{ fontSize: '13px', color: T.greyText, lineHeight: 1.6, marginBottom: '14px' }}>{getRationale(key, a)}</p>
+                    <div style={{ background: T.greyBg, padding: '12px 14px', borderLeft: `3px solid ${T.greyLine}` }}>
+                      <p style={{ fontSize: '12px', fontWeight: 700, color: T.ink, marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '.4px' }}>Key questions to investigate</p>
+                      <ul style={{ paddingLeft: '16px', fontSize: '13px', color: T.greyText, lineHeight: 1.75 }}>
                         {f.investigate.map((item, i) => <li key={i}>{item}</li>)}
                         {BAYES_BULLETS[key] && showBayes && (
                           <li dangerouslySetInnerHTML={{ __html: BAYES_BULLETS[key] }} />
@@ -550,15 +535,15 @@ export default function PageDesignFinder() {
             {/* Removed */}
             {Object.keys(removed).length > 0 && (
               <div style={{ marginBottom: '28px' }}>
-                <div style={{ fontSize: '12px', fontWeight: 700, color: GREY_4, textTransform: 'uppercase', letterSpacing: '.5px', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ fontSize: '12px', fontWeight: 700, color: T.greyText, textTransform: 'uppercase', letterSpacing: '.5px', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   Removed from consideration
-                  <span style={{ flex: 1, height: '1px', background: GREY_2 }} />
+                  <span style={{ flex: 1, height: '1px', background: T.greyLine }} />
                 </div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                   {Object.entries(removed).map(([key, reason]) => (
-                    <div key={key} style={{ fontSize: '12px', padding: '5px 12px', background: '#fff', border: `1px solid ${GREY_2}`, color: GREY_3, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span style={{ textDecoration: 'line-through', textDecorationColor: GREY_3 }}>{FAMILIES[key].name}</span>
-                      <span style={{ fontSize: '11px', color: RED, fontStyle: 'italic', textDecoration: 'none' }}>{reason}</span>
+                    <div key={key} style={{ fontSize: '12px', padding: '5px 12px', background: '#fff', border: `1px solid ${T.greyLine}`, color: T.greyLine, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span style={{ textDecoration: 'line-through', textDecorationColor: T.greyLine }}>{FAMILIES[key].name}</span>
+                      <span style={{ fontSize: '11px', color: T.magenta, fontStyle: 'italic', textDecoration: 'none' }}>{reason}</span>
                     </div>
                   ))}
                 </div>
@@ -566,9 +551,9 @@ export default function PageDesignFinder() {
             )}
 
             {/* Handoff */}
-            <div style={{ background: DARK, padding: '24px 28px', marginBottom: '24px' }}>
-              <h3 style={{ fontFamily: "'DM Serif Display', Georgia, serif", fontSize: '20px', color: '#fff', marginBottom: '8px' }}>Ready for a detailed assessment?</h3>
-              <p style={{ fontSize: '13px', color: 'rgba(255,255,255,.65)', lineHeight: 1.6, marginBottom: '16px' }}>
+            <div style={{ background: T.purple25, padding: '24px 28px', marginBottom: '24px' }}>
+              <h3 style={{ fontSize: '20px', fontWeight: 700, color: '#fff', marginBottom: '8px' }}>Ready for a detailed assessment?</h3>
+              <p style={{ fontSize: '13px', color: 'rgba(255,255,255,.8)', lineHeight: 1.6, marginBottom: '16px' }}>
                 When you have worked through the investigation questions above, use the full <strong>Impact Evaluation Feasibility Tool</strong> to score and rank all 32 design variants based on your specific data landscape, causal structure, and statistical parameters.
               </p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '18px' }}>
@@ -579,33 +564,33 @@ export default function PageDesignFinder() {
                   { label: 'Pre-intervention data confirmed', ready: a.q_predata !== 'none' && a.q_predata !== undefined },
                   { label: 'Key investigation questions answered', ready: false },
                 ].map(c => (
-                  <span key={c.label} style={{ fontSize: '11px', padding: '4px 10px', background: c.ready ? 'rgba(0,112,60,.25)' : 'rgba(255,255,255,.07)', color: c.ready ? '#7ed4a8' : 'rgba(255,255,255,.6)', border: `1px solid ${c.ready ? 'rgba(0,112,60,.4)' : 'rgba(255,255,255,.14)'}` }}>
+                  <span key={c.label} style={{ fontSize: '11px', padding: '4px 10px', background: c.ready ? `rgba(15,122,82,.2)` : 'rgba(255,255,255,.07)', color: c.ready ? T.tealTintMid : 'rgba(255,255,255,.6)', border: `1px solid ${c.ready ? 'rgba(15,122,82,.4)' : 'rgba(255,255,255,.14)'}` }}>
                     {c.ready ? '✓' : '○'} {c.label}
                   </span>
                 ))}
               </div>
               <button
                 onClick={() => navigate('/research-question')}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: MOJ, color: '#fff', border: 'none', padding: '12px 24px', fontFamily: "'DM Sans', system-ui, sans-serif", fontSize: '15px', fontWeight: 600, cursor: 'pointer', textDecoration: 'none' }}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: T.purple, color: '#fff', border: 'none', padding: '12px 24px', fontSize: '15px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', textDecoration: 'none', boxShadow: `0 3px 0 ${T.purple50}` }}
               >
                 Open the full feasibility tool →
               </button>
             </div>
 
             {/* Summary */}
-            <div style={{ background: '#fff', border: `1px solid ${GREY_2}`, padding: '20px 22px', marginBottom: '24px' }}>
-              <h4 style={{ fontSize: '12px', fontWeight: 700, color: GREY_4, textTransform: 'uppercase', letterSpacing: '.5px', marginBottom: '12px' }}>Your answers</h4>
+            <div style={{ background: '#fff', border: `1px solid ${T.greyLine}`, padding: '20px 22px', marginBottom: '24px' }}>
+              <h4 style={{ fontSize: '12px', fontWeight: 700, color: T.greyText, textTransform: 'uppercase', letterSpacing: '.5px', marginBottom: '12px' }}>Your answers</h4>
               {QUESTIONS.filter(q => a[q.id] !== undefined).map(q => {
                 const opt = q.options.find(o => o.value === a[q.id])
                 return (
-                  <div key={q.id} style={{ display: 'flex', gap: '12px', fontSize: '12px', padding: '5px 0', borderBottom: `1px solid ${GREY_1}` }}>
-                    <span style={{ color: GREY_4, flex: 1 }}>{QLAB[q.id] || q.heading.slice(0, 60) + '...'}</span>
-                    <span style={{ fontWeight: 600, color: DARK, flexShrink: 0, maxWidth: '220px', textAlign: 'right' }}>{opt ? opt.label : a[q.id]}</span>
+                  <div key={q.id} style={{ display: 'flex', gap: '12px', fontSize: '12px', padding: '5px 0', borderBottom: `1px solid ${T.greyBg}` }}>
+                    <span style={{ color: T.greyText, flex: 1 }}>{QLAB[q.id] || q.heading.slice(0, 60) + '...'}</span>
+                    <span style={{ fontWeight: 600, color: T.ink, flexShrink: 0, maxWidth: '220px', textAlign: 'right' }}>{opt ? opt.label : a[q.id]}</span>
                   </div>
                 )
               })}
               <div style={{ display: 'flex', gap: '12px', fontSize: '12px', padding: '5px 0' }}>
-                <span style={{ color: GREY_4, flex: 1 }}>Suggested T&amp;L stage</span>
+                <span style={{ color: T.greyText, flex: 1 }}>Suggested T&amp;L stage</span>
                 <span style={{ display: 'flex', gap: '4px', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
                   {tlInfo.stages.map(s => <TlBadge key={s} stage={s} />)}
                 </span>
@@ -633,11 +618,11 @@ ${Object.keys(removed).length > 0 ? `
 <p style="margin-top:20px"><strong>Suggested T&amp;L stage:</strong> ${tlInfo.stages.join(', ')}</p>`
                   downloadToolResult({ toolName: 'Evaluation Design Finder', breadcrumb, resultHtml })
                 }}
-                style={{ background: MOJ, color: '#fff', border: 'none', fontFamily: 'inherit', fontSize: '13px', fontWeight: 600, padding: '9px 18px', cursor: 'pointer' }}
+                style={{ background: T.purple, color: '#fff', border: 'none', fontFamily: 'inherit', fontSize: '13px', fontWeight: 600, padding: '9px 18px', cursor: 'pointer' }}
               >
                 ↓ Download summary
               </button>
-              <button onClick={restart} style={{ background: 'none', border: 'none', fontFamily: 'inherit', fontSize: '13px', color: GREY_4, cursor: 'pointer', textDecoration: 'underline' }}>
+              <button onClick={restart} style={{ background: 'none', border: 'none', fontFamily: 'inherit', fontSize: '13px', color: T.greyText, cursor: 'pointer', textDecoration: 'underline' }}>
                 ← Start again with different answers
               </button>
             </div>

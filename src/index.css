@@ -1,16 +1,42 @@
 /*
- * Global stylesheet
- * Fixes font fallback, reinforces GOV.UK/MoJ class usage,
- * and provides app-level layout styles.
+ * Global stylesheet — house-style restyle (purple brand, Source Sans 3).
+ * Design tokens mirrored from src/styles/tokens.js as CSS custom properties.
  *
  * GOV.UK Frontend and MoJ Frontend are loaded via CDN in index.html.
  * This file handles anything they don't cover and overrides where needed.
  */
 
+/* ── Design tokens ─────────────────────────────────────────────────────────── */
+
+:root {
+  --purple:         #54319f;
+  --purple50:       #3f2577;
+  --purple25:       #2a1850;
+  --purple-tint:    #eeeaf7;
+  --purple-tint-mid:#ccc1e7;
+  --teal:           #158187;
+  --teal-hover:     #106165;
+  --teal25:         #0a4144;
+  --teal-tint:      #e3f2f3;
+  --teal-tint-mid:  #b3dadc;
+  --magenta:        #ca357c;
+  --magenta50:      #98285d;
+  --magenta25:      #651a3e;
+  --magenta-tint:   #f7e5ee;
+  --magenta-tint-mid:#efc7db;
+  --green:          #0f7a52;
+  --green25:        #073d29;
+  --green-tint:     #e3f1ea;
+  --ink:            #0b0c0c;
+  --grey-bg:        #f3f2f1;
+  --grey-line:      #b1b4b6;
+  --grey-text:      #505a5f;
+  --focus:          #ffdd00;
+}
+
 /* ── Font stack ────────────────────────────────────────────────────────────────
- * GDS Transport is only licensed for use on gov.uk domains.
- * On github.io the font request silently fails, leaving a browser serif fallback.
- * Explicitly declaring the fallback stack here ensures consistency everywhere.
+ * Source Sans 3 is loaded from Google Fonts in index.html.
+ * Applied globally so GOV.UK / MoJ component classes inherit the right face.
  */
 body,
 .govuk-body,
@@ -47,10 +73,30 @@ button,
 input,
 select,
 textarea {
-  font-family: "GDS Transport", Arial, "Helvetica Neue", Helvetica, sans-serif !important;
+  font-family: "Source Sans 3", "Segoe UI", Arial, sans-serif !important;
 }
 
-/* ── App shell ─────────────────────────────────────────────────────────────── */
+/* ── Link colours ───────────────────────────────────────────────────────────── */
+
+.govuk-link,
+.govuk-link:link,
+.govuk-link:visited,
+a:not([class]) {
+  color: var(--teal);
+}
+.govuk-link:hover,
+a:not([class]):hover {
+  color: var(--teal-hover);
+}
+
+/* ── Focus ring ─────────────────────────────────────────────────────────────── */
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 0;
+}
+
+/* ── App shell ──────────────────────────────────────────────────────────────── */
 
 html, body, #root {
   min-height: 100vh;
@@ -58,7 +104,7 @@ html, body, #root {
 
 body {
   margin: 0;
-  background-color: #f3f2f1;
+  background-color: var(--grey-bg);
 }
 
 /* ── Sticky sidebar ─────────────────────────────────────────────────────────── */
@@ -69,19 +115,20 @@ body {
   height: 100vh;
   overflow-y: auto;
   flex-shrink: 0;
-  background: #0b0c0c;
+  background: var(--grey-bg);
+  border-right: 1px solid var(--grey-line);
   scrollbar-width: thin;
-  scrollbar-color: #444 #0b0c0c;
+  scrollbar-color: var(--grey-line) var(--grey-bg);
 }
 
 .app-sidebar::-webkit-scrollbar {
   width: 4px;
 }
 .app-sidebar::-webkit-scrollbar-track {
-  background: #0b0c0c;
+  background: var(--grey-bg);
 }
 .app-sidebar::-webkit-scrollbar-thumb {
-  background: #444;
+  background: var(--grey-line);
 }
 
 /* ── App body layout ─────────────────────────────────────────────────────────── */
@@ -94,19 +141,20 @@ body {
 .app-main {
   flex: 1;
   min-width: 0;
-  background: #f3f2f1;
+  background: var(--grey-bg);
 }
 
 /* ── Page header band ────────────────────────────────────────────────────────── */
 
 .page-header {
   background: #ffffff;
-  border-bottom: 4px solid #9c1b6d;
+  border-bottom: 4px solid var(--purple);
   padding: 20px 30px;
 }
 
 .page-header .govuk-heading-l {
   margin: 0;
+  color: var(--purple);
 }
 
 /* ── Page content area ───────────────────────────────────────────────────────── */
@@ -119,13 +167,13 @@ body {
 
 .app-card {
   background: #ffffff;
-  border: 1px solid #b1b4b6;
+  border: 1px solid var(--grey-line);
   padding: 24px;
   margin-bottom: 24px;
 }
 
 .app-card .govuk-heading-m {
-  border-bottom: 2px solid #9c1b6d;
+  border-bottom: 2px solid var(--purple);
   padding-bottom: 8px;
   margin-bottom: 16px;
 }
@@ -134,9 +182,9 @@ body {
 
 .app-section-tag {
   display: inline-block;
-  background-color: #9c1b6d;
+  background-color: var(--purple);
   color: #ffffff;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   padding: 3px 10px;
   letter-spacing: 0.5px;
@@ -149,7 +197,7 @@ body {
 .app-nav-buttons {
   margin-top: 32px;
   padding-top: 20px;
-  border-top: 1px solid #b1b4b6;
+  border-top: 1px solid var(--grey-line);
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
@@ -161,18 +209,28 @@ body {
 .app-alert {
   padding: 16px 20px;
   margin-bottom: 20px;
+  border-radius: 0;
 }
-.app-alert--blue   { border-left: 6px solid #1d70b8; background-color: #e8f0fb; }
-.app-alert--green  { border-left: 6px solid #00703c; background-color: #e3f3eb; }
-.app-alert--yellow { border-left: 6px solid #f47738; background-color: #fef3e8; }
-.app-alert--red    { border-left: 6px solid #d4351c; background-color: #fde8e6; }
+
+/* info: purple tint bg + purple left border (replaces old --blue) */
+.app-alert--blue,
+.app-alert--info    { border-left: 4px solid var(--purple);  background-color: var(--purple-tint); }
+
+/* success: green tint bg + green left border (replaces old --green) */
+.app-alert--green,
+.app-alert--success { border-left: 4px solid var(--green);   background-color: var(--green-tint); }
+
+/* warning: magenta tint bg + magenta left border (replaces old --yellow and --red) */
+.app-alert--yellow,
+.app-alert--warning { border-left: 4px solid var(--magenta); background-color: var(--magenta-tint); }
+.app-alert--red     { border-left: 4px solid var(--magenta); background-color: var(--magenta-tint); }
 
 /* ── Design card (Page 4) ───────────────────────────────────────────────────── */
 
 .design-card {
   background: #ffffff;
-  border: 1px solid #b1b4b6;
-  border-left: 4px solid #1d70b8;
+  border: 1px solid var(--grey-line);
+  border-left: 4px solid var(--purple);
   padding: 20px;
   margin-bottom: 16px;
 }
@@ -181,43 +239,45 @@ body {
   margin-bottom: 4px;
 }
 
-/* ── TTE card (Page 2) ───────────────────────────────────────────────────────── */
+/* ── TTE / Ideal Trial card ──────────────────────────────────────────────────── */
 
 .tte-card {
   background: #ffffff;
-  border: 1px solid #b1b4b6;
-  border-left: 4px solid #9c1b6d;
+  border: 1px solid var(--grey-line);
+  border-left: 4px solid var(--purple);
   padding: 20px;
   margin-bottom: 16px;
 }
 
-/* ── MoJ Badge ────────────────────────────────────────────────────────────────── */
+/* ── Badge system ────────────────────────────────────────────────────────────── */
 
+/* Category A–E: purple sequential (ordered, not verdicts) */
 .app-badge {
   display: inline-block;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   padding: 2px 8px;
-  border-radius: 2px;
   color: #ffffff;
 }
-.app-badge--A      { background: #00703c; }
-.app-badge--B      { background: #1d70b8; }
-.app-badge--C      { background: #f47738; }
-.app-badge--D      { background: #9c1b6d; }
-.app-badge--E      { background: #6f777b; }
-.app-badge--High   { background: #00703c; }
-.app-badge--Medium { background: #f47738; }
-.app-badge--Low    { background: #d4351c; }
-.app-badge--NA     { background: #6f777b; }
+.app-badge--A { background: var(--purple25);     color: #ffffff; }
+.app-badge--B { background: var(--purple50);     color: #ffffff; }
+.app-badge--C { background: var(--purple);       color: #ffffff; }
+.app-badge--D { background: var(--purple-tint-mid); color: var(--purple25); }
+.app-badge--E { background: var(--purple-tint);  color: var(--purple25); }
 
-/* ── MoJ Sub-navigation (within-page anchors) ────────────────────────────────── */
+/* Feasibility: diverging teal ↔ magenta */
+.app-badge--High   { background: var(--teal);     color: #ffffff; }
+.app-badge--Medium { background: var(--grey-bg);  color: var(--ink); border: 1px solid var(--grey-line); }
+.app-badge--Low    { background: var(--magenta);  color: #ffffff; }
+.app-badge--NA     { background: #ffffff; color: var(--grey-text); border: 1px solid var(--grey-line); }
+
+/* ── MoJ Sub-navigation (within-page anchor links) ────────────────────────────── */
 
 .moj-sub-navigation__list {
   list-style: none;
   margin: 0 0 24px 0;
   padding: 0;
-  border-bottom: 1px solid #b1b4b6;
+  border-bottom: 1px solid var(--grey-line);
   display: flex;
   flex-wrap: wrap;
   gap: 0;
@@ -231,24 +291,24 @@ body {
   display: block;
   padding: 10px 16px;
   font-size: 16px;
-  color: #1d70b8;
-  text-decoration: none;
+  color: var(--teal);
+  text-decoration: underline;
   border-bottom: 4px solid transparent;
   white-space: nowrap;
 }
 
 .moj-sub-navigation__link:hover {
-  color: #003078;
-  border-bottom-color: #b1b4b6;
+  color: var(--teal-hover);
+  border-bottom-color: var(--grey-line);
 }
 
 .moj-sub-navigation__link--active {
-  color: #0b0c0c;
+  color: var(--ink);
   font-weight: 700;
-  border-bottom-color: #9c1b6d;
+  border-bottom-color: var(--purple);
 }
 
-/* ── MoJ Progress tracker ────────────────────────────────────────────────────── */
+/* ── Sidebar progress tracker (light theme) ────────────────────────────────────── */
 
 .moj-progress-tracker {
   padding: 12px 0 0 0;
@@ -266,25 +326,29 @@ body {
   gap: 10px;
   padding: 6px 16px;
   border-left: 4px solid transparent;
-  color: #ffffff;
+  color: var(--ink);
   font-size: 13px;
 }
 
 .moj-progress-tracker__item--complete {
-  border-left-color: #00703c;
-  color: #aed6ae;
+  border-left-color: var(--green);
+  color: var(--ink);
 }
 
 .moj-progress-tracker__item--active {
-  border-left-color: #9c1b6d;
-  color: #ffffff;
+  border-left-color: var(--purple);
+  color: var(--purple50);
   font-weight: 700;
-  background: #1a1a1a;
+  background: #ffffff;
 }
 
 .moj-progress-tracker__item--locked {
-  color: #6f777b;
+  color: var(--grey-text);
   font-style: italic;
+}
+
+.moj-progress-tracker__item--todo {
+  color: var(--ink);
 }
 
 .moj-progress-tracker__status-icon {
@@ -300,31 +364,32 @@ body {
 }
 
 .moj-progress-tracker__status-icon--complete {
-  background: #00703c;
+  background: var(--green);
   color: #fff;
 }
 
 .moj-progress-tracker__status-icon--active {
-  background: #9c1b6d;
-  color: #fff;
+  background: transparent;
+  border: 2px solid var(--purple);
+  color: var(--purple50);
 }
 
 .moj-progress-tracker__status-icon--locked {
-  background: #444;
-  color: #6f777b;
+  background: transparent;
+  color: var(--grey-text);
 }
 
 .moj-progress-tracker__status-icon--todo {
-  background: #444;
-  color: #888;
+  background: transparent;
+  color: var(--grey-text);
 }
 
 /* ── Next steps item ─────────────────────────────────────────────────────────── */
 
 .next-steps-item {
   background: #ffffff;
-  border: 1px solid #b1b4b6;
-  border-left: 4px solid #f47738;
+  border: 1px solid var(--grey-line);
+  border-left: 4px solid var(--magenta);
   padding: 16px 20px;
   margin-bottom: 10px;
 }
@@ -334,7 +399,7 @@ body {
 .locked-page {
   text-align: center;
   padding: 60px 20px;
-  color: #6f777b;
+  color: var(--grey-text);
 }
 
 /* ── Data table (Page 6) ─────────────────────────────────────────────────────── */
@@ -348,7 +413,7 @@ body {
 }
 
 .data-source-table th {
-  background: #0b0c0c;
+  background: var(--purple);
   color: #ffffff;
   padding: 8px 10px;
   text-align: left;
@@ -358,10 +423,11 @@ body {
 .data-source-table td {
   padding: 4px 6px;
   vertical-align: top;
+  border-bottom: 1px solid var(--grey-line);
 }
 
 .data-source-table tr:nth-child(even) td {
-  background: #f8f8f8;
+  background: var(--grey-bg);
 }
 
 /* ── Results table ───────────────────────────────────────────────────────────── */
@@ -373,7 +439,7 @@ body {
 }
 
 .results-table th {
-  background: #0b0c0c;
+  background: var(--purple);
   color: #ffffff;
   padding: 8px 10px;
   text-align: left;
@@ -385,17 +451,11 @@ body {
 
 .results-table td {
   padding: 8px 10px;
-  border-bottom: 1px solid #e8e8e8;
+  border-bottom: 1px solid var(--grey-line);
 }
 
 .results-table tr:nth-child(even) td {
-  background: #f8f8f8;
-}
-
-/* ── MoJ Date picker overrides ───────────────────────────────────────────────── */
-
-.moj-date-picker__input {
-  font-family: "GDS Transport", Arial, "Helvetica Neue", Helvetica, sans-serif !important;
+  background: var(--grey-bg);
 }
 
 /* ── Print styles ────────────────────────────────────────────────────────────── */
@@ -416,37 +476,26 @@ body {
 
 .page4-subnav-sticky {
   position: sticky;
-  top: 0;
+  top: 56px; /* matches header min-height */
   z-index: 100;
   background: #ffffff;
-  border-bottom: 1px solid #b1b4b6;
+  border-bottom: 1px solid var(--grey-line);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
   padding: 0 30px;
 }
 
-/* Remove bottom border from the sub-navigation list inside the sticky wrapper
-   since the wrapper itself provides the border */
 .page4-subnav-sticky .moj-sub-navigation__list {
   border-bottom: none;
   margin-bottom: 0;
 }
 
-/* ── Collapsible sidebar ─────────────────────────────────────────────────────── */
-
-/* Header is now sticky — offset sticky sub-nav on Page 4 to sit below it */
-.page4-subnav-sticky {
-  top: 56px; /* matches header min-height */
-}
-
 /* ── Mobile responsive layout ───────────────────────────────────────────────── */
 
 @media (max-width: 767px) {
-  /* Page content less horizontal padding on small screens */
   .page-content {
     padding: 16px;
   }
 
-  /* Page header less padding on small screens */
   .page-header {
     padding: 14px 16px;
   }
@@ -455,18 +504,15 @@ body {
     font-size: 1.375rem;
   }
 
-  /* App card less padding */
   .app-card {
     padding: 16px;
   }
 
-  /* Results table — allow horizontal scroll on small screens */
   .results-table-wrapper {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
 
-  /* Sub-navigation wraps on small screens */
   .moj-sub-navigation__list {
     flex-wrap: wrap;
   }
@@ -476,7 +522,6 @@ body {
     padding: 8px 12px;
   }
 
-  /* Nav buttons stack vertically on small screens */
   .app-nav-buttons {
     flex-direction: column;
     align-items: stretch;
@@ -487,16 +532,14 @@ body {
     text-align: center;
   }
 
-  /* Inline radios stack on mobile */
   .govuk-radios--inline .govuk-radios__item {
     display: block;
     margin-right: 0;
   }
 }
 
-/* ── PWA: hide browser UI chrome affordances when installed ─────────────────── */
+/* ── PWA: installed standalone mode ─────────────────────────────────────────── */
 @media (display-mode: standalone) {
-  /* App is installed — can adjust chrome if needed */
   .govuk-header {
     padding-top: env(safe-area-inset-top, 0);
   }

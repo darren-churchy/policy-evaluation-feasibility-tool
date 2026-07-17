@@ -71,7 +71,7 @@ export default function DecisionTree({ tree, namedNodes = {}, renderResult, acce
 
   if (resultKey) {
     return (
-      <div style={{ maxWidth: '720px', margin: '0 auto', padding: '2rem 1.5rem', fontFamily: "'DM Sans', system-ui, sans-serif" }}>
+      <div style={{ maxWidth: '720px', margin: '0 auto', padding: '2rem 1.5rem', fontFamily: "inherit" }}>
         {path.length > 0 && (
           <div style={{ marginBottom: '1.25rem' }}>
             <div style={{ fontSize: '0.68rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#888', marginBottom: '0.5rem' }}>Your path</div>
@@ -89,7 +89,7 @@ export default function DecisionTree({ tree, namedNodes = {}, renderResult, acce
   }
 
   return (
-    <div style={{ maxWidth: '720px', margin: '0 auto', padding: '2rem 1.5rem', fontFamily: "'DM Sans', system-ui, sans-serif" }}>
+    <div style={{ maxWidth: '720px', margin: '0 auto', padding: '2rem 1.5rem', fontFamily: "inherit" }}>
       {/* Progress bar */}
       <div style={{ display: 'flex', gap: '0.3rem', marginBottom: '1rem' }}>
         {[0,1,2,3].map(i => (
@@ -134,7 +134,7 @@ export default function DecisionTree({ tree, namedNodes = {}, renderResult, acce
           {currentNode.question}
         </div>
         {currentNode.hint && (
-          <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.78rem', color: '#777', lineHeight: 1.5, background: '#f0ece6', padding: '0.5rem 0.75rem', borderRadius: '3px', borderLeft: '3px solid #ccc', marginBottom: '0.9rem' }}>
+          <div style={{ fontSize: '0.78rem', color: '#777', lineHeight: 1.5, background: '#f0ece6', padding: '0.5rem 0.75rem', borderRadius: '3px', borderLeft: '3px solid #ccc', marginBottom: '0.9rem' }}>
             {currentNode.hint}
           </div>
         )}
@@ -146,7 +146,7 @@ export default function DecisionTree({ tree, namedNodes = {}, renderResult, acce
               style={{
                 textAlign: 'left', background: '#faf8f5', border: '1px solid #d8d2c8',
                 borderRadius: '4px', padding: '0.85rem 1rem', cursor: 'pointer',
-                fontFamily: "'DM Sans', sans-serif", width: '100%',
+                width: '100%',
                 transition: 'background 0.15s, border-color 0.15s',
               }}
               onMouseEnter={e => { e.currentTarget.style.background = '#f0ece6'; e.currentTarget.style.borderColor = '#b8b0a0' }}

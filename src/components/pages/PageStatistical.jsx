@@ -3,6 +3,7 @@ import {
   Card, SectionTag, Alert, NavButtons, Button,
   RadioQuestion, When, LockedPage, TextArea, PageHeader,
 } from '../ui/GovukComponents.jsx'
+import { T } from '../../styles/tokens.js'
 
 // Bayesian callout — shown when sample is small or tiny
 function BayesianNote({ sampleSize }) {
@@ -10,21 +11,21 @@ function BayesianNote({ sampleSize }) {
   const isTiny = sampleSize === 'tiny'
   return (
     <div style={{
-      background: '#f0ebfa',
-      border: '1px solid #c8b0e8',
-      borderLeft: '5px solid #4c2c92',
+      background: T.purpleTint,
+      border: `1px solid ${T.purpleTintMid}`,
+      borderLeft: `4px solid ${T.purple}`,
       padding: '16px 20px',
       marginBottom: '20px',
     }}>
-      <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#4c2c92', marginBottom: '8px' }}>
+      <h3 style={{ fontSize: '14px', fontWeight: 700, color: T.purple25, marginBottom: '8px' }}>
         𝔅 Consider Bayesian analysis approaches
       </h3>
-      <p style={{ fontSize: '13px', color: '#3a2a5a', lineHeight: 1.6, marginBottom: '8px' }}>
+      <p style={{ fontSize: '13px', color: T.purple25, lineHeight: 1.6, marginBottom: '8px' }}>
         {isTiny
           ? 'With a very small sample, classical frequentist methods will have very limited power. Bayesian analysis is particularly valuable here — it can incorporate prior information from similar interventions, produce honest posterior uncertainty, and update as data accumulate.'
           : 'With a small sample (20–99 units), statistical power will be a constraint for all designs. Bayesian approaches offer two concrete advantages: informative priors from prior evidence can improve precision without additional data; and Bayesian adaptive designs (for RCTs) can stop early for efficacy or futility, reducing sample requirements.'}
       </p>
-      <ul style={{ fontSize: '13px', color: '#3a2a5a', paddingLeft: '18px', lineHeight: 1.75 }}>
+      <ul style={{ fontSize: '13px', color: T.purple25, paddingLeft: '18px', lineHeight: 1.75 }}>
         <li>Ask your statistician whether informative priors are defensible from existing evidence on similar interventions</li>
         <li>For RCTs: consider whether a Bayesian adaptive design or sequential analysis is appropriate</li>
         <li>Bayesian results (posterior distributions, credible intervals) require different communication to decision-makers than p-values</li>
@@ -57,13 +58,14 @@ export default function Page7({ inputs, set, gatePassed }) {
 
         {/* T&L contextual note */}
         <div style={{
-          background: '#0b0c0c', padding: '12px 16px', marginBottom: '20px',
-          fontSize: '13px', color: 'rgba(255,255,255,.65)', lineHeight: 1.6,
+          background: T.purpleTint, borderLeft: `4px solid ${T.purple}`,
+          padding: '12px 16px', marginBottom: '20px',
+          fontSize: '13px', color: T.ink, lineHeight: 1.6,
         }}>
-          <strong style={{ color: '#fff' }}>T&amp;L stage context:</strong>{' '}
-          At the <span style={{ background: '#f5eaf8', color: '#5a1a6a', fontWeight: 700, padding: '1px 6px', borderRadius: '2px' }}>Test</span> stage,
+          <strong>T&amp;L stage context:</strong>{' '}
+          At the <span style={{ background: T.purpleTint, color: T.purple25, fontWeight: 700, padding: '1px 6px', border: `1px solid ${T.purpleTintMid}` }}>Test</span> stage,
           power calculations often rely on estimates from similar programmes. At the{' '}
-          <span style={{ background: '#fef0e0', color: '#6a3a1a', fontWeight: 700, padding: '1px 6px', borderRadius: '2px' }}>Grow</span> stage,
+          <span style={{ background: T.tealTint, color: T.teal25, fontWeight: 700, padding: '1px 6px', border: `1px solid ${T.tealTintMid}` }}>Grow</span> stage,
           prior data from the Test phase evaluation may be available to inform priors or assumptions.
         </div>
 
@@ -189,7 +191,7 @@ export default function Page7({ inputs, set, gatePassed }) {
             ]} inline />
 
           <When condition={inputs.p7_analysis === 'freq'}>
-            <div style={{ borderLeft: '4px solid #1d70b8', padding: '16px 20px', background: '#e8f0fb', marginBottom: '16px' }}>
+            <div style={{ borderLeft: `4px solid ${T.teal}`, padding: '16px 20px', background: T.tealTint, marginBottom: '16px' }}>
               <h4 className="govuk-heading-s" style={{ marginTop: 0 }}>Frequentist Analysis</h4>
               <RadioQuestion id="p7_freq_alpha"
                 label="What significance threshold will you use?"
