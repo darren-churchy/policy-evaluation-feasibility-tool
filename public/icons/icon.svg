@@ -1,19 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <!-- Magenta rounded-square background -->
-  <rect width="512" height="512" rx="88" fill="#9C1B6D"/>
-  <!-- Two diverging paths: single stem splits at a fork into left and right branches -->
-  <g fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round">
-    <!-- Stem coming up from bottom -->
-    <line x1="256" y1="390" x2="256" y2="258" stroke-width="32"/>
-    <!-- Fork dot -->
-    <circle cx="256" cy="252" r="18" fill="#ffffff" stroke="none"/>
-    <!-- Left branch curving up-left -->
-    <path d="M256 252 C256 200 160 200 148 130" stroke-width="32" fill="none"/>
-    <!-- Right branch curving up-right -->
-    <path d="M256 252 C256 200 352 200 364 130" stroke-width="32" fill="none"/>
-    <!-- Left end cap dot -->
-    <circle cx="148" cy="126" r="18" fill="#ffffff" stroke="none"/>
-    <!-- Right end cap dot -->
-    <circle cx="364" cy="126" r="18" fill="#ffffff" stroke="none"/>
-  </g>
+  <!-- Purple background -->
+  <rect width="512" height="512" rx="88" fill="#54319f"/>
+  <!-- Start node (left) -->
+  <circle cx="100" cy="256" r="24" fill="#ffffff"/>
+  <!-- Horizontal stem: start node to fork junction -->
+  <line x1="124" y1="256" x2="212" y2="256" stroke="#ffffff" stroke-width="32" stroke-linecap="round"/>
+  <!-- Fork junction dot -->
+  <circle cx="212" cy="256" r="18" fill="#ffffff"/>
+  <!-- Vertical connector joining the two branch starts -->
+  <line x1="212" y1="148" x2="212" y2="364" stroke="#ffffff" stroke-width="32" stroke-linecap="round"/>
+  <!-- Upper horizontal branch -->
+  <line x1="212" y1="148" x2="402" y2="148" stroke="#ffffff" stroke-width="32" stroke-linecap="round"/>
+  <!-- Lower horizontal branch -->
+  <line x1="212" y1="364" x2="402" y2="364" stroke="#ffffff" stroke-width="32" stroke-linecap="round"/>
+  <!-- Upper end node -->
+  <circle cx="402" cy="148" r="24" fill="#ffffff"/>
+  <!-- Lower end node -->
+  <circle cx="402" cy="364" r="24" fill="#ffffff"/>
 </svg>
