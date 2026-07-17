@@ -1,37 +1,15 @@
 import { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { qualData, quantData } from '../../../data/questionFrameworkData.js'
-
-function hexToRgba(hex, alpha) {
-  const r = parseInt(hex.slice(1,3), 16), g = parseInt(hex.slice(3,5), 16), b = parseInt(hex.slice(5,7), 16)
-  return `rgba(${r},${g},${b},${alpha})`
-}
-
-const TL_MAP = { 'Explore': 'tl-explore', 'Co-design': 'tl-codesign', 'Test': 'tl-test', 'Grow': 'tl-grow' }
-const TL_STYLES = {
-  Explore: { background: '#e8f4e8', color: '#1a5a2a' },
-  'Co-design': { background: '#e8eef8', color: '#1a3a6a' },
-  Test: { background: '#f5eaf8', color: '#5a1a6a' },
-  Grow: { background: '#fef0e0', color: '#6a3a1a' },
-}
-
-function TlTag({ stage }) {
-  return (
-    <span style={{
-      fontSize: '0.65rem', fontWeight: 600,
-      padding: '0.15rem 0.4rem', borderRadius: '2px', textAlign: 'center',
-      display: 'inline-block', marginBottom: '0.25rem', marginRight: '0.15rem',
-      ...(TL_STYLES[stage] || {}),
-    }}>
-      {stage}
-    </span>
-  )
-}
+import { hexToRgba } from '../../../utils/colorUtils.js'
+import { T } from '../../../styles/tokens.js'
+import { TlBadge, Alert, Button, NavButtons, PageHeader } from '../../ui/GovukComponents.jsx'
 
 function claimDotsHtml(n, accent) {
   return Array.from({ length: 3 }, (_, i) => (
     <span key={i} style={{
       width: '7px', height: '7px', borderRadius: '50%',
-      background: i < n ? accent : '#ddd',
+      background: i < n ? accent : T.greyLine,
       display: 'inline-block', marginRight: '3px', verticalAlign: 'middle',
     }} />
   ))
@@ -52,12 +30,11 @@ function FrameworkTable({ data, isQuant }) {
         gridTemplateColumns: '190px 1fr 110px 145px',
         gap: '0 0.75rem',
         padding: '0.35rem 0.75rem 0.35rem 1.1rem',
-        fontFamily: "'DM Sans', sans-serif",
         fontSize: '0.64rem',
         letterSpacing: '0.1em',
         textTransform: 'uppercase',
-        color: '#999',
-        borderBottom: '1px solid #d0c9bc',
+        color: T.greyText,
+        borderBottom: `1px solid ${T.greyLine}`,
         marginBottom: '0.2rem',
       }}>
         <span>Question Type</span>
@@ -83,35 +60,34 @@ function FrameworkTable({ data, isQuant }) {
                 gap: '0 0.75rem',
                 padding: '0.85rem 0.75rem 0.85rem 1.1rem',
                 borderLeft: `4px solid ${row.accent}`,
-                background: isActive ? '#eee9e3' : '#faf8f5',
+                background: isActive ? T.purpleTint : T.greyBg,
                 marginBottom: '0.25rem',
                 cursor: 'pointer',
                 transition: 'background 0.15s',
-                borderRadius: '0 4px 4px 0',
                 userSelect: 'none',
               }}
             >
               <div>
-                <div style={{ fontFamily: "'Source Serif 4', Georgia, serif", fontWeight: 600, fontSize: '0.9rem', color: row.color, marginBottom: '0.2rem', lineHeight: 1.3 }}>
+                <div style={{ fontWeight: 600, fontSize: '0.9rem', color: row.color, marginBottom: '0.2rem', lineHeight: 1.3 }}>
                   {row.type}
                 </div>
-                <span style={{ fontSize: '0.68rem', display: 'inline-block', padding: '0.12rem 0.45rem', borderRadius: '2px', background: ab, color: row.color, border: `1px solid ${abo}`, marginTop: '0.2rem' }}>
+                <span style={{ fontSize: '0.68rem', display: 'inline-block', padding: '0.12rem 0.45rem', background: ab, color: row.color, border: `1px solid ${abo}`, marginTop: '0.2rem' }}>
                   {row.signal}
                 </span>
                 {isQuant && (
-                  <div style={{ marginTop: '0.35rem', fontSize: '0.68rem', color: '#888' }}>
+                  <div style={{ marginTop: '0.35rem', fontSize: '0.68rem', color: T.greyText }}>
                     {claimDotsHtml(row.claimDots, row.accent)}
                     {row.claimDots === 3 ? 'Causal' : row.claimDots === 2 ? 'Associational' : 'Descriptive'} claim
                   </div>
                 )}
               </div>
               <div>
-                <div style={{ fontSize: '0.84rem', lineHeight: 1.5, color: '#333', marginBottom: '0.3rem' }}>
+                <div style={{ fontSize: '0.84rem', lineHeight: 1.5, color: T.ink, marginBottom: '0.3rem' }}>
                   {row.logic}
                 </div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem' }}>
                   {row.signalPhrases.map((p, pi) => (
-                    <span key={pi} style={{ fontSize: '0.68rem', background: '#e0dbd2', color: '#555', padding: '0.1rem 0.45rem', borderRadius: '2px', fontStyle: 'italic' }}>
+                    <span key={pi} style={{ fontSize: '0.68rem', background: T.greyBg, color: T.greyText, padding: '0.1rem 0.45rem', fontStyle: 'italic' }}>
                       {p}
                     </span>
                   ))}
@@ -120,16 +96,16 @@ function FrameworkTable({ data, isQuant }) {
               <div>
                 <div style={{ fontSize: '0.78rem', fontWeight: 600, color: row.color, marginBottom: '0.15rem', lineHeight: 1.3 }}
                   dangerouslySetInnerHTML={{ __html: row.evalHome }} />
-                <div style={{ fontSize: '0.68rem', color: '#777', lineHeight: 1.35 }}>
+                <div style={{ fontSize: '0.68rem', color: T.greyText, lineHeight: 1.35 }}>
                   {row.evalNote}
                 </div>
-                <span style={{ fontSize: '0.67rem', color: '#999', textDecoration: 'underline', marginTop: '0.35rem', display: 'block' }}>
+                <span style={{ fontSize: '0.67rem', color: T.teal, textDecoration: 'underline', marginTop: '0.35rem', display: 'block' }}>
                   {isActive ? '▲ collapse' : '▼ expand'}
                 </span>
               </div>
               <div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                  {row.tlStages.map(s => <TlTag key={s} stage={s} />)}
+                  {row.tlStages.map(s => <TlBadge key={s} stage={s} />)}
                 </div>
               </div>
             </div>
@@ -139,14 +115,13 @@ function FrameworkTable({ data, isQuant }) {
               <div style={{
                 background: '#fff',
                 borderLeft: `4px solid ${row.accent}`,
-                borderRadius: '0 4px 4px 0',
                 padding: '1.1rem 1.25rem',
                 marginBottom: '0.25rem',
                 marginTop: '-0.2rem',
               }}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
                   <div>
-                    <div style={{ fontSize: '0.63rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#999', marginBottom: '0.6rem' }}>
+                    <div style={{ fontSize: '0.63rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: T.greyText, marginBottom: '0.6rem' }}>
                       {isQuant ? 'Methods & Designs' : 'Qualitative Approaches'}
                     </div>
                     {methods.map((m, mi) => (
@@ -154,14 +129,14 @@ function FrameworkTable({ data, isQuant }) {
                         <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: row.accent, flexShrink: 0, marginTop: '6px' }} />
                         <div>
                           <span style={{ fontSize: '0.85rem', fontWeight: 600, color: row.color, display: 'block' }}>{m.name}</span>
-                          <span style={{ fontSize: '0.74rem', color: '#666', lineHeight: 1.35 }}>
+                          <span style={{ fontSize: '0.74rem', color: T.greyText, lineHeight: 1.35 }}>
                             {isQuant ? m.note : '— ' + m.note}
                           </span>
                         </div>
                       </div>
                     ))}
                     {!isQuant && (
-                      <div style={{ background: '#fdf6ee', border: '1px solid #e8d5b8', borderRadius: '4px', padding: '0.65rem 0.85rem', fontSize: '0.82rem', lineHeight: 1.55, color: '#555', fontStyle: 'italic', marginTop: '0.75rem' }}>
+                      <div style={{ background: T.magentaTint, border: `1px solid ${T.magentaTintMid}`, padding: '0.65rem 0.85rem', fontSize: '0.82rem', lineHeight: 1.55, color: T.ink, fontStyle: 'italic', marginTop: '0.75rem' }}>
                         "{row.weakness}"
                       </div>
                     )}
@@ -169,8 +144,8 @@ function FrameworkTable({ data, isQuant }) {
                   <div>
                     {isQuant ? (
                       <>
-                        <div style={{ fontSize: '0.63rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#999', marginBottom: '0.6rem' }}>Key Assumptions</div>
-                        <div style={{ background: '#f0f4fa', border: '1px solid #c0d0e8', borderRadius: '4px', padding: '0.65rem 0.85rem', fontSize: '0.76rem', lineHeight: 1.5, color: '#2a3a5a' }}>
+                        <div style={{ fontSize: '0.63rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: T.greyText, marginBottom: '0.6rem' }}>Key Assumptions</div>
+                        <div style={{ background: T.purpleTint, border: `1px solid ${T.purpleTintMid}`, padding: '0.65rem 0.85rem', fontSize: '0.76rem', lineHeight: 1.5, color: T.ink }}>
                           {row.assumptions.map((a, ai) => (
                             <div key={ai} style={{ display: 'flex', gap: '0.4rem', marginBottom: '0.25rem', alignItems: 'flex-start', fontSize: '0.75rem' }}>
                               <span style={{ color: row.accent, flexShrink: 0 }}>▸</span>
@@ -179,18 +154,18 @@ function FrameworkTable({ data, isQuant }) {
                           ))}
                         </div>
                         {row.extraNote && (
-                          <div style={{ marginTop: '0.75rem', background: '#f4f0fa', border: '1px solid #c8b8e8', borderRadius: '4px', padding: '0.6rem 0.85rem', fontSize: '0.76rem', color: '#3a2a5a', lineHeight: 1.55 }}>
+                          <div style={{ marginTop: '0.75rem', background: T.purpleTint, border: `1px solid ${T.purpleTintMid}`, padding: '0.6rem 0.85rem', fontSize: '0.76rem', color: T.purple25, lineHeight: 1.55 }}>
                             <strong>Efficacy vs Effectiveness:</strong> {row.extraNote}
                           </div>
                         )}
-                        <div style={{ background: '#fdf6ee', border: '1px solid #e8d5b8', borderRadius: '4px', padding: '0.65rem 0.85rem', fontSize: '0.82rem', lineHeight: 1.55, color: '#555', fontStyle: 'italic', marginTop: '0.75rem' }}>
+                        <div style={{ background: T.magentaTint, border: `1px solid ${T.magentaTintMid}`, padding: '0.65rem 0.85rem', fontSize: '0.82rem', lineHeight: 1.55, color: T.ink, fontStyle: 'italic', marginTop: '0.75rem' }}>
                           "{row.weakness}"
                         </div>
                       </>
                     ) : (
                       <>
-                        <div style={{ fontSize: '0.63rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#999', marginBottom: '0.6rem' }}>Common Commissioning Pitfall</div>
-                        <div style={{ background: '#fdf6ee', border: '1px solid #e8d5b8', borderRadius: '4px', padding: '0.65rem 0.85rem', fontSize: '0.82rem', lineHeight: 1.55, color: '#555', fontStyle: 'italic' }}>
+                        <div style={{ fontSize: '0.63rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: T.greyText, marginBottom: '0.6rem' }}>Common Commissioning Pitfall</div>
+                        <div style={{ background: T.magentaTint, border: `1px solid ${T.magentaTintMid}`, padding: '0.65rem 0.85rem', fontSize: '0.82rem', lineHeight: 1.55, color: T.ink, fontStyle: 'italic' }}>
                           "{row.weakness}"
                         </div>
                       </>
@@ -207,20 +182,21 @@ function FrameworkTable({ data, isQuant }) {
 }
 
 const SIDEBAR_ITEMS = [
-  { target: 'cover', label: 'Introduction', accent: '#4a9eda', section: 'Overview' },
-  { target: 'qual-systems', label: 'Systems & Complexity', accent: '#2a8a5a', section: 'Qualitative' },
-  { target: 'qual-contextual', label: 'Contextual', accent: '#4a9eda', section: null },
-  { target: 'qual-diagnostic', label: 'Diagnostic', accent: '#4acba0', section: null },
-  { target: 'qual-eval-process', label: 'Evaluative — Process', accent: '#9a7eda', section: null },
-  { target: 'qual-eval-impact', label: 'Evaluative — Impact', accent: '#e07a4a', section: null },
-  { target: 'qual-strategic', label: 'Strategic', accent: '#c8b84a', section: null },
-  { target: 'quant-description', label: 'Description', accent: '#3a80b8', section: 'Quantitative' },
-  { target: 'quant-prediction', label: 'Prediction', accent: '#2a9a6a', section: null },
-  { target: 'quant-causal', label: 'Causal Inference', accent: '#8a4aba', section: null },
-  { target: 'tl-map', label: 'Stage Mapping', accent: '#e07a2a', section: 'Test & Learn' },
+  { target: 'cover',             label: 'Introduction',          accent: T.greyLine,  section: 'Overview' },
+  { target: 'qual-systems',      label: 'Systems & Complexity',  accent: T.teal,      section: 'Qualitative' },
+  { target: 'qual-contextual',   label: 'Contextual',            accent: T.teal,      section: null },
+  { target: 'qual-diagnostic',   label: 'Diagnostic',            accent: T.teal,      section: null },
+  { target: 'qual-eval-process', label: 'Evaluative — Process',  accent: T.teal,      section: null },
+  { target: 'qual-eval-impact',  label: 'Evaluative — Impact',   accent: T.teal,      section: null },
+  { target: 'qual-strategic',    label: 'Strategic',             accent: T.teal,      section: null },
+  { target: 'quant-description', label: 'Description',           accent: T.purple,    section: 'Quantitative' },
+  { target: 'quant-prediction',  label: 'Prediction',            accent: T.purple,    section: null },
+  { target: 'quant-causal',      label: 'Causal Inference',      accent: T.purple,    section: null },
+  { target: 'tl-map',            label: 'Stage Mapping',         accent: T.green,     section: 'Test & Learn' },
 ]
 
 export default function PageQuestionFramework() {
+  const navigate = useNavigate()
   const [activeSection, setActiveSection] = useState('cover')
   const observerRef = useRef(null)
 
@@ -228,9 +204,7 @@ export default function PageQuestionFramework() {
     const sections = SIDEBAR_ITEMS.map(i => document.getElementById(i.target)).filter(Boolean)
     observerRef.current = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          setActiveSection(entry.target.id)
-        }
+        if (entry.isIntersecting) setActiveSection(entry.target.id)
       })
     }, { rootMargin: '-20% 0px -60% 0px', threshold: 0 })
     sections.forEach(s => observerRef.current.observe(s))
@@ -243,205 +217,206 @@ export default function PageQuestionFramework() {
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100%', fontFamily: "'Source Serif 4', Georgia, serif", background: '#f5f2ed', color: '#1a1a1a' }}>
-      {/* Sidebar */}
-      <nav style={{
-        width: '220px', minWidth: '220px', background: '#1c2a3a', minHeight: '100vh',
-        position: 'sticky', top: '0', height: '100vh', overflowY: 'auto',
-        display: 'flex', flexDirection: 'column', flexShrink: 0,
-      }}>
-        <div style={{ padding: '1.25rem 1rem 0.75rem', borderBottom: '1px solid rgba(255,255,255,0.1)', marginBottom: '0.5rem' }}>
-          <div style={{ fontSize: '0.6rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: '0.3rem' }}>Analytical Framework</div>
-          <div style={{ fontSize: '0.82rem', fontWeight: 600, color: 'rgba(255,255,255,0.9)', lineHeight: 1.3 }}>Research Question Typology</div>
-        </div>
-
-        {(() => {
-          let lastSection = null
-          return SIDEBAR_ITEMS.map((item, i) => {
-            const sectionLabel = item.section && item.section !== lastSection ? (() => { lastSection = item.section; return item.section })() : null
-            return (
-              <div key={item.target}>
-                {sectionLabel && (
-                  <div style={{ fontSize: '0.6rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', padding: '0.75rem 1rem 0.3rem' }}>
-                    {i > 0 && <div style={{ height: '1px', background: 'rgba(255,255,255,0.08)', marginBottom: '0.75rem', marginTop: '-0.3rem' }} />}
-                    {sectionLabel}
-                  </div>
-                )}
-                <button
-                  onClick={() => scrollTo(item.target)}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: '0.5rem',
-                    padding: '0.4rem 1rem', width: '100%', textAlign: 'left',
-                    fontSize: '0.78rem',
-                    color: activeSection === item.target ? '#fff' : 'rgba(255,255,255,0.6)',
-                    background: activeSection === item.target ? 'rgba(255,255,255,0.08)' : 'none',
-                    border: 'none', borderLeft: `3px solid ${activeSection === item.target ? item.accent : 'transparent'}`,
-                    cursor: 'pointer', lineHeight: 1.35,
-                  }}
-                >
-                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: item.accent, flexShrink: 0, opacity: activeSection === item.target ? 1 : 0.7 }} />
-                  {item.label}
-                </button>
-              </div>
-            )
-          })
-        })()}
-
-        <div style={{ marginTop: 'auto', padding: '0.75rem 1rem', fontSize: '0.62rem', color: 'rgba(255,255,255,0.25)', borderTop: '1px solid rgba(255,255,255,0.08)', lineHeight: 1.5 }}>
-          Magenta Book (2020, updated 2026)<br />
-          Test &amp; Learn Annex (2026)<br />
-          Ritchie &amp; Lewis (2003)<br />
-          Herman &amp; Hsu (2017)
-        </div>
-      </nav>
-
-      {/* Main content */}
-      <main style={{ flex: 1, minWidth: 0, padding: '2.5rem 2.5rem 4rem', maxWidth: '960px' }}>
-
-        {/* Cover */}
-        <div id="cover" style={{ borderLeft: '4px solid #1c3f5e', paddingLeft: '1.5rem', marginBottom: '2.5rem', paddingBottom: '2rem', borderBottom: '1px solid #d0c9bc', scrollMarginTop: '2rem' }}>
-          <div style={{ fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#777', marginBottom: '0.5rem' }}>Analytical Framework</div>
-          <h1 style={{ fontSize: '1.9rem', fontWeight: 300, lineHeight: 1.2, color: '#1a1a1a', marginBottom: '0.6rem' }}>A Typology of Research Questions</h1>
-          <p style={{ fontSize: '0.9rem', color: '#444', maxWidth: '620px', lineHeight: 1.65, marginBottom: '1.25rem' }}>
-            A combined qualitative and quantitative framework for classifying research questions, selecting appropriate methods, and locating analytical work within the Magenta Book Test and Learn policy cycle. Updated to reflect the Test and Learn Annex (May 2026).
-          </p>
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-            {['Click any row to expand methods & assumptions', 'Qual: Ritchie & Lewis (2003) extended', 'Quant: Herman & Hsu (2017) extended', 'T&L: Magenta Book Annex (2026)'].map(tag => (
-              <span key={tag} style={{ fontSize: '0.72rem', color: '#555', background: '#e0dbd2', padding: '0.2rem 0.6rem', borderRadius: '2px' }}>{tag}</span>
-            ))}
+    <div>
+      <PageHeader title="A Typology of Research Questions" />
+      <div style={{ display: 'flex', minHeight: '100%', background: T.greyBg }}>
+        {/* Sidebar */}
+        <nav style={{
+          width: '220px', minWidth: '220px', background: T.purple25, minHeight: '100vh',
+          position: 'sticky', top: '56px', height: 'calc(100vh - 56px)', overflowY: 'auto',
+          display: 'flex', flexDirection: 'column', flexShrink: 0,
+        }}>
+          <div style={{ padding: '1.25rem 1rem 0.75rem', borderBottom: '1px solid rgba(255,255,255,0.1)', marginBottom: '0.5rem' }}>
+            <div style={{ fontSize: '0.6rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: '0.3rem' }}>Analytical Framework</div>
+            <div style={{ fontSize: '0.82rem', fontWeight: 600, color: 'rgba(255,255,255,0.9)', lineHeight: 1.3 }}>Research Question Typology</div>
           </div>
-        </div>
 
-        {/* Qualitative section */}
-        <div id="qual-section" style={{ marginBottom: '3.5rem', scrollMarginTop: '2rem' }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '1rem', marginBottom: '0.5rem', paddingBottom: '0.6rem', borderBottom: '2px solid #d0c9bc' }}>
-            <div style={{ width: '3px', height: '1.5rem', borderRadius: '2px', background: '#4a9eda', flexShrink: 0 }} />
-            <div>
-              <div style={{ fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#aaa', marginBottom: '0.2rem' }}>Part One</div>
-              <h2 style={{ fontSize: '1.3rem', fontWeight: 400, color: '#1a1a1a' }}>Qualitative Research Questions</h2>
-            </div>
-          </div>
-          <p style={{ fontSize: '0.88rem', color: '#444', lineHeight: 1.65, marginBottom: '1.25rem', maxWidth: '700px' }}>
-            Six question types distinguished by the kind of claim being made, not the topic. Positioned within the Test and Learn framework from Explore through to Grow. Qualitative work is not confined to process evaluation — evaluative-impact questions have legitimate qualitative homes.
-          </p>
-        </div>
-
-        <div style={{ marginTop: '-2rem', marginBottom: '3rem' }}>
-          <FrameworkTable data={qualData} isQuant={false} />
-        </div>
-
-        {/* Quantitative section */}
-        <div id="quant-section" style={{ marginBottom: '3.5rem', scrollMarginTop: '2rem' }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '1rem', marginBottom: '0.5rem', paddingBottom: '0.6rem', borderBottom: '2px solid #d0c9bc' }}>
-            <div style={{ width: '3px', height: '1.5rem', borderRadius: '2px', background: '#3a80b8', flexShrink: 0 }} />
-            <div>
-              <div style={{ fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#aaa', marginBottom: '0.2rem' }}>Part Two</div>
-              <h2 style={{ fontSize: '1.3rem', fontWeight: 400, color: '#1a1a1a' }}>Quantitative Research Questions</h2>
-            </div>
-          </div>
-          <p style={{ fontSize: '0.88rem', color: '#444', lineHeight: 1.65, marginBottom: '1.25rem', maxWidth: '700px' }}>
-            Three question types forming a hierarchy of claim strength. Each stronger type requires a stronger identification strategy to support it.
-          </p>
-
-          {/* Hierarchy strip */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 0, marginBottom: '1.5rem', overflowX: 'auto' }}>
-            {[
-              { label: 'Description', sub: 'What is the case?', bg: '#2a6496' },
-              { label: 'Prediction', sub: 'What tends to occur?', bg: '#1a7a5a' },
-              { label: 'Causal Inference', sub: 'What is the effect of X on Y?', bg: '#5a2a6a' },
-            ].map((block, i, arr) => (
-              <>
-                <div key={block.label} style={{ padding: '0.5rem 0.85rem', color: 'white', whiteSpace: 'nowrap', flexShrink: 0, background: block.bg }}>
-                  <div style={{ fontWeight: 600, fontSize: '0.78rem' }}>{block.label}</div>
-                  <div style={{ fontSize: '0.65rem', opacity: 0.82, marginTop: '0.1rem' }}>{block.sub}</div>
+          {(() => {
+            let lastSection = null
+            return SIDEBAR_ITEMS.map((item, i) => {
+              const sectionLabel = item.section && item.section !== lastSection ? (() => { lastSection = item.section; return item.section })() : null
+              return (
+                <div key={item.target}>
+                  {sectionLabel && (
+                    <div style={{ fontSize: '0.6rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', padding: '0.75rem 1rem 0.3rem' }}>
+                      {i > 0 && <div style={{ height: '1px', background: 'rgba(255,255,255,0.08)', marginBottom: '0.75rem', marginTop: '-0.3rem' }} />}
+                      {sectionLabel}
+                    </div>
+                  )}
+                  <button
+                    onClick={() => scrollTo(item.target)}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '0.5rem',
+                      padding: '0.4rem 1rem', width: '100%', textAlign: 'left',
+                      fontSize: '0.78rem',
+                      color: activeSection === item.target ? '#fff' : 'rgba(255,255,255,0.6)',
+                      background: activeSection === item.target ? 'rgba(255,255,255,0.08)' : 'none',
+                      border: 'none', borderLeft: `3px solid ${activeSection === item.target ? item.accent : 'transparent'}`,
+                      cursor: 'pointer', lineHeight: 1.35,
+                    }}
+                  >
+                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: item.accent, flexShrink: 0, opacity: activeSection === item.target ? 1 : 0.7 }} />
+                    {item.label}
+                  </button>
                 </div>
-                {i < arr.length - 1 && <span style={{ fontSize: '0.9rem', color: '#bbb', flexShrink: 0, padding: '0 0.1rem' }}>→</span>}
-              </>
-            ))}
-            <div style={{ fontSize: '0.7rem', color: '#777', paddingLeft: '0.75rem', borderLeft: '1px solid #d0c9bc', marginLeft: '0.5rem', lineHeight: 1.5, flexShrink: 0 }}>
-              Each type makes a stronger claim<br />and requires stronger assumptions.
+              )
+            })
+          })()}
+
+          <div style={{ marginTop: 'auto', padding: '0.75rem 1rem', fontSize: '0.62rem', color: 'rgba(255,255,255,0.25)', borderTop: '1px solid rgba(255,255,255,0.08)', lineHeight: 1.5 }}>
+            Magenta Book (2020, updated 2026)<br />
+            Test &amp; Learn Annex (2026)<br />
+            Ritchie &amp; Lewis (2003)<br />
+            Herman &amp; Hsu (2017)
+          </div>
+        </nav>
+
+        {/* Main content */}
+        <main style={{ flex: 1, minWidth: 0, padding: '2.5rem 2.5rem 4rem', maxWidth: '960px' }}>
+
+          {/* Cover */}
+          <div id="cover" style={{ borderLeft: `4px solid ${T.purple}`, paddingLeft: '1.5rem', marginBottom: '2.5rem', paddingBottom: '2rem', borderBottom: `1px solid ${T.greyLine}`, scrollMarginTop: '2rem' }}>
+            <div style={{ fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: T.greyText, marginBottom: '0.5rem' }}>Analytical Framework</div>
+            <p className="govuk-body" style={{ maxWidth: '620px' }}>
+              A combined qualitative and quantitative framework for classifying research questions, selecting appropriate methods, and locating analytical work within the Magenta Book Test and Learn policy cycle. Updated to reflect the Test and Learn Annex (May 2026).
+            </p>
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+              {['Click any row to expand methods & assumptions', 'Qual: Ritchie & Lewis (2003) extended', 'Quant: Herman & Hsu (2017) extended', 'T&L: Magenta Book Annex (2026)'].map(tag => (
+                <span key={tag} style={{ fontSize: '0.72rem', color: T.greyText, background: T.greyBg, padding: '0.2rem 0.6rem', border: `1px solid ${T.greyLine}` }}>{tag}</span>
+              ))}
             </div>
           </div>
 
-          {/* Drivers callout */}
-          <div style={{ background: '#f4f0fa', border: '1px solid #c8b8e8', borderLeft: '4px solid #7a5aba', borderRadius: '0 4px 4px 0', padding: '0.85rem 1rem', fontSize: '0.82rem', lineHeight: 1.6, color: '#3a2a5a', margin: '0.75rem 0 1.25rem', display: 'flex', gap: '0.75rem' }}>
-            <span style={{ flexShrink: 0 }}>⬧</span>
-            <div>
-              <p style={{ color: '#3a2a5a', marginBottom: '0.4rem' }}><strong>Boundary case — "drivers" and "risk factor" questions</strong></p>
-              <p style={{ color: '#3a2a5a', marginBottom: '0.4rem' }}>These are among the most frequently misclassified question types. The language implies causation but the methods used typically support only associational claims.</p>
+          {/* Qualitative section */}
+          <div id="qual-section" style={{ marginBottom: '3.5rem', scrollMarginTop: '2rem' }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '1rem', marginBottom: '0.5rem', paddingBottom: '0.6rem', borderBottom: `2px solid ${T.greyLine}` }}>
+              <div style={{ width: '3px', height: '1.5rem', background: T.teal, flexShrink: 0 }} />
+              <div>
+                <div style={{ fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: T.greyText, marginBottom: '0.2rem' }}>Part One</div>
+                <h2 className="govuk-heading-m" style={{ marginBottom: 0 }}>Qualitative Research Questions</h2>
+              </div>
+            </div>
+            <p className="govuk-body" style={{ maxWidth: '700px' }}>
+              Six question types distinguished by the kind of claim being made, not the topic. Positioned within the Test and Learn framework from Explore through to Grow. Qualitative work is not confined to process evaluation — evaluative-impact questions have legitimate qualitative homes.
+            </p>
+          </div>
+
+          <div style={{ marginTop: '-2rem', marginBottom: '3rem' }}>
+            <FrameworkTable data={qualData} isQuant={false} />
+          </div>
+
+          {/* Quantitative section */}
+          <div id="quant-section" style={{ marginBottom: '3.5rem', scrollMarginTop: '2rem' }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '1rem', marginBottom: '0.5rem', paddingBottom: '0.6rem', borderBottom: `2px solid ${T.greyLine}` }}>
+              <div style={{ width: '3px', height: '1.5rem', background: T.purple, flexShrink: 0 }} />
+              <div>
+                <div style={{ fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: T.greyText, marginBottom: '0.2rem' }}>Part Two</div>
+                <h2 className="govuk-heading-m" style={{ marginBottom: 0 }}>Quantitative Research Questions</h2>
+              </div>
+            </div>
+            <p className="govuk-body" style={{ maxWidth: '700px' }}>
+              Three question types forming a hierarchy of claim strength. Each stronger type requires a stronger identification strategy to support it.
+            </p>
+
+            {/* Hierarchy strip */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 0, marginBottom: '1.5rem', overflowX: 'auto' }}>
+              {[
+                { label: 'Description',     sub: 'What is the case?',          bg: T.teal    },
+                { label: 'Prediction',      sub: 'What tends to occur?',       bg: T.green   },
+                { label: 'Causal Inference',sub: 'What is the effect of X on Y?', bg: T.purple  },
+              ].map((block, i, arr) => (
+                <>
+                  <div key={block.label} style={{ padding: '0.5rem 0.85rem', color: 'white', whiteSpace: 'nowrap', flexShrink: 0, background: block.bg }}>
+                    <div style={{ fontWeight: 600, fontSize: '0.78rem' }}>{block.label}</div>
+                    <div style={{ fontSize: '0.65rem', opacity: 0.82, marginTop: '0.1rem' }}>{block.sub}</div>
+                  </div>
+                  {i < arr.length - 1 && <span style={{ fontSize: '0.9rem', color: T.greyLine, flexShrink: 0, padding: '0 0.1rem' }}>→</span>}
+                </>
+              ))}
+              <div style={{ fontSize: '0.7rem', color: T.greyText, paddingLeft: '0.75rem', borderLeft: `1px solid ${T.greyLine}`, marginLeft: '0.5rem', lineHeight: 1.5, flexShrink: 0 }}>
+                Each type makes a stronger claim<br />and requires stronger assumptions.
+              </div>
+            </div>
+
+            {/* Drivers callout */}
+            <Alert type="blue" title="Boundary case — 'drivers' and 'risk factor' questions">
+              <p style={{ marginBottom: '0.4rem' }}>These are among the most frequently misclassified question types. The language implies causation but the methods used typically support only associational claims.</p>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.6rem', marginTop: '0.5rem' }}>
-                <div style={{ background: 'white', borderRadius: '3px', padding: '0.55rem 0.7rem', fontSize: '0.76rem', lineHeight: 1.5 }}>
-                  <div style={{ fontWeight: 600, fontSize: '0.69rem', marginBottom: '0.2rem', color: '#1a5a8a' }}>→ Prediction</div>
+                <div style={{ background: 'white', border: `1px solid ${T.greyLine}`, padding: '0.55rem 0.7rem', fontSize: '0.76rem', lineHeight: 1.5 }}>
+                  <div style={{ fontWeight: 600, fontSize: '0.69rem', marginBottom: '0.2rem', color: T.teal }}>→ Prediction</div>
                   <em>"Which factors are associated with reoffending?"</em><br />
                   Regression, descriptive modelling. Reports association.
                 </div>
-                <div style={{ background: 'white', borderRadius: '3px', padding: '0.55rem 0.7rem', fontSize: '0.76rem', lineHeight: 1.5 }}>
-                  <div style={{ fontWeight: 600, fontSize: '0.69rem', marginBottom: '0.2rem', color: '#3a1a5a' }}>→ Causal Inference</div>
+                <div style={{ background: 'white', border: `1px solid ${T.greyLine}`, padding: '0.55rem 0.7rem', fontSize: '0.76rem', lineHeight: 1.5 }}>
+                  <div style={{ fontWeight: 600, fontSize: '0.69rem', marginBottom: '0.2rem', color: T.purple25 }}>→ Causal Inference</div>
                   <em>"Does housing instability cause reoffending?"</em><br />
                   Requires a credible identification strategy.
                 </div>
               </div>
-            </div>
+            </Alert>
           </div>
-        </div>
 
-        <div style={{ marginTop: '-1rem', marginBottom: '3rem' }}>
-          <FrameworkTable data={quantData} isQuant={true} />
-        </div>
-
-        {/* T&L mapping */}
-        <div id="tl-map" style={{ marginBottom: '3.5rem', scrollMarginTop: '2rem' }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '1rem', marginBottom: '0.5rem', paddingBottom: '0.6rem', borderBottom: '2px solid #d0c9bc' }}>
-            <div style={{ width: '3px', height: '1.5rem', borderRadius: '2px', background: '#e07a2a', flexShrink: 0 }} />
-            <div>
-              <div style={{ fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#aaa', marginBottom: '0.2rem' }}>Part Three · Magenta Book Test &amp; Learn Annex (2026)</div>
-              <h2 style={{ fontSize: '1.3rem', fontWeight: 400, color: '#1a1a1a' }}>Question Types Across the Test and Learn Cycle</h2>
-            </div>
+          <div style={{ marginTop: '-1rem', marginBottom: '3rem' }}>
+            <FrameworkTable data={quantData} isQuant={true} />
           </div>
-          <p style={{ fontSize: '0.88rem', color: '#444', lineHeight: 1.65, marginBottom: '1.5rem', maxWidth: '700px' }}>
-            The Test and Learn framework organises evaluation activity around four stages: Explore, Co-design, Test, and Grow. Different question types belong at different stages.
-          </p>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0, border: '1px solid #d0c9bc', borderRadius: '6px', overflow: 'hidden', marginBottom: '1.5rem' }}>
-            {[
-              { name: 'Explore', q: 'What is the system? What is the problem?', bg: '#1a5a2a', badges: [['Systems & Complexity','#e8f4e8','#1a5a2a'],['Contextual','#e8f2fc','#1a3a5c'],['Diagnostic','#e8f7f2','#1a4a3a'],['Description','#e8f4fc','#1c3f5e']], purpose: 'Build shared understanding of the system. Map actors, relationships, feedback loops, and behavioural drivers.', methods: 'Systems mapping · Actor mapping · SSM · Stakeholder engagement · Descriptive data analysis · Behavioural diagnosis', output: 'Outputs: shared system map, behavioural analysis, evidence gaps, leverage point assessment' },
-              { name: 'Co-design', q: 'What might work? What do people need?', bg: '#1a3a6a', badges: [['Strategic','#faf5e0','#3a3a1a'],['Systems & Complexity','#e8f4e8','#1a5a2a'],['Contextual','#e8f2fc','#1a3a5c'],['Description','#e8f4fc','#1c3f5e'],['Prediction','#eaf7f2','#1a4a2a']], purpose: 'Generate and compare intervention options. Build a Theory of Change. Test paper prototypes with users and staff.', methods: 'Co-production workshops · Prototype testing · Think-aloud testing · Journey mapping · Theory of Change development', output: 'Outputs: prioritised prototypes, initial Theory of Change, refined assumptions' },
-              { name: 'Test', q: 'Are the critical assumptions holding?', bg: '#4a1a6a', badges: [['Diagnostic','#e8f7f2','#1a4a3a'],['Evaluative — Process','#f0ebfc','#3a2a5c'],['Evaluative — Impact','#fdf0e8','#4a2a1a'],['Prediction','#eaf7f2','#1a4a2a'],['Causal — Efficacy','#f0ebff','#3a1a5a']], purpose: 'Test riskiest assumptions in real-world settings. Examine whether mechanisms are operating as expected. Assess early behavioural signals.', methods: 'Qualitative sprints · A/B testing · Nimble RCTs · Mechanism experiments · Bayesian adaptive trials · Process evaluation techniques', output: 'Outputs: evidence on critical assumptions, updated ToC, decision to iterate/continue/stop' },
-              { name: 'Grow', q: 'Does it work at scale, for whom, at what cost?', bg: '#6a3a1a', badges: [['Evaluative — Process','#f0ebfc','#3a2a5c'],['Evaluative — Impact','#fdf0e8','#4a2a1a'],['Causal — Effectiveness','#f0ebff','#3a1a5a']], purpose: 'Robustly evaluate a stable, well-specified intervention. Establish whether it achieves intended outcomes, for whom, and at what cost.', methods: 'RCT · DiD · RDD · ITS · IV · Matching/PSM · Realist evaluation · Contribution analysis · Value for money analysis', output: 'Outputs: impact findings, process evaluation, VfM assessment, scale/adapt/stop recommendation' },
-            ].map(stage => (
-              <div key={stage.name} style={{ borderRight: '1px solid #d0c9bc' }}>
-                <div style={{ padding: '0.65rem 0.85rem', color: 'white', borderBottom: '1px solid rgba(255,255,255,0.2)', background: stage.bg }}>
-                  <div style={{ fontWeight: 600, fontSize: '0.85rem', marginBottom: '0.15rem' }}>{stage.name}</div>
-                  <div style={{ fontSize: '0.68rem', opacity: 0.85 }}>{stage.q}</div>
-                </div>
-                <div style={{ padding: '0.75rem 0.85rem', background: 'white' }}>
-                  <div style={{ fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#aaa', marginBottom: '0.4rem' }}>Primary question types</div>
-                  {stage.badges.map(([label, bg, fg]) => (
-                    <span key={label} style={{ display: 'inline-block', fontSize: '0.68rem', fontWeight: 500, padding: '0.15rem 0.5rem', borderRadius: '2px', margin: '0.15rem 0.15rem 0.15rem 0', lineHeight: 1.4, background: bg, color: fg }}>{label}</span>
-                  ))}
-                  <div style={{ fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#aaa', marginBottom: '0.4rem', marginTop: '0.6rem' }}>Analytical purpose</div>
-                  <div style={{ fontSize: '0.75rem', color: '#444', lineHeight: 1.55 }}>{stage.purpose}</div>
-                  <div style={{ fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#aaa', marginBottom: '0.4rem', marginTop: '0.6rem' }}>Typical methods</div>
-                  <div style={{ fontSize: '0.73rem', color: '#666', lineHeight: 1.5 }}>{stage.methods}</div>
-                  <div style={{ fontSize: '0.72rem', color: '#777', lineHeight: 1.5, marginTop: '0.6rem', fontStyle: 'italic', paddingTop: '0.5rem', borderTop: '1px solid #e0dbd2' }}>{stage.output}</div>
-                </div>
+          {/* T&L mapping */}
+          <div id="tl-map" style={{ marginBottom: '3.5rem', scrollMarginTop: '2rem' }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '1rem', marginBottom: '0.5rem', paddingBottom: '0.6rem', borderBottom: `2px solid ${T.greyLine}` }}>
+              <div style={{ width: '3px', height: '1.5rem', background: T.green, flexShrink: 0 }} />
+              <div>
+                <div style={{ fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: T.greyText, marginBottom: '0.2rem' }}>Part Three · Magenta Book Test &amp; Learn Annex (2026)</div>
+                <h2 className="govuk-heading-m" style={{ marginBottom: 0 }}>Question Types Across the Test and Learn Cycle</h2>
               </div>
-            ))}
+            </div>
+            <p className="govuk-body" style={{ maxWidth: '700px' }}>
+              The Test and Learn framework organises evaluation activity around four stages: Explore, Co-design, Test, and Grow. Different question types belong at different stages.
+            </p>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0, border: `1px solid ${T.greyLine}`, overflow: 'hidden', marginBottom: '1.5rem' }}>
+              {[
+                { name: 'Explore',   bg: T.greyText,    q: 'What is the system? What is the problem?',            badges: [['Systems & Complexity',T.greyBg,T.greyText],['Contextual',T.greyBg,T.greyText],['Diagnostic',T.greyBg,T.greyText],['Description',T.greyBg,T.greyText]], purpose: 'Build shared understanding of the system. Map actors, relationships, feedback loops, and behavioural drivers.', methods: 'Systems mapping · Actor mapping · SSM · Stakeholder engagement · Descriptive data analysis · Behavioural diagnosis', output: 'Outputs: shared system map, behavioural analysis, evidence gaps, leverage point assessment' },
+                { name: 'Co-design', bg: T.magenta25,   q: 'What might work? What do people need?',               badges: [['Strategic',T.magentaTint,T.magenta25],['Systems & Complexity',T.magentaTint,T.magenta25],['Contextual',T.magentaTint,T.magenta25],['Description',T.magentaTint,T.magenta25],['Prediction',T.magentaTint,T.magenta25]], purpose: 'Generate and compare intervention options. Build a Theory of Change. Test paper prototypes with users and staff.', methods: 'Co-production workshops · Prototype testing · Think-aloud testing · Journey mapping · Theory of Change development', output: 'Outputs: prioritised prototypes, initial Theory of Change, refined assumptions' },
+                { name: 'Test',      bg: T.purple25,    q: 'Are the critical assumptions holding?',               badges: [['Diagnostic',T.purpleTint,T.purple25],['Evaluative — Process',T.purpleTint,T.purple25],['Evaluative — Impact',T.purpleTint,T.purple25],['Prediction',T.purpleTint,T.purple25],['Causal — Efficacy',T.purpleTint,T.purple25]], purpose: 'Test riskiest assumptions in real-world settings. Examine whether mechanisms are operating as expected. Assess early behavioural signals.', methods: 'Qualitative sprints · A/B testing · Nimble RCTs · Mechanism experiments · Bayesian adaptive trials · Process evaluation techniques', output: 'Outputs: evidence on critical assumptions, updated ToC, decision to iterate/continue/stop' },
+                { name: 'Grow',      bg: T.teal25,      q: 'Does it work at scale, for whom, at what cost?',      badges: [['Evaluative — Process',T.tealTint,T.teal25],['Evaluative — Impact',T.tealTint,T.teal25],['Causal — Effectiveness',T.tealTint,T.teal25]], purpose: 'Robustly evaluate a stable, well-specified intervention. Establish whether it achieves intended outcomes, for whom, and at what cost.', methods: 'RCT · DiD · RDD · ITS · IV · Matching/PSM · Realist evaluation · Contribution analysis · Value for money analysis', output: 'Outputs: impact findings, process evaluation, VfM assessment, scale/adapt/stop recommendation' },
+              ].map(stage => (
+                <div key={stage.name} style={{ borderRight: `1px solid ${T.greyLine}` }}>
+                  <div style={{ padding: '0.65rem 0.85rem', color: 'white', borderBottom: '1px solid rgba(255,255,255,0.2)', background: stage.bg }}>
+                    <div style={{ fontWeight: 600, fontSize: '0.85rem', marginBottom: '0.15rem' }}>{stage.name}</div>
+                    <div style={{ fontSize: '0.68rem', opacity: 0.85 }}>{stage.q}</div>
+                  </div>
+                  <div style={{ padding: '0.75rem 0.85rem', background: 'white' }}>
+                    <div style={{ fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: T.greyText, marginBottom: '0.4rem' }}>Primary question types</div>
+                    {stage.badges.map(([label, bg, fg]) => (
+                      <span key={label} style={{ display: 'inline-block', fontSize: '0.68rem', fontWeight: 500, padding: '0.15rem 0.5rem', margin: '0.15rem 0.15rem 0.15rem 0', lineHeight: 1.4, background: bg, color: fg }}>{label}</span>
+                    ))}
+                    <div style={{ fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: T.greyText, marginBottom: '0.4rem', marginTop: '0.6rem' }}>Analytical purpose</div>
+                    <div style={{ fontSize: '0.75rem', color: T.greyText, lineHeight: 1.55 }}>{stage.purpose}</div>
+                    <div style={{ fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: T.greyText, marginBottom: '0.4rem', marginTop: '0.6rem' }}>Typical methods</div>
+                    <div style={{ fontSize: '0.73rem', color: T.greyText, lineHeight: 1.5 }}>{stage.methods}</div>
+                    <div style={{ fontSize: '0.72rem', color: T.greyText, lineHeight: 1.5, marginTop: '0.6rem', fontStyle: 'italic', paddingTop: '0.5rem', borderTop: `1px solid ${T.greyLine}` }}>{stage.output}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <Alert type="yellow" title="On causal inference across stages">
+              The identification standard for causal questions does not relax at the Test stage. A nimble RCT, A/B test, or mechanism experiment still requires a valid identification strategy — what changes is the <em>estimand</em> (a specific component or mechanism rather than whole-programme effectiveness) and the <em>decision it informs</em>.
+            </Alert>
           </div>
 
-          <div style={{ background: '#fdf6ee', border: '1px solid #e8d5b8', borderRadius: '4px', padding: '0.6rem 0.85rem', fontSize: '0.75rem', lineHeight: 1.55, color: '#7a5a2a', display: 'flex', gap: '0.5rem' }}>
-            <span>⚠</span>
-            <span><strong>On causal inference across stages:</strong> The identification standard for causal questions does not relax at the Test stage. A nimble RCT, A/B test, or mechanism experiment still requires a valid identification strategy — what changes is the <em>estimand</em> (a specific component or mechanism rather than whole-programme effectiveness) and the <em>decision it informs</em>.</span>
+          {/* Footer */}
+          <div style={{ marginTop: '3rem', paddingTop: '1rem', borderTop: `1px solid ${T.greyLine}`, display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
+            <p className="govuk-body-s" style={{ color: T.greyText }}><strong>Qualitative references:</strong> Ritchie &amp; Lewis (2003); Pawson &amp; Tilley (1997); Mayne (2001); Mason (2002); Checkland (2000)</p>
+            <p className="govuk-body-s" style={{ color: T.greyText }}><strong>Quantitative references:</strong> Herman &amp; Hsu (2017); Hernán &amp; Robins (2020); Angrist &amp; Pischke (2009); Huntington-Klein (2021)</p>
+            <p className="govuk-body-s" style={{ color: T.greyText }}><strong>Policy cycle:</strong> HM Treasury Magenta Book (2020); Test and Learn Annex (2026); Nesta Test and Learn Playbook</p>
           </div>
-        </div>
 
-        {/* Footer */}
-        <div style={{ marginTop: '3rem', paddingTop: '1rem', borderTop: '1px solid #d0c9bc', fontSize: '0.73rem', color: '#999', display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
-          <div><strong style={{ color: '#666' }}>Qualitative references:</strong> Ritchie &amp; Lewis (2003); Pawson &amp; Tilley (1997); Mayne (2001); Mason (2002); Checkland (2000)</div>
-          <div><strong style={{ color: '#666' }}>Quantitative references:</strong> Herman &amp; Hsu (2017); Hernán &amp; Robins (2020); Angrist &amp; Pischke (2009); Huntington-Klein (2021)</div>
-          <div><strong style={{ color: '#666' }}>Policy cycle:</strong> HM Treasury Magenta Book (2020); Test and Learn Annex (2026); Nesta Test and Learn Playbook</div>
-        </div>
-      </main>
+          <NavButtons>
+            <Button variant="secondary" onClick={() => navigate('/')}>← Home</Button>
+          </NavButtons>
+        </main>
+      </div>
     </div>
   )
 }

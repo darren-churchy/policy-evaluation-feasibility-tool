@@ -40,7 +40,7 @@ export default defineConfig({
         short_name: 'Eval Feasibility',
         description: 'Decision-support tool for assessing impact evaluation design feasibility.',
         theme_color: '#54319f',
-        background_color: '#f3f2f1',
+        background_color: '#54319f',
         display: 'standalone',
         orientation: 'any',
         scope: `/${REPO_NAME}/`,
