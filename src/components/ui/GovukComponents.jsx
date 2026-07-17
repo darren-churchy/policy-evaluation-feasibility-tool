@@ -172,6 +172,24 @@ export function Button({ onClick, children, variant = 'primary', disabled = fals
   )
 }
 
+// ── T&L Stage Badge ───────────────────────────────────────────────────────────
+
+const TL_STAGE_STYLES = {
+  Test:        { background: T.purpleTint,  color: T.purple25  },
+  Grow:        { background: T.tealTint,    color: T.teal25    },
+  Explore:     { background: T.greyBg,      color: T.greyText  },
+  'Co-design': { background: T.magentaTint, color: T.magenta25 },
+}
+
+export function TlBadge({ stage }) {
+  const s = TL_STAGE_STYLES[stage] ?? { background: T.greyBg, color: T.greyText }
+  return (
+    <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 8px', ...s }}>
+      {stage}
+    </span>
+  )
+}
+
 // ── MoJ Badge ─────────────────────────────────────────────────────────────────
 
 export function Badge({ label }) {

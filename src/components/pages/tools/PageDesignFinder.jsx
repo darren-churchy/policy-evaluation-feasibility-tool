@@ -3,22 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { QUESTIONS, FAMILIES, BAYES_BULLETS } from '../../../data/designFinderData.js'
 import { downloadToolResult } from '../../../utils/exportToolResult.js'
 import { T } from '../../../styles/tokens.js'
-
-const TL_STYLES = {
-  Test:        { background: T.purpleTint,  color: T.purple25  },
-  Grow:        { background: T.tealTint,    color: T.teal25    },
-  Explore:     { background: T.greyBg,      color: T.greyText  },
-  'Co-design': { background: T.magentaTint, color: T.magenta25 },
-}
-
-function TlBadge({ stage }) {
-  const s = TL_STYLES[stage] || {}
-  return (
-    <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '2px', ...s }}>
-      {stage}
-    </span>
-  )
-}
+import { TlBadge, Alert, Button, NavButtons } from '../../ui/GovukComponents.jsx'
 
 function inferTLStage(a) {
   if (a.q_scale === 'yes' && a.q_defined === 'yes' && a.q_toc === 'yes') {
@@ -258,13 +243,15 @@ export default function PageDesignFinder() {
           <p style={{ fontSize: '16px', color: T.greyText, lineHeight: 1.7, marginBottom: '20px' }}>
             Answer 10–12 questions about your intervention, data, and context. In about 3 minutes you'll receive a shortlist of the most promising evaluation design families to explore — along with the key questions to investigate before committing to a design.
           </p>
-          <div style={{ background: T.purpleTint, borderLeft: `4px solid ${T.purple}`, padding: '14px 18px', marginBottom: '28px', fontSize: '13px', color: T.ink, lineHeight: 1.6 }}>
-            <strong>Where this tool fits.</strong> This tool is for impact evaluation — causal questions about whether an intervention works. It is most appropriate at the <strong>Test</strong> or <strong>Grow</strong> stages of the Magenta Book Test and Learn cycle, once your intervention is defined, has a theory of change, and is running at sufficient scale.
-            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: '8px', alignItems: 'center' }}>
-              <span style={{ fontSize: '12px', color: T.greyText }}>T&amp;L stages covered:&nbsp;</span>
-              <TlBadge stage="Test" /><TlBadge stage="Grow" />
-            </div>
-            <div style={{ marginTop: '8px', fontSize: '12px', color: T.greyText }}>At the <strong>Explore</strong> or <strong>Co-design</strong> stage, start with the <em>Research Question Framework</em> or the decision trees to clarify your question type before selecting a design.</div>
+          <div style={{ marginBottom: '28px' }}>
+            <Alert type="blue" title="Where this tool fits">
+              This tool is for impact evaluation — causal questions about whether an intervention works. It is most appropriate at the <strong>Test</strong> or <strong>Grow</strong> stages of the Magenta Book Test and Learn cycle, once your intervention is defined, has a theory of change, and is running at sufficient scale.
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: '8px', alignItems: 'center' }}>
+                <span style={{ fontSize: '12px', color: T.greyText }}>T&amp;L stages covered:&nbsp;</span>
+                <TlBadge stage="Test" /><TlBadge stage="Grow" />
+              </div>
+              <div style={{ marginTop: '8px', fontSize: '12px', color: T.greyText }}>At the <strong>Explore</strong> or <strong>Co-design</strong> stage, start with the <em>Research Question Framework</em> or the decision trees to clarify your question type before selecting a design.</div>
+            </Alert>
           </div>
           <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', marginBottom: '36px' }}>
             {['10–12 questions','~3 minutes','No login required'].map(item => (
@@ -383,10 +370,9 @@ export default function PageDesignFinder() {
       {/* ── RESULT: not ready ── */}
       {phase === 'result' && result && result.type === 'notready' && (
         <div style={{ width: '100%', maxWidth: '760px', margin: '0 auto', padding: '40px 16px 64px' }}>
-          <div style={{ background: T.magentaTint, padding: '28px 32px', marginBottom: '24px', borderLeft: `6px solid ${T.magenta}` }}>
-            <h2 style={{ fontSize: '22px', fontWeight: 700, color: T.ink, marginBottom: '8px' }}>Impact evaluation is premature at this stage</h2>
-            <p style={{ fontSize: '14px', color: T.ink, lineHeight: 1.6 }}>One or more critical readiness conditions are not yet met. Evaluating impact before these conditions are in place risks producing findings that reflect the immaturity of the intervention rather than its true effectiveness.</p>
-          </div>
+          <Alert type="yellow" title="Impact evaluation is premature at this stage">
+            One or more critical readiness conditions are not yet met. Evaluating impact before these conditions are in place risks producing findings that reflect the immaturity of the intervention rather than its true effectiveness.
+          </Alert>
 
           {result.failures.map(f => (
             <div key={f.id} style={{ background: '#fff', border: `1px solid ${T.greyLine}`, borderLeft: `5px solid ${T.magenta}`, padding: '22px 24px', boxShadow: '0 1px 3px rgba(0,0,0,.05)', marginBottom: '16px' }}>
@@ -424,11 +410,10 @@ export default function PageDesignFinder() {
             <p style={{ fontSize: '13px', color: 'rgba(255,255,255,.8)', lineHeight: 1.6 }}>Once the intervention is clearly defined, has a theory of change, and is operating at sufficient scale (Test or Grow stage), return to this tool to identify the most promising impact evaluation designs.</p>
           </div>
 
-          <div style={{ textAlign: 'center', marginTop: '32px' }}>
-            <button onClick={restart} style={{ background: 'none', border: 'none', fontFamily: 'inherit', fontSize: '13px', color: T.greyText, cursor: 'pointer', textDecoration: 'underline' }}>
-              ← Start again with different answers
-            </button>
-          </div>
+          <NavButtons>
+            <Button variant="secondary" onClick={restart}>↩ Start again with different answers</Button>
+            <Button variant="secondary" onClick={() => navigate('/')}>← Home</Button>
+          </NavButtons>
         </div>
       )}
 
@@ -445,53 +430,42 @@ export default function PageDesignFinder() {
             </div>
 
             {/* T&L stage panel */}
-            <div style={{ background: T.purpleTint, borderLeft: `4px solid ${T.purple}`, padding: '18px 22px', marginBottom: '24px', display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
-              <div style={{ fontSize: '20px', flexShrink: 0 }}>📋</div>
-              <div>
-                <h3 style={{ fontSize: '13px', fontWeight: 700, color: T.purple25, marginBottom: '4px' }}>Magenta Book Test and Learn stage</h3>
-                <p style={{ fontSize: '13px', color: T.ink, lineHeight: 1.6, marginBottom: '8px' }} dangerouslySetInnerHTML={{ __html: tlInfo.note }} />
-                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                  {tlInfo.stages.map(s => <TlBadge key={s} stage={s} />)}
-                </div>
+            <Alert type="blue" title="Magenta Book Test and Learn stage">
+              <p style={{ marginBottom: '8px' }} dangerouslySetInnerHTML={{ __html: tlInfo.note }} />
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                {tlInfo.stages.map(s => <TlBadge key={s} stage={s} />)}
               </div>
-            </div>
+            </Alert>
 
             {/* Constraint callout */}
             {constraintInfo && (
-              <div style={{ background: T.purpleTint, borderLeft: `4px solid ${T.purple}`, padding: '18px 22px', marginBottom: '24px', display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
-                <div style={{ fontSize: '20px', flexShrink: 0 }}>{constraintInfo.icon}</div>
-                <div>
-                  {constraintInfo.title && <h3 style={{ fontSize: '14px', fontWeight: 700, color: T.purple25, marginBottom: '4px' }}>{constraintInfo.title}</h3>}
-                  <p style={{ fontSize: '13px', color: T.ink, lineHeight: 1.6 }} dangerouslySetInnerHTML={{ __html: constraintInfo.body }} />
-                </div>
-              </div>
+              <Alert type="blue" title={constraintInfo.title || undefined}>
+                <p dangerouslySetInnerHTML={{ __html: constraintInfo.body }} />
+              </Alert>
             )}
 
             {/* Bayesian callout */}
             {showBayes && (
-              <div style={{ background: T.purpleTint, border: `1px solid ${T.purpleTintMid}`, borderLeft: `4px solid ${T.purple}`, padding: '16px 20px', marginBottom: '24px' }}>
-                <h3 style={{ fontSize: '13px', fontWeight: 700, color: T.purple25, marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>𝔅 Consider Bayesian analysis approaches</h3>
-                <p style={{ fontSize: '13px', color: T.purple25, lineHeight: 1.6, marginBottom: '8px' }}>
+              <Alert type="blue" title="Consider Bayesian analysis approaches">
+                <p style={{ marginBottom: '8px' }}>
                   {a.q_sample === 'tiny'
                     ? 'With a very small sample, classical frequentist methods will have very limited power and wide confidence intervals. Bayesian analysis is particularly valuable here: it can incorporate prior information from similar interventions or contexts, produce honest posterior uncertainty rather than binary significance decisions, and update as data accumulate.'
                     : 'With a small sample (20–99 units), statistical power will be a constraint for all designs. Bayesian approaches offer two concrete advantages: informative priors from prior evidence can improve precision without additional data collection; and Bayesian adaptive designs (for RCTs) can stop early for efficacy or futility, reducing sample requirements.'}
                 </p>
-                <ul style={{ fontSize: '13px', color: T.purple25, paddingLeft: '18px', lineHeight: 1.75, marginTop: '6px' }}>
+                <ul style={{ paddingLeft: '18px', lineHeight: 1.75, marginTop: '6px' }}>
                   <li>Ask your statistician whether informative priors are defensible from existing evidence on similar interventions</li>
                   <li>For RCTs: consider whether a Bayesian adaptive design or sequential analysis is appropriate</li>
                   <li>For observational methods: Bayesian sensitivity analysis for unmeasured confounding provides a more honest quantification of uncertainty</li>
                   <li>Note that Bayesian results (posterior distributions, credible intervals) require different communication to decision-makers than p-values and confidence intervals</li>
                 </ul>
-              </div>
+              </Alert>
             )}
 
             {/* Warnings */}
             {warnings.length > 0 && (
               <div style={{ marginBottom: '20px' }}>
                 {warnings.map((w, i) => (
-                  <div key={i} style={{ background: '#fff', border: `1px solid ${T.greyLine}`, borderLeft: `5px solid ${T.magenta}`, padding: '14px 18px', marginBottom: '10px', fontSize: '13px', color: T.greyText, lineHeight: 1.6 }}>
-                    ⚠ {w}
-                  </div>
+                  <Alert key={i} type="yellow">{w}</Alert>
                 ))}
               </div>
             )}
@@ -597,13 +571,12 @@ export default function PageDesignFinder() {
               </div>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px', flexWrap: 'wrap', marginTop: '32px', paddingBottom: '8px' }}>
-              <button
-                onClick={() => {
-                  const breadcrumb = QUESTIONS
-                    .filter(q => answers[q.id] !== undefined)
-                    .map(q => ({ question: QLAB[q.id] || q.heading, chosen: q.options.find(o => o.value === answers[q.id])?.label || answers[q.id] }))
-                  const resultHtml = `
+            <NavButtons>
+              <Button variant="moj" onClick={() => {
+                const breadcrumb = QUESTIONS
+                  .filter(q => answers[q.id] !== undefined)
+                  .map(q => ({ question: QLAB[q.id] || q.heading, chosen: q.options.find(o => o.value === answers[q.id])?.label || answers[q.id] }))
+                const resultHtml = `
 <h2 style="font-size:18px">Your evaluation design shortlist</h2>
 <p>${sorted.length} design ${sorted.length === 1 ? 'family' : 'families'} recommended based on your answers.</p>
 ${sorted.map(([key, priority]) => `
@@ -616,16 +589,11 @@ ${Object.keys(removed).length > 0 ? `
 <h3 style="font-size:14px;margin-top:24px">Removed from consideration</h3>
 <ul>${Object.entries(removed).map(([key, reason]) => `<li>${FAMILIES[key].name} — ${reason}</li>`).join('')}</ul>` : ''}
 <p style="margin-top:20px"><strong>Suggested T&amp;L stage:</strong> ${tlInfo.stages.join(', ')}</p>`
-                  downloadToolResult({ toolName: 'Evaluation Design Finder', breadcrumb, resultHtml })
-                }}
-                style={{ background: T.purple, color: '#fff', border: 'none', fontFamily: 'inherit', fontSize: '13px', fontWeight: 600, padding: '9px 18px', cursor: 'pointer' }}
-              >
-                ↓ Download summary
-              </button>
-              <button onClick={restart} style={{ background: 'none', border: 'none', fontFamily: 'inherit', fontSize: '13px', color: T.greyText, cursor: 'pointer', textDecoration: 'underline' }}>
-                ← Start again with different answers
-              </button>
-            </div>
+                downloadToolResult({ toolName: 'Evaluation Design Finder', breadcrumb, resultHtml })
+              }}>↓ Download summary</Button>
+              <Button variant="secondary" onClick={restart}>↩ Start again</Button>
+              <Button variant="secondary" onClick={() => navigate('/')}>← Home</Button>
+            </NavButtons>
           </div>
         )
       })()}
