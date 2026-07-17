@@ -191,7 +191,7 @@ export default function Page7({ inputs, set, gatePassed }) {
             ]} inline />
 
           <When condition={inputs.p7_analysis === 'freq'}>
-            <div style={{ borderLeft: '4px solid #1d70b8', padding: '16px 20px', background: '#e8f0fb', marginBottom: '16px' }}>
+            <div style={{ borderLeft: `4px solid ${T.teal}`, padding: '16px 20px', background: T.tealTint, marginBottom: '16px' }}>
               <h4 className="govuk-heading-s" style={{ marginTop: 0 }}>Frequentist Analysis</h4>
               <RadioQuestion id="p7_freq_alpha"
                 label="What significance threshold will you use?"

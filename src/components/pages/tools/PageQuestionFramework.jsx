@@ -17,7 +17,7 @@ const TL_STYLES = {
 function TlTag({ stage }) {
   return (
     <span style={{
-      fontFamily: "'DM Sans', sans-serif", fontSize: '0.65rem', fontWeight: 600,
+      fontSize: '0.65rem', fontWeight: 600,
       padding: '0.15rem 0.4rem', borderRadius: '2px', textAlign: 'center',
       display: 'inline-block', marginBottom: '0.25rem', marginRight: '0.15rem',
       ...(TL_STYLES[stage] || {}),
@@ -95,11 +95,11 @@ function FrameworkTable({ data, isQuant }) {
                 <div style={{ fontFamily: "'Source Serif 4', Georgia, serif", fontWeight: 600, fontSize: '0.9rem', color: row.color, marginBottom: '0.2rem', lineHeight: 1.3 }}>
                   {row.type}
                 </div>
-                <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.68rem', display: 'inline-block', padding: '0.12rem 0.45rem', borderRadius: '2px', background: ab, color: row.color, border: `1px solid ${abo}`, marginTop: '0.2rem' }}>
+                <span style={{ fontSize: '0.68rem', display: 'inline-block', padding: '0.12rem 0.45rem', borderRadius: '2px', background: ab, color: row.color, border: `1px solid ${abo}`, marginTop: '0.2rem' }}>
                   {row.signal}
                 </span>
                 {isQuant && (
-                  <div style={{ marginTop: '0.35rem', fontFamily: "'DM Sans', sans-serif", fontSize: '0.68rem', color: '#888' }}>
+                  <div style={{ marginTop: '0.35rem', fontSize: '0.68rem', color: '#888' }}>
                     {claimDotsHtml(row.claimDots, row.accent)}
                     {row.claimDots === 3 ? 'Causal' : row.claimDots === 2 ? 'Associational' : 'Descriptive'} claim
                   </div>
@@ -111,19 +111,19 @@ function FrameworkTable({ data, isQuant }) {
                 </div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem' }}>
                   {row.signalPhrases.map((p, pi) => (
-                    <span key={pi} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.68rem', background: '#e0dbd2', color: '#555', padding: '0.1rem 0.45rem', borderRadius: '2px', fontStyle: 'italic' }}>
+                    <span key={pi} style={{ fontSize: '0.68rem', background: '#e0dbd2', color: '#555', padding: '0.1rem 0.45rem', borderRadius: '2px', fontStyle: 'italic' }}>
                       {p}
                     </span>
                   ))}
                 </div>
               </div>
               <div>
-                <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.78rem', fontWeight: 600, color: row.color, marginBottom: '0.15rem', lineHeight: 1.3 }}
+                <div style={{ fontSize: '0.78rem', fontWeight: 600, color: row.color, marginBottom: '0.15rem', lineHeight: 1.3 }}
                   dangerouslySetInnerHTML={{ __html: row.evalHome }} />
-                <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.68rem', color: '#777', lineHeight: 1.35 }}>
+                <div style={{ fontSize: '0.68rem', color: '#777', lineHeight: 1.35 }}>
                   {row.evalNote}
                 </div>
-                <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.67rem', color: '#999', textDecoration: 'underline', marginTop: '0.35rem', display: 'block' }}>
+                <span style={{ fontSize: '0.67rem', color: '#999', textDecoration: 'underline', marginTop: '0.35rem', display: 'block' }}>
                   {isActive ? '▲ collapse' : '▼ expand'}
                 </span>
               </div>
@@ -146,7 +146,7 @@ function FrameworkTable({ data, isQuant }) {
               }}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
                   <div>
-                    <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.63rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#999', marginBottom: '0.6rem' }}>
+                    <div style={{ fontSize: '0.63rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#999', marginBottom: '0.6rem' }}>
                       {isQuant ? 'Methods & Designs' : 'Qualitative Approaches'}
                     </div>
                     {methods.map((m, mi) => (
@@ -154,7 +154,7 @@ function FrameworkTable({ data, isQuant }) {
                         <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: row.accent, flexShrink: 0, marginTop: '6px' }} />
                         <div>
                           <span style={{ fontSize: '0.85rem', fontWeight: 600, color: row.color, display: 'block' }}>{m.name}</span>
-                          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.74rem', color: '#666', lineHeight: 1.35 }}>
+                          <span style={{ fontSize: '0.74rem', color: '#666', lineHeight: 1.35 }}>
                             {isQuant ? m.note : '— ' + m.note}
                           </span>
                         </div>
@@ -169,8 +169,8 @@ function FrameworkTable({ data, isQuant }) {
                   <div>
                     {isQuant ? (
                       <>
-                        <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.63rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#999', marginBottom: '0.6rem' }}>Key Assumptions</div>
-                        <div style={{ background: '#f0f4fa', border: '1px solid #c0d0e8', borderRadius: '4px', padding: '0.65rem 0.85rem', fontFamily: "'DM Sans', sans-serif", fontSize: '0.76rem', lineHeight: 1.5, color: '#2a3a5a' }}>
+                        <div style={{ fontSize: '0.63rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#999', marginBottom: '0.6rem' }}>Key Assumptions</div>
+                        <div style={{ background: '#f0f4fa', border: '1px solid #c0d0e8', borderRadius: '4px', padding: '0.65rem 0.85rem', fontSize: '0.76rem', lineHeight: 1.5, color: '#2a3a5a' }}>
                           {row.assumptions.map((a, ai) => (
                             <div key={ai} style={{ display: 'flex', gap: '0.4rem', marginBottom: '0.25rem', alignItems: 'flex-start', fontSize: '0.75rem' }}>
                               <span style={{ color: row.accent, flexShrink: 0 }}>▸</span>
@@ -179,7 +179,7 @@ function FrameworkTable({ data, isQuant }) {
                           ))}
                         </div>
                         {row.extraNote && (
-                          <div style={{ marginTop: '0.75rem', background: '#f4f0fa', border: '1px solid #c8b8e8', borderRadius: '4px', padding: '0.6rem 0.85rem', fontFamily: "'DM Sans', sans-serif", fontSize: '0.76rem', color: '#3a2a5a', lineHeight: 1.55 }}>
+                          <div style={{ marginTop: '0.75rem', background: '#f4f0fa', border: '1px solid #c8b8e8', borderRadius: '4px', padding: '0.6rem 0.85rem', fontSize: '0.76rem', color: '#3a2a5a', lineHeight: 1.55 }}>
                             <strong>Efficacy vs Effectiveness:</strong> {row.extraNote}
                           </div>
                         )}
@@ -189,7 +189,7 @@ function FrameworkTable({ data, isQuant }) {
                       </>
                     ) : (
                       <>
-                        <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.63rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#999', marginBottom: '0.6rem' }}>Common Commissioning Pitfall</div>
+                        <div style={{ fontSize: '0.63rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#999', marginBottom: '0.6rem' }}>Common Commissioning Pitfall</div>
                         <div style={{ background: '#fdf6ee', border: '1px solid #e8d5b8', borderRadius: '4px', padding: '0.65rem 0.85rem', fontSize: '0.82rem', lineHeight: 1.55, color: '#555', fontStyle: 'italic' }}>
                           "{row.weakness}"
                         </div>
@@ -251,8 +251,8 @@ export default function PageQuestionFramework() {
         display: 'flex', flexDirection: 'column', flexShrink: 0,
       }}>
         <div style={{ padding: '1.25rem 1rem 0.75rem', borderBottom: '1px solid rgba(255,255,255,0.1)', marginBottom: '0.5rem' }}>
-          <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.6rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: '0.3rem' }}>Analytical Framework</div>
-          <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.82rem', fontWeight: 600, color: 'rgba(255,255,255,0.9)', lineHeight: 1.3 }}>Research Question Typology</div>
+          <div style={{ fontSize: '0.6rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: '0.3rem' }}>Analytical Framework</div>
+          <div style={{ fontSize: '0.82rem', fontWeight: 600, color: 'rgba(255,255,255,0.9)', lineHeight: 1.3 }}>Research Question Typology</div>
         </div>
 
         {(() => {
@@ -262,7 +262,7 @@ export default function PageQuestionFramework() {
             return (
               <div key={item.target}>
                 {sectionLabel && (
-                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.6rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', padding: '0.75rem 1rem 0.3rem' }}>
+                  <div style={{ fontSize: '0.6rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', padding: '0.75rem 1rem 0.3rem' }}>
                     {i > 0 && <div style={{ height: '1px', background: 'rgba(255,255,255,0.08)', marginBottom: '0.75rem', marginTop: '-0.3rem' }} />}
                     {sectionLabel}
                   </div>
@@ -272,7 +272,7 @@ export default function PageQuestionFramework() {
                   style={{
                     display: 'flex', alignItems: 'center', gap: '0.5rem',
                     padding: '0.4rem 1rem', width: '100%', textAlign: 'left',
-                    fontFamily: "'DM Sans', sans-serif", fontSize: '0.78rem',
+                    fontSize: '0.78rem',
                     color: activeSection === item.target ? '#fff' : 'rgba(255,255,255,0.6)',
                     background: activeSection === item.target ? 'rgba(255,255,255,0.08)' : 'none',
                     border: 'none', borderLeft: `3px solid ${activeSection === item.target ? item.accent : 'transparent'}`,
@@ -287,7 +287,7 @@ export default function PageQuestionFramework() {
           })
         })()}
 
-        <div style={{ marginTop: 'auto', padding: '0.75rem 1rem', fontFamily: "'DM Sans', sans-serif", fontSize: '0.62rem', color: 'rgba(255,255,255,0.25)', borderTop: '1px solid rgba(255,255,255,0.08)', lineHeight: 1.5 }}>
+        <div style={{ marginTop: 'auto', padding: '0.75rem 1rem', fontSize: '0.62rem', color: 'rgba(255,255,255,0.25)', borderTop: '1px solid rgba(255,255,255,0.08)', lineHeight: 1.5 }}>
           Magenta Book (2020, updated 2026)<br />
           Test &amp; Learn Annex (2026)<br />
           Ritchie &amp; Lewis (2003)<br />
@@ -300,14 +300,14 @@ export default function PageQuestionFramework() {
 
         {/* Cover */}
         <div id="cover" style={{ borderLeft: '4px solid #1c3f5e', paddingLeft: '1.5rem', marginBottom: '2.5rem', paddingBottom: '2rem', borderBottom: '1px solid #d0c9bc', scrollMarginTop: '2rem' }}>
-          <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#777', marginBottom: '0.5rem' }}>Analytical Framework</div>
+          <div style={{ fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#777', marginBottom: '0.5rem' }}>Analytical Framework</div>
           <h1 style={{ fontSize: '1.9rem', fontWeight: 300, lineHeight: 1.2, color: '#1a1a1a', marginBottom: '0.6rem' }}>A Typology of Research Questions</h1>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.9rem', color: '#444', maxWidth: '620px', lineHeight: 1.65, marginBottom: '1.25rem' }}>
+          <p style={{ fontSize: '0.9rem', color: '#444', maxWidth: '620px', lineHeight: 1.65, marginBottom: '1.25rem' }}>
             A combined qualitative and quantitative framework for classifying research questions, selecting appropriate methods, and locating analytical work within the Magenta Book Test and Learn policy cycle. Updated to reflect the Test and Learn Annex (May 2026).
           </p>
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
             {['Click any row to expand methods & assumptions', 'Qual: Ritchie & Lewis (2003) extended', 'Quant: Herman & Hsu (2017) extended', 'T&L: Magenta Book Annex (2026)'].map(tag => (
-              <span key={tag} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.72rem', color: '#555', background: '#e0dbd2', padding: '0.2rem 0.6rem', borderRadius: '2px' }}>{tag}</span>
+              <span key={tag} style={{ fontSize: '0.72rem', color: '#555', background: '#e0dbd2', padding: '0.2rem 0.6rem', borderRadius: '2px' }}>{tag}</span>
             ))}
           </div>
         </div>
@@ -317,11 +317,11 @@ export default function PageQuestionFramework() {
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '1rem', marginBottom: '0.5rem', paddingBottom: '0.6rem', borderBottom: '2px solid #d0c9bc' }}>
             <div style={{ width: '3px', height: '1.5rem', borderRadius: '2px', background: '#4a9eda', flexShrink: 0 }} />
             <div>
-              <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#aaa', marginBottom: '0.2rem' }}>Part One</div>
+              <div style={{ fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#aaa', marginBottom: '0.2rem' }}>Part One</div>
               <h2 style={{ fontSize: '1.3rem', fontWeight: 400, color: '#1a1a1a' }}>Qualitative Research Questions</h2>
             </div>
           </div>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.88rem', color: '#444', lineHeight: 1.65, marginBottom: '1.25rem', maxWidth: '700px' }}>
+          <p style={{ fontSize: '0.88rem', color: '#444', lineHeight: 1.65, marginBottom: '1.25rem', maxWidth: '700px' }}>
             Six question types distinguished by the kind of claim being made, not the topic. Positioned within the Test and Learn framework from Explore through to Grow. Qualitative work is not confined to process evaluation — evaluative-impact questions have legitimate qualitative homes.
           </p>
         </div>
@@ -335,11 +335,11 @@ export default function PageQuestionFramework() {
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '1rem', marginBottom: '0.5rem', paddingBottom: '0.6rem', borderBottom: '2px solid #d0c9bc' }}>
             <div style={{ width: '3px', height: '1.5rem', borderRadius: '2px', background: '#3a80b8', flexShrink: 0 }} />
             <div>
-              <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#aaa', marginBottom: '0.2rem' }}>Part Two</div>
+              <div style={{ fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#aaa', marginBottom: '0.2rem' }}>Part Two</div>
               <h2 style={{ fontSize: '1.3rem', fontWeight: 400, color: '#1a1a1a' }}>Quantitative Research Questions</h2>
             </div>
           </div>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.88rem', color: '#444', lineHeight: 1.65, marginBottom: '1.25rem', maxWidth: '700px' }}>
+          <p style={{ fontSize: '0.88rem', color: '#444', lineHeight: 1.65, marginBottom: '1.25rem', maxWidth: '700px' }}>
             Three question types forming a hierarchy of claim strength. Each stronger type requires a stronger identification strategy to support it.
           </p>
 
@@ -352,19 +352,19 @@ export default function PageQuestionFramework() {
             ].map((block, i, arr) => (
               <>
                 <div key={block.label} style={{ padding: '0.5rem 0.85rem', color: 'white', whiteSpace: 'nowrap', flexShrink: 0, background: block.bg }}>
-                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: '0.78rem' }}>{block.label}</div>
-                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.65rem', opacity: 0.82, marginTop: '0.1rem' }}>{block.sub}</div>
+                  <div style={{ fontWeight: 600, fontSize: '0.78rem' }}>{block.label}</div>
+                  <div style={{ fontSize: '0.65rem', opacity: 0.82, marginTop: '0.1rem' }}>{block.sub}</div>
                 </div>
                 {i < arr.length - 1 && <span style={{ fontSize: '0.9rem', color: '#bbb', flexShrink: 0, padding: '0 0.1rem' }}>→</span>}
               </>
             ))}
-            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.7rem', color: '#777', paddingLeft: '0.75rem', borderLeft: '1px solid #d0c9bc', marginLeft: '0.5rem', lineHeight: 1.5, flexShrink: 0 }}>
+            <div style={{ fontSize: '0.7rem', color: '#777', paddingLeft: '0.75rem', borderLeft: '1px solid #d0c9bc', marginLeft: '0.5rem', lineHeight: 1.5, flexShrink: 0 }}>
               Each type makes a stronger claim<br />and requires stronger assumptions.
             </div>
           </div>
 
           {/* Drivers callout */}
-          <div style={{ background: '#f4f0fa', border: '1px solid #c8b8e8', borderLeft: '4px solid #7a5aba', borderRadius: '0 4px 4px 0', padding: '0.85rem 1rem', fontFamily: "'DM Sans', sans-serif", fontSize: '0.82rem', lineHeight: 1.6, color: '#3a2a5a', margin: '0.75rem 0 1.25rem', display: 'flex', gap: '0.75rem' }}>
+          <div style={{ background: '#f4f0fa', border: '1px solid #c8b8e8', borderLeft: '4px solid #7a5aba', borderRadius: '0 4px 4px 0', padding: '0.85rem 1rem', fontSize: '0.82rem', lineHeight: 1.6, color: '#3a2a5a', margin: '0.75rem 0 1.25rem', display: 'flex', gap: '0.75rem' }}>
             <span style={{ flexShrink: 0 }}>⬧</span>
             <div>
               <p style={{ color: '#3a2a5a', marginBottom: '0.4rem' }}><strong>Boundary case — "drivers" and "risk factor" questions</strong></p>
@@ -394,11 +394,11 @@ export default function PageQuestionFramework() {
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '1rem', marginBottom: '0.5rem', paddingBottom: '0.6rem', borderBottom: '2px solid #d0c9bc' }}>
             <div style={{ width: '3px', height: '1.5rem', borderRadius: '2px', background: '#e07a2a', flexShrink: 0 }} />
             <div>
-              <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#aaa', marginBottom: '0.2rem' }}>Part Three · Magenta Book Test &amp; Learn Annex (2026)</div>
+              <div style={{ fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#aaa', marginBottom: '0.2rem' }}>Part Three · Magenta Book Test &amp; Learn Annex (2026)</div>
               <h2 style={{ fontSize: '1.3rem', fontWeight: 400, color: '#1a1a1a' }}>Question Types Across the Test and Learn Cycle</h2>
             </div>
           </div>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.88rem', color: '#444', lineHeight: 1.65, marginBottom: '1.5rem', maxWidth: '700px' }}>
+          <p style={{ fontSize: '0.88rem', color: '#444', lineHeight: 1.65, marginBottom: '1.5rem', maxWidth: '700px' }}>
             The Test and Learn framework organises evaluation activity around four stages: Explore, Co-design, Test, and Grow. Different question types belong at different stages.
           </p>
 
@@ -411,32 +411,32 @@ export default function PageQuestionFramework() {
             ].map(stage => (
               <div key={stage.name} style={{ borderRight: '1px solid #d0c9bc' }}>
                 <div style={{ padding: '0.65rem 0.85rem', color: 'white', borderBottom: '1px solid rgba(255,255,255,0.2)', background: stage.bg }}>
-                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: '0.85rem', marginBottom: '0.15rem' }}>{stage.name}</div>
-                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.68rem', opacity: 0.85 }}>{stage.q}</div>
+                  <div style={{ fontWeight: 600, fontSize: '0.85rem', marginBottom: '0.15rem' }}>{stage.name}</div>
+                  <div style={{ fontSize: '0.68rem', opacity: 0.85 }}>{stage.q}</div>
                 </div>
                 <div style={{ padding: '0.75rem 0.85rem', background: 'white' }}>
-                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#aaa', marginBottom: '0.4rem' }}>Primary question types</div>
+                  <div style={{ fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#aaa', marginBottom: '0.4rem' }}>Primary question types</div>
                   {stage.badges.map(([label, bg, fg]) => (
-                    <span key={label} style={{ display: 'inline-block', fontFamily: "'DM Sans', sans-serif", fontSize: '0.68rem', fontWeight: 500, padding: '0.15rem 0.5rem', borderRadius: '2px', margin: '0.15rem 0.15rem 0.15rem 0', lineHeight: 1.4, background: bg, color: fg }}>{label}</span>
+                    <span key={label} style={{ display: 'inline-block', fontSize: '0.68rem', fontWeight: 500, padding: '0.15rem 0.5rem', borderRadius: '2px', margin: '0.15rem 0.15rem 0.15rem 0', lineHeight: 1.4, background: bg, color: fg }}>{label}</span>
                   ))}
-                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#aaa', marginBottom: '0.4rem', marginTop: '0.6rem' }}>Analytical purpose</div>
-                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.75rem', color: '#444', lineHeight: 1.55 }}>{stage.purpose}</div>
-                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#aaa', marginBottom: '0.4rem', marginTop: '0.6rem' }}>Typical methods</div>
-                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.73rem', color: '#666', lineHeight: 1.5 }}>{stage.methods}</div>
-                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '0.72rem', color: '#777', lineHeight: 1.5, marginTop: '0.6rem', fontStyle: 'italic', paddingTop: '0.5rem', borderTop: '1px solid #e0dbd2' }}>{stage.output}</div>
+                  <div style={{ fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#aaa', marginBottom: '0.4rem', marginTop: '0.6rem' }}>Analytical purpose</div>
+                  <div style={{ fontSize: '0.75rem', color: '#444', lineHeight: 1.55 }}>{stage.purpose}</div>
+                  <div style={{ fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#aaa', marginBottom: '0.4rem', marginTop: '0.6rem' }}>Typical methods</div>
+                  <div style={{ fontSize: '0.73rem', color: '#666', lineHeight: 1.5 }}>{stage.methods}</div>
+                  <div style={{ fontSize: '0.72rem', color: '#777', lineHeight: 1.5, marginTop: '0.6rem', fontStyle: 'italic', paddingTop: '0.5rem', borderTop: '1px solid #e0dbd2' }}>{stage.output}</div>
                 </div>
               </div>
             ))}
           </div>
 
-          <div style={{ background: '#fdf6ee', border: '1px solid #e8d5b8', borderRadius: '4px', padding: '0.6rem 0.85rem', fontFamily: "'DM Sans', sans-serif", fontSize: '0.75rem', lineHeight: 1.55, color: '#7a5a2a', display: 'flex', gap: '0.5rem' }}>
+          <div style={{ background: '#fdf6ee', border: '1px solid #e8d5b8', borderRadius: '4px', padding: '0.6rem 0.85rem', fontSize: '0.75rem', lineHeight: 1.55, color: '#7a5a2a', display: 'flex', gap: '0.5rem' }}>
             <span>⚠</span>
             <span><strong>On causal inference across stages:</strong> The identification standard for causal questions does not relax at the Test stage. A nimble RCT, A/B test, or mechanism experiment still requires a valid identification strategy — what changes is the <em>estimand</em> (a specific component or mechanism rather than whole-programme effectiveness) and the <em>decision it informs</em>.</span>
           </div>
         </div>
 
         {/* Footer */}
-        <div style={{ marginTop: '3rem', paddingTop: '1rem', borderTop: '1px solid #d0c9bc', fontFamily: "'DM Sans', sans-serif", fontSize: '0.73rem', color: '#999', display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
+        <div style={{ marginTop: '3rem', paddingTop: '1rem', borderTop: '1px solid #d0c9bc', fontSize: '0.73rem', color: '#999', display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
           <div><strong style={{ color: '#666' }}>Qualitative references:</strong> Ritchie &amp; Lewis (2003); Pawson &amp; Tilley (1997); Mayne (2001); Mason (2002); Checkland (2000)</div>
           <div><strong style={{ color: '#666' }}>Quantitative references:</strong> Herman &amp; Hsu (2017); Hernán &amp; Robins (2020); Angrist &amp; Pischke (2009); Huntington-Klein (2021)</div>
           <div><strong style={{ color: '#666' }}>Policy cycle:</strong> HM Treasury Magenta Book (2020); Test and Learn Annex (2026); Nesta Test and Learn Playbook</div>

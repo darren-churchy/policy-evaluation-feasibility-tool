@@ -1,10 +1,12 @@
+import { T } from '../styles/tokens.js'
+
 export function downloadToolResult({ toolName, breadcrumb, resultHtml, date }) {
   const dateStr = date || new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
 
   const pathRows = breadcrumb.map((step, i) => `
     <tr>
-      <td style="padding:6px 10px;color:#6f777b;border-bottom:1px solid #e8e8e8">${i + 1}. ${step.question}</td>
-      <td style="padding:6px 10px;font-weight:600;border-bottom:1px solid #e8e8e8">${step.chosen}</td>
+      <td style="padding:6px 10px;color:${T.greyText};border-bottom:1px solid ${T.greyLine}">${i + 1}. ${step.question}</td>
+      <td style="padding:6px 10px;font-weight:600;border-bottom:1px solid ${T.greyLine}">${step.chosen}</td>
     </tr>`).join('\n')
 
   const html = `<!DOCTYPE html>
@@ -13,16 +15,16 @@ export function downloadToolResult({ toolName, breadcrumb, resultHtml, date }) {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${toolName} — Result</title>
 <style>
-  body{font-family:Arial,sans-serif;font-size:15px;color:#0b0c0c;max-width:800px;margin:40px auto;padding:0 20px;background:#fff}
-  h1{font-size:22px;border-bottom:4px solid #9c1b6d;padding-bottom:10px;margin-bottom:6px}
-  h2{font-size:16px;color:#9c1b6d;margin-top:28px;border-bottom:1px solid #e8e8e8;padding-bottom:4px}
+  body{font-family:Arial,sans-serif;font-size:15px;color:${T.ink};max-width:800px;margin:40px auto;padding:0 20px;background:#fff}
+  h1{font-size:22px;border-bottom:4px solid ${T.purple};padding-bottom:10px;margin-bottom:6px}
+  h2{font-size:16px;color:${T.purple};margin-top:28px;border-bottom:1px solid ${T.greyLine};padding-bottom:4px}
   table{width:100%;border-collapse:collapse;margin-top:10px;font-size:14px}
-  th{background:#0b0c0c;color:#fff;padding:7px 10px;text-align:left;font-size:13px}
+  th{background:${T.purple};color:#fff;padding:7px 10px;text-align:left;font-size:13px}
   td{vertical-align:top}
-  .tag{display:inline-block;background:#9c1b6d;color:#fff;font-size:11px;font-weight:700;padding:2px 8px;text-transform:uppercase;margin-bottom:14px}
-  .meta{font-size:13px;color:#6f777b;margin-bottom:20px}
+  .tag{display:inline-block;background:${T.purple};color:#fff;font-size:11px;font-weight:700;padding:2px 8px;text-transform:uppercase;margin-bottom:14px}
+  .meta{font-size:13px;color:${T.greyText};margin-bottom:20px}
   .result-content{margin-top:20px}
-  .footer{margin-top:40px;padding-top:14px;border-top:1px solid #b1b4b6;font-size:12px;color:#6f777b}
+  .footer{margin-top:40px;padding-top:14px;border-top:1px solid ${T.greyLine};font-size:12px;color:${T.greyText}}
 </style>
 </head>
 <body>
