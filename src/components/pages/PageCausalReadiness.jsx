@@ -3,30 +3,28 @@ import {
   Card, SectionTag, Alert, NavButtons, Button,
   RadioQuestion, When, TextArea, PageHeader,
 } from '../ui/GovukComponents.jsx'
+import { T } from '../../styles/tokens.js'
 
 // ── Test and Learn stage mapping ───────────────────────────────────────────
-// Maps readiness answers to T&L stage labels and guidance.
-// Used to contextualise the gate outcome within the Magenta Book framework.
-
 const TL_STAGES = {
   explore: {
     label: 'Explore',
-    bg: '#e8f4e8', fg: '#1a5a2a',
+    bg: T.greyBg, fg: T.greyText,
     note: 'At the Explore stage the focus is on understanding the problem and the population it affects. Impact evaluation is not yet appropriate.',
   },
   codesign: {
     label: 'Co-design',
-    bg: '#e8eef8', fg: '#1a3a6a',
+    bg: T.magentaTint, fg: T.magenta25,
     note: 'At the Co-design stage the focus is on developing and refining the intervention. Document the intervention specification and theory of change before returning to assess impact evaluation feasibility.',
   },
   test: {
     label: 'Test',
-    bg: '#f5eaf8', fg: '#5a1a6a',
+    bg: T.purpleTint, fg: T.purple25,
     note: 'At the Test stage the intervention is defined and has a theory of change. Impact evaluation is appropriate — the focus is on testing whether it works and for whom.',
   },
   grow: {
     label: 'Grow',
-    bg: '#fef0e0', fg: '#6a3a1a',
+    bg: T.tealTint, fg: T.teal25,
     note: 'At the Grow stage the intervention is running at scale. Evaluation may focus on whether effects replicate at scale, in different contexts, or for different sub-populations.',
   },
 }
@@ -79,7 +77,8 @@ export default function PageCausalReadiness({ inputs, set, gatePassed, gateFailu
 
         {/* T&L context panel */}
         <div style={{
-          background: '#0b0c0c',
+          background: T.purpleTint,
+          borderLeft: `4px solid ${T.purple}`,
           padding: '16px 20px',
           marginBottom: '20px',
           display: 'flex',
@@ -88,22 +87,22 @@ export default function PageCausalReadiness({ inputs, set, gatePassed, gateFailu
         }}>
           <div style={{ fontSize: '18px', flexShrink: 0 }}>📋</div>
           <div>
-            <div style={{ fontSize: '12px', fontWeight: 700, color: '#fff', marginBottom: '4px' }}>
+            <div style={{ fontSize: '12px', fontWeight: 700, color: T.purple25, marginBottom: '4px' }}>
               Magenta Book Test and Learn — Readiness Check
             </div>
-            <p style={{ fontSize: '13px', color: 'rgba(255,255,255,.65)', lineHeight: 1.6, margin: 0 }}>
+            <p style={{ fontSize: '13px', color: T.ink, lineHeight: 1.6, margin: 0 }}>
               This section checks whether your intervention is ready for impact evaluation.
-              The T&amp;L framework identifies <strong style={{ color: '#fff' }}>Test</strong> and{' '}
-              <strong style={{ color: '#fff' }}>Grow</strong> as the appropriate stages for impact evaluation —
+              The T&amp;L framework identifies <strong>Test</strong> and{' '}
+              <strong>Grow</strong> as the appropriate stages for impact evaluation —
               once the intervention is defined, has a theory of change, and is operating at
               sufficient scale. If critical conditions are not met, sections 3–7 and Results
               are locked and alternative evaluation approaches are signposted.
             </p>
             {hasAnswered && (
               <div style={{ marginTop: '10px', display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
-                <span style={{ fontSize: '11px', color: 'rgba(255,255,255,.5)' }}>Suggested stage:</span>
+                <span style={{ fontSize: '11px', color: T.greyText }}>Suggested stage:</span>
                 <TLBadge stage={tlStage} />
-                <span style={{ fontSize: '11px', color: 'rgba(255,255,255,.5)', fontStyle: 'italic' }}>
+                <span style={{ fontSize: '11px', color: T.greyText, fontStyle: 'italic' }}>
                   {TL_STAGES[tlStage]?.note}
                 </span>
               </div>
@@ -121,11 +120,11 @@ export default function PageCausalReadiness({ inputs, set, gatePassed, gateFailu
             <br />
             <span style={{ fontSize: '12px', marginTop: '4px', display: 'inline-block' }}>
               If you are unsure whether impact evaluation is the right approach, try the{' '}
-              <a href="/policy-evaluation-feasibility-tool/research-question-framework.html" target="_blank" rel="noopener noreferrer" style={{ color: '#1d70b8' }}>
+              <a href="/policy-evaluation-feasibility-tool/research-question-framework.html" target="_blank" rel="noopener noreferrer" style={{ color: T.teal }}>
                 Research Question Framework
               </a>{' '}
               or the{' '}
-              <a href="/policy-evaluation-feasibility-tool/design-finder.html" target="_blank" rel="noopener noreferrer" style={{ color: '#1d70b8' }}>
+              <a href="/policy-evaluation-feasibility-tool/design-finder.html" target="_blank" rel="noopener noreferrer" style={{ color: T.teal }}>
                 Evaluation Design Finder
               </a>{' '}
               first.
@@ -190,8 +189,8 @@ export default function PageCausalReadiness({ inputs, set, gatePassed, gateFailu
         {/* Gate: passed */}
         <When condition={gatePassed && hasAnswered}>
           <div style={{
-            background: '#e3f3eb',
-            borderLeft: '5px solid #00703c',
+            background: T.greenTint,
+            borderLeft: `5px solid ${T.green}`,
             padding: '14px 18px',
             marginBottom: '20px',
             display: 'flex',
@@ -221,15 +220,18 @@ export default function PageCausalReadiness({ inputs, set, gatePassed, gateFailu
           </Alert>
 
           {/* T&L stage callout */}
-          <div style={{ background: '#0b0c0c', padding: '16px 20px', marginBottom: '16px' }}>
-            <div style={{ fontSize: '12px', fontWeight: 700, color: '#fff', marginBottom: '8px' }}>
+          <div style={{
+            background: T.magentaTint, borderLeft: `4px solid ${T.magenta}`,
+            padding: '16px 20px', marginBottom: '16px',
+          }}>
+            <div style={{ fontSize: '12px', fontWeight: 700, color: T.ink, marginBottom: '8px' }}>
               Suggested T&amp;L stage based on your answers
             </div>
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
               {(inputs.p3_defined === 'no' || inputs.p3_toc === 'no') && <TLBadge stage="codesign" />}
               {inputs.p3_scale === 'no' && !(inputs.p3_defined === 'no' || inputs.p3_toc === 'no') && <TLBadge stage="explore" />}
             </div>
-            <p style={{ fontSize: '13px', color: 'rgba(255,255,255,.65)', marginTop: '8px', lineHeight: 1.6 }}>
+            <p style={{ fontSize: '13px', color: T.ink, marginTop: '8px', lineHeight: 1.6 }}>
               {inputs.p3_defined === 'no' || inputs.p3_toc === 'no'
                 ? 'Your intervention appears to be at the Co-design stage. Focus on defining the intervention and developing a theory of change before attempting impact evaluation.'
                 : 'Your intervention appears to be at the Explore or early Test stage. A process or developmental evaluation will generate more useful evidence than an impact evaluation at this point.'}
@@ -245,10 +247,10 @@ export default function PageCausalReadiness({ inputs, set, gatePassed, gateFailu
             <table className="govuk-table">
               <thead className="govuk-table__head">
                 <tr className="govuk-table__row">
-                  <th className="govuk-table__header" style={{ background: '#0b0c0c', color: '#fff', width: '22%' }}>Approach</th>
-                  <th className="govuk-table__header" style={{ background: '#0b0c0c', color: '#fff', width: '12%' }}>T&amp;L stage</th>
-                  <th className="govuk-table__header" style={{ background: '#0b0c0c', color: '#fff', width: '38%' }}>Purpose</th>
-                  <th className="govuk-table__header" style={{ background: '#0b0c0c', color: '#fff' }}>When to use</th>
+                  <th className="govuk-table__header" style={{ background: T.purple, color: '#fff', width: '22%' }}>Approach</th>
+                  <th className="govuk-table__header" style={{ background: T.purple, color: '#fff', width: '12%' }}>T&amp;L stage</th>
+                  <th className="govuk-table__header" style={{ background: T.purple, color: '#fff', width: '38%' }}>Purpose</th>
+                  <th className="govuk-table__header" style={{ background: T.purple, color: '#fff' }}>When to use</th>
                 </tr>
               </thead>
               <tbody className="govuk-table__body">
@@ -258,8 +260,8 @@ export default function PageCausalReadiness({ inputs, set, gatePassed, gateFailu
                     <td className="govuk-table__cell">
                       <TLBadge stage={alt.stage === 'Co-design' ? 'codesign' : alt.stage === 'Test' ? 'test' : 'grow'} />
                     </td>
-                    <td className="govuk-table__cell govuk-hint" style={{ color: '#6f777b', fontSize: '13px' }}>{alt.purpose}</td>
-                    <td className="govuk-table__cell govuk-hint" style={{ color: '#6f777b', fontSize: '13px' }}>{alt.when}</td>
+                    <td className="govuk-table__cell govuk-hint" style={{ color: T.greyText, fontSize: '13px' }}>{alt.purpose}</td>
+                    <td className="govuk-table__cell govuk-hint" style={{ color: T.greyText, fontSize: '13px' }}>{alt.when}</td>
                   </tr>
                 ))}
               </tbody>
