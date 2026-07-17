@@ -2,16 +2,23 @@ import { useNavigate } from 'react-router-dom'
 import { Card, SectionTag, Alert, NavButtons, Button, Badge, PageHeader,
 } from '../ui/GovukComponents.jsx'
 import { WEIGHTS, CATEGORY_CEILINGS } from '../../scoring/config.js'
+import { T } from '../../styles/tokens.js'
 
-// ── Category colour map ───────────────────────────────────────────────────────
-const CAT_BG = { A: '#e3f3eb', B: '#e8f0fb', C: '#fef3e8', D: '#f8f0fc', E: '#f3f2f1' }
+// ── Category badge styles — purple sequential (ordered, not verdicts) ──────────
+const CAT_STYLE = {
+  A: { background: T.purple25,       color: '#ffffff' },
+  B: { background: T.purple50,       color: '#ffffff' },
+  C: { background: T.purple,         color: '#ffffff' },
+  D: { background: T.purpleTintMid,  color: T.purple25 },
+  E: { background: T.purpleTint,     color: T.purple25 },
+}
 
 // ── Export helpers ────────────────────────────────────────────────────────────
 function generateHtmlReport({ inputs, results, flaggedNextSteps, topDesign }) {
   const safe = (v) => (v == null || v === '' ? '—' : String(v))
 
   const resultRows = results.map(r => {
-    const feasColor = { High: '#00703c', Medium: '#f47738', Low: '#d4351c', 'N/A': '#6f777b' }[r.feasibility] ?? '#6f777b'
+    const feasColor = { High: T.teal, Medium: T.ink, Low: T.magenta, 'N/A': T.greyText }[r.feasibility] ?? T.greyText
     const wt = r.weightedTotal != null ? r.weightedTotal.toFixed(3) : '—'
     return `<tr>
       <td>${r.category}</td><td>${r.family}</td><td>${r.variant}</td>
@@ -26,24 +33,24 @@ function generateHtmlReport({ inputs, results, flaggedNextSteps, topDesign }) {
   const nextStepsHtml = flaggedNextSteps.length === 0
     ? '<p>No major gaps identified — all key questions returned definitive answers.</p>'
     : flaggedNextSteps.map(item => `
-      <div style="border-left:4px solid #f47738;padding:12px 16px;margin-bottom:10px;background:#fef3e8;">
+      <div style="border-left:4px solid ${T.magenta};padding:12px 16px;margin-bottom:10px;background:${T.magentaTint};">
         <strong>${item.page} — ${item.question}</strong><br>
-        <span style="color:#6f777b;font-size:14px">${item.guidance}</span>
+        <span style="color:${T.greyText};font-size:14px">${item.guidance}</span>
       </div>`).join('\n')
 
   return `<!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8">
 <title>Evaluation Feasibility Report — ${safe(inputs.p1_title)}</title>
 <style>
-  body{font-family:Arial,sans-serif;font-size:15px;color:#0b0c0c;max-width:960px;margin:40px auto;padding:0 20px}
-  h1{font-size:26px;border-bottom:4px solid #9c1b6d;padding-bottom:10px}
-  h2{font-size:18px;color:#9c1b6d;margin-top:30px;border-bottom:1px solid #e8e8e8;padding-bottom:6px}
+  body{font-family:Arial,sans-serif;font-size:15px;color:${T.ink};max-width:960px;margin:40px auto;padding:0 20px}
+  h1{font-size:26px;border-bottom:4px solid ${T.purple};padding-bottom:10px;color:${T.ink}}
+  h2{font-size:18px;color:${T.purple};margin-top:30px;border-bottom:1px solid ${T.greyLine};padding-bottom:6px}
   table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}
-  th{background:#0b0c0c;color:#fff;padding:8px 10px;text-align:left}
-  td{padding:8px 10px;border-bottom:1px solid #e8e8e8}
-  tr:nth-child(even) td{background:#f8f8f8}
-  .tag{display:inline-block;background:#9c1b6d;color:#fff;font-size:11px;font-weight:700;padding:2px 8px;text-transform:uppercase;margin-bottom:12px}
-  .footer{margin-top:40px;padding-top:16px;border-top:1px solid #b1b4b6;font-size:12px;color:#6f777b}
+  th{background:${T.purple};color:#fff;padding:8px 10px;text-align:left;border:none}
+  td{padding:8px 10px;border-bottom:1px solid ${T.greyLine};border-left:none;border-right:none}
+  tr:nth-child(even) td{background:${T.greyBg}}
+  .tag{display:inline-block;background:${T.purple};color:#fff;font-size:11px;font-weight:700;padding:2px 8px;text-transform:uppercase;margin-bottom:12px}
+  .footer{margin-top:40px;padding-top:16px;border-top:1px solid ${T.greyLine};font-size:12px;color:${T.greyText}}
 </style></head><body>
 <div class="tag">Impact Evaluation Feasibility Tool</div>
 <h1>Evaluation Feasibility Report</h1>
@@ -131,7 +138,7 @@ function TopRecommendation({ topDesign }) {
   return (
     <Card>
       <SectionTag>Top Recommendation</SectionTag>
-      <h3 className="govuk-heading-m" style={{ borderBottom: '2px solid #00703c', paddingBottom: '8px' }}>
+      <h3 className="govuk-heading-m" style={{ borderBottom: `2px solid ${T.green}`, paddingBottom: '8px' }}>
         {topDesign.variant}
       </h3>
       <p className="govuk-body">
@@ -158,7 +165,7 @@ function TopRecommendation({ topDesign }) {
 
 function ResultsTable({ results }) {
   const thStyle = {
-    background: '#0b0c0c', color: '#fff',
+    background: T.purple, color: '#fff',
     padding: '8px 10px', textAlign: 'left',
     fontSize: '13px', whiteSpace: 'nowrap',
     position: 'sticky', top: 0,
@@ -192,9 +199,7 @@ function ResultsTable({ results }) {
                 <td style={{ padding: '8px 10px', textAlign: 'center' }}>
                   <span style={{
                     display: 'inline-block',
-                    background: CAT_BG[r.category] ?? '#f3f2f1',
-                    border: '1px solid #b1b4b6',
-                    borderRadius: '3px',
+                    ...(CAT_STYLE[r.category] ?? { background: T.greyBg, color: T.ink }),
                     padding: '1px 6px',
                     fontWeight: 700,
                     fontSize: '12px',
@@ -217,7 +222,7 @@ function ResultsTable({ results }) {
                           display: 'inline-block',
                           width: `${Math.round((r.weightedTotal ?? 0) * 60)}px`,
                           height: '8px',
-                          background: '#1d70b8',
+                          background: T.purple,
                           borderRadius: '2px',
                           opacity: 0.4,
                         }} />
@@ -228,7 +233,7 @@ function ResultsTable({ results }) {
                 <td style={{ padding: '8px 10px' }}>
                   <Badge label={r.feasibility} />
                 </td>
-                <td style={{ padding: '8px 10px', color: r.blocker === 'None' ? '#6f777b' : '#d4351c', fontSize: '12px' }}>
+                <td style={{ padding: '8px 10px', color: r.blocker === 'None' ? T.greyText : T.magenta, fontSize: '12px' }}>
                   {r.blocker}
                 </td>
               </tr>
@@ -263,9 +268,9 @@ function NextStepsPanel({ flaggedNextSteps }) {
           </Alert>
           {flaggedNextSteps.map(item => (
             <div key={item.id} style={{
-              background: '#fff',
-              border: '1px solid #b1b4b6',
-              borderLeft: '4px solid #f47738',
+              background: T.magentaTint,
+              border: `1px solid ${T.magentaTintMid}`,
+              borderLeft: `4px solid ${T.magenta}`,
               padding: '16px 20px',
               marginBottom: '10px',
             }}>
