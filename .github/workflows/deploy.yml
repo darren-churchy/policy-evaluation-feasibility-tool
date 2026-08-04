@@ -1,9 +1,8 @@
 name: Deploy to GitHub Pages
 
 on:
-  push:
-    branches: [main]
-  # Allow manual trigger from the Actions tab
+  # Hosting has moved to Cloudflare Pages (deploys automatically from main/dev branches).
+  # This workflow is retained as a manual fallback only.
   workflow_dispatch:
 
 permissions:
