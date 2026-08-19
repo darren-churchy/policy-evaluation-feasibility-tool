@@ -120,11 +120,11 @@ export default function PageCausalReadiness({ inputs, set, gatePassed, gateFailu
             <br />
             <span style={{ fontSize: '12px', marginTop: '4px', display: 'inline-block' }}>
               If you are unsure whether impact evaluation is the right approach, try the{' '}
-              <a href="/policy-evaluation-feasibility-tool/research-question-framework.html" target="_blank" rel="noopener noreferrer" style={{ color: T.teal }}>
+              <a href="#/question-framework" style={{ color: T.teal }}>
                 Research Question Framework
               </a>{' '}
               or the{' '}
-              <a href="/policy-evaluation-feasibility-tool/design-finder.html" target="_blank" rel="noopener noreferrer" style={{ color: T.teal }}>
+              <a href="#/design-finder" style={{ color: T.teal }}>
                 Evaluation Design Finder
               </a>{' '}
               first.

@@ -128,7 +128,7 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
               </button>
             )}
             <img
-              src="/policy-evaluation-feasibility-tool/icons/icon.svg"
+              src="/icons/icon.svg"
               alt=""
               aria-hidden="true"
               style={{ width: '28px', height: '28px', flexShrink: 0 }}
