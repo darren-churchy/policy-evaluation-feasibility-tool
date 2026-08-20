@@ -27,7 +27,7 @@ function renderQualResult(key, reset, path) {
   }
 
   return (
-    <div style={{ padding: '0 1.5rem', maxWidth: '720px', margin: '0 auto' }}>
+    <div>
       <div style={{ background: '#fff', borderLeft: `5px solid ${r.accent}`, padding: '1.5rem', marginBottom: '1rem' }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
           <div>
@@ -77,26 +77,24 @@ export default function PageQualTree() {
   return (
     <div>
       <PageHeader title="What kind of qualitative question is this?" />
-      <div style={{ maxWidth: '720px', margin: '0 auto', padding: '0 1.5rem' }}>
-        <Alert type="blue">
-          Answer the questions below to classify your research question, identify appropriate
-          qualitative approaches, and locate your work within the Magenta Book Test and Learn
-          framework.
-        </Alert>
-      </div>
-      <DecisionTree
-        tree={tree}
-        namedNodes={namedNodes}
-        accentColor={T.teal}
-        renderResult={renderQualResult}
-      />
-      <div style={{ maxWidth: '720px', margin: '0 auto', padding: '0 1.5rem 2rem' }}>
-        <NavButtons>
-          <Button variant="secondary" onClick={() => navigate('/')}>← Home</Button>
-        </NavButtons>
-        <p className="govuk-body-s" style={{ color: T.greyText, borderTop: `1px solid ${T.greyLine}`, paddingTop: '1rem', marginTop: '1rem' }}>
-          Use alongside the combined Research Question Typology reference document · Ritchie &amp; Lewis (2003) extended · Magenta Book Test and Learn Annex (2026)
-        </p>
+      <div className="page-content tool-column">
+          <Alert type="blue">
+            Answer the questions below to classify your research question, identify appropriate
+            qualitative approaches, and locate your work within the Magenta Book Test and Learn
+            framework.
+          </Alert>
+          <DecisionTree
+            tree={tree}
+            namedNodes={namedNodes}
+            accentColor={T.teal}
+            renderResult={renderQualResult}
+          />
+          <NavButtons>
+            <Button variant="secondary" onClick={() => navigate('/')}>← Home</Button>
+          </NavButtons>
+          <p className="govuk-body-s" style={{ color: T.greyText, borderTop: `1px solid ${T.greyLine}`, paddingTop: '1rem', marginTop: '1rem' }}>
+            Use alongside the combined Research Question Typology reference document · Ritchie &amp; Lewis (2003) extended · Magenta Book Test and Learn Annex (2026)
+          </p>
       </div>
     </div>
   )

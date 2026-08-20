@@ -228,11 +228,11 @@ export default function PageDesignFinder() {
   const QLAB = { q_defined:'Intervention clearly defined?', q_toc:'Theory of change exists?', q_scale:'Sufficient scale / maturity?', q_prospective:'Prospective evaluation possible?', q_randomisation:'Barriers to randomisation?', q_predata:'Pre-intervention data available?', q_comparison:'Comparison group available?', q_stagger:'Staggered rollout?', q_threshold:'Assignment threshold or cutoff?', q_instrument:'Plausible instrument available?', q_covariates:'Rich covariate data available?', q_sample:'Approximate study size?', q_constraint:'Primary constraint?' }
 
   return (
-    <div style={{ background: T.greyBg, minHeight: '100%' }}>
+    <div>
 
       {/* ── INTRO ── */}
       {phase === 'intro' && (
-        <div style={{ width: '100%', maxWidth: '680px', margin: '0 auto', padding: '40px 16px 64px' }}>
+        <div className="page-content tool-column">
           <div style={{ fontSize: '11px', fontWeight: 600, color: T.purple, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '12px' }}>
             Evaluation Design Finder
           </div>
@@ -279,7 +279,7 @@ export default function PageDesignFinder() {
 
       {/* ── QUIZ ── */}
       {phase === 'quiz' && q && (
-        <div style={{ width: '100%', maxWidth: '680px', margin: '0 auto', padding: '40px 16px 64px' }}>
+        <div className="page-content tool-column">
           <div style={{ marginBottom: '28px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
               <span style={{ fontSize: '12px', color: T.greyText, fontWeight: 500 }}>Question {pos}</span>
@@ -369,7 +369,7 @@ export default function PageDesignFinder() {
 
       {/* ── RESULT: not ready ── */}
       {phase === 'result' && result && result.type === 'notready' && (
-        <div style={{ width: '100%', maxWidth: '760px', margin: '0 auto', padding: '40px 16px 64px' }}>
+        <div className="page-content tool-column">
           <Alert type="yellow" title="Impact evaluation is premature at this stage">
             One or more critical readiness conditions are not yet met. Evaluating impact before these conditions are in place risks producing findings that reflect the immaturity of the intervention rather than its true effectiveness.
           </Alert>
@@ -422,7 +422,7 @@ export default function PageDesignFinder() {
         const { sorted, removed, showBayes, tlInfo, constraintInfo, warnings } = result
         const a = answers
         return (
-          <div style={{ width: '100%', maxWidth: '760px', margin: '0 auto', padding: '40px 16px 64px' }}>
+          <div className="page-content tool-column">
             <div style={{ marginBottom: '28px' }}>
               <div style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '10px', color: T.green }}>Assessment complete</div>
               <h2 style={{ fontSize: 'clamp(24px, 4vw, 34px)', fontWeight: 700, letterSpacing: '-0.5px', lineHeight: 1.2, color: T.ink, marginBottom: '8px' }}>Your evaluation design shortlist</h2>

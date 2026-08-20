@@ -55,7 +55,7 @@ export default function DecisionTree({ tree, namedNodes = {}, renderResult, acce
 
   if (resultKey) {
     return (
-      <div style={{ maxWidth: '720px', margin: '0 auto', padding: '2rem 1.5rem' }}>
+      <div style={{ paddingBottom: '1.5rem' }}>
         {path.length > 0 && (
           <div style={{ marginBottom: '1.25rem' }}>
             <div style={{ fontSize: '0.68rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: T.greyText, marginBottom: '0.5rem' }}>Your path</div>
@@ -73,7 +73,7 @@ export default function DecisionTree({ tree, namedNodes = {}, renderResult, acce
   }
 
   return (
-    <div style={{ maxWidth: '720px', margin: '0 auto', padding: '2rem 1.5rem' }}>
+    <div style={{ paddingBottom: '1.5rem' }}>
       {/* Progress bar */}
       <div style={{ display: 'flex', gap: '0.3rem', marginBottom: '1rem' }}>
         {[0,1,2,3].map(i => (

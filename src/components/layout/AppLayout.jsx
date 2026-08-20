@@ -15,6 +15,13 @@ const NAV_ITEMS = [
   { path: '/results',           label: 'Results'                    },
 ]
 
+const TOOL_NAV_ITEMS = [
+  { path: '/question-framework', label: 'Research Question Framework' },
+  { path: '/quant-tree',         label: 'Quantitative Decision Tree'  },
+  { path: '/qual-tree',          label: 'Qualitative Decision Tree'   },
+  { path: '/design-finder',      label: 'Evaluation Design Finder'    },
+]
+
 const LOCKED_PATHS = new Set([
   '/ideal-trial', '/design-questions', '/adjustment',
   '/data-sources', '/statistical', '/results',
@@ -42,9 +49,11 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
     }
   }, [])
 
-  const TOOL_PATHS = ['/question-framework', '/quant-tree', '/qual-tree', '/design-finder']
-  const isNoSidebar = location.pathname === '/' || TOOL_PATHS.includes(location.pathname)
+  // The sidebar is the app's persistent wayfinding: it shows everywhere except
+  // the landing page, tool pages included, so moving between the assessment and
+  // the companion tools never drops the user out of the app shell.
   const isLanding = location.pathname === '/'
+  const isNoSidebar = isLanding
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -75,7 +84,8 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
     return 'todo'
   }
 
-  const currentLabel = NAV_ITEMS.find(i => i.path === currentPath)?.label ?? ''
+  const currentLabel =
+    [...NAV_ITEMS, ...TOOL_NAV_ITEMS].find(i => i.path === currentPath)?.label ?? ''
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -314,6 +324,40 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
                   Sections 3–7 locked. Complete the Causal Readiness assessment to continue.
                 </div>
               )}
+
+              {/* Companion tools — always available, never gated */}
+              <p style={{
+                color: T.greyText, padding: '16px 16px 4px',
+                margin: 0, textTransform: 'uppercase', fontSize: '11px',
+                letterSpacing: '.5px', whiteSpace: 'nowrap',
+                borderTop: `1px solid ${T.greyLine}`,
+              }}>
+                Tools
+              </p>
+              <ul style={{ listStyle: 'none', margin: 0, padding: '0 0 4px' }}>
+                {TOOL_NAV_ITEMS.map(item => {
+                  const active = item.path === currentPath
+                  return (
+                    <li key={item.path} style={{ margin: 0 }}>
+                      <button
+                        onClick={() => navigate(item.path)}
+                        aria-current={active ? 'page' : undefined}
+                        style={{
+                          background: active ? T.purpleTint : 'none',
+                          border: 'none',
+                          borderLeft: `3px solid ${active ? T.purple : 'transparent'}`,
+                          color: T.ink, font: 'inherit', fontSize: '14px',
+                          fontWeight: active ? 600 : 400,
+                          cursor: 'pointer', width: '100%', textAlign: 'left',
+                          padding: '7px 16px', lineHeight: 1.35,
+                        }}
+                      >
+                        {item.label}
+                      </button>
+                    </li>
+                  )
+                })}
+              </ul>
               <InstallPrompt prompt={installPrompt} installed={installed} onInstall={setInstallPrompt} />
             </div>
           </nav>

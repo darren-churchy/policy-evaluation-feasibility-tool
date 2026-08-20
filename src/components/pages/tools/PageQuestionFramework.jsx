@@ -219,60 +219,29 @@ export default function PageQuestionFramework() {
   return (
     <div>
       <PageHeader title="A Typology of Research Questions" />
-      <div style={{ display: 'flex', minHeight: '100%', background: T.greyBg }}>
-        {/* Sidebar */}
-        <nav style={{
-          width: '220px', minWidth: '220px', background: T.purple25, minHeight: '100vh',
-          position: 'sticky', top: '56px', height: 'calc(100vh - 56px)', overflowY: 'auto',
-          display: 'flex', flexDirection: 'column', flexShrink: 0,
-        }}>
-          <div style={{ padding: '1.25rem 1rem 0.75rem', borderBottom: '1px solid rgba(255,255,255,0.1)', marginBottom: '0.5rem' }}>
-            <div style={{ fontSize: '0.6rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: '0.3rem' }}>Analytical Framework</div>
-            <div style={{ fontSize: '0.82rem', fontWeight: 600, color: 'rgba(255,255,255,0.9)', lineHeight: 1.3 }}>Research Question Typology</div>
-          </div>
+      <div className="page-content tool-column tool-column--wide">
 
-          {(() => {
-            let lastSection = null
-            return SIDEBAR_ITEMS.map((item, i) => {
-              const sectionLabel = item.section && item.section !== lastSection ? (() => { lastSection = item.section; return item.section })() : null
-              return (
-                <div key={item.target}>
-                  {sectionLabel && (
-                    <div style={{ fontSize: '0.6rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)', padding: '0.75rem 1rem 0.3rem' }}>
-                      {i > 0 && <div style={{ height: '1px', background: 'rgba(255,255,255,0.08)', marginBottom: '0.75rem', marginTop: '-0.3rem' }} />}
-                      {sectionLabel}
-                    </div>
-                  )}
-                  <button
-                    onClick={() => scrollTo(item.target)}
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: '0.5rem',
-                      padding: '0.4rem 1rem', width: '100%', textAlign: 'left',
-                      fontSize: '0.78rem',
-                      color: activeSection === item.target ? '#fff' : 'rgba(255,255,255,0.6)',
-                      background: activeSection === item.target ? 'rgba(255,255,255,0.08)' : 'none',
-                      border: 'none', borderLeft: `3px solid ${activeSection === item.target ? item.accent : 'transparent'}`,
-                      cursor: 'pointer', lineHeight: 1.35,
-                    }}
-                  >
-                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: item.accent, flexShrink: 0, opacity: activeSection === item.target ? 1 : 0.7 }} />
-                    {item.label}
-                  </button>
-                </div>
-              )
-            })
-          })()}
-
-          <div style={{ marginTop: 'auto', padding: '0.75rem 1rem', fontSize: '0.62rem', color: 'rgba(255,255,255,0.25)', borderTop: '1px solid rgba(255,255,255,0.08)', lineHeight: 1.5 }}>
-            Magenta Book (2020, updated 2026)<br />
-            Test &amp; Learn Annex (2026)<br />
-            Ritchie &amp; Lewis (2003)<br />
-            Herman &amp; Hsu (2017)
+        {/* On this page — replaces the standalone sidebar this page used to
+            carry, so the app sidebar stays the only persistent navigation. */}
+        <nav className="toc-panel" aria-label="On this page">
+          <div className="toc-panel__label">On this page</div>
+          <div className="toc-panel__list">
+            {SIDEBAR_ITEMS.map(item => (
+              <button
+                key={item.target}
+                type="button"
+                className="toc-panel__item"
+                aria-current={activeSection === item.target}
+                onClick={() => scrollTo(item.target)}
+              >
+                <span className="toc-panel__dot" style={{ background: item.accent }} />
+                {item.label}
+              </button>
+            ))}
           </div>
         </nav>
 
-        {/* Main content */}
-        <main style={{ flex: 1, minWidth: 0, padding: '2.5rem 2.5rem 4rem', maxWidth: '960px' }}>
+        <div>
 
           {/* Cover */}
           <div id="cover" style={{ borderLeft: `4px solid ${T.purple}`, paddingLeft: '1.5rem', marginBottom: '2.5rem', paddingBottom: '2rem', borderBottom: `1px solid ${T.greyLine}`, scrollMarginTop: '2rem' }}>
@@ -415,7 +384,7 @@ export default function PageQuestionFramework() {
           <NavButtons>
             <Button variant="secondary" onClick={() => navigate('/')}>← Home</Button>
           </NavButtons>
-        </main>
+        </div>
       </div>
     </div>
   )

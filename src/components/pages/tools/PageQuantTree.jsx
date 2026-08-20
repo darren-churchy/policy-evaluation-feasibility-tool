@@ -37,7 +37,7 @@ function renderQuantResult(key, reset, path) {
 
   if (r.isWarning) {
     return (
-      <div style={{ padding: '0 1.5rem', maxWidth: '720px', margin: '0 auto' }}>
+      <div>
         <Alert type="yellow" title="Classification issue identified">
           <p style={{ marginBottom: '0.75rem' }}>{r.summary}</p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '0.75rem' }}>
@@ -65,7 +65,7 @@ function renderQuantResult(key, reset, path) {
   const abo = hexToRgba(r.accent, 0.32)
 
   return (
-    <div style={{ padding: '0 1.5rem', maxWidth: '720px', margin: '0 auto' }}>
+    <div>
       <div style={{ background: '#fff', borderLeft: `5px solid ${r.accent}`, padding: '1.5rem', marginBottom: '1rem' }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
           <div>
@@ -135,26 +135,24 @@ export default function PageQuantTree() {
   return (
     <div>
       <PageHeader title="What kind of quantitative question is this?" />
-      <div style={{ maxWidth: '720px', margin: '0 auto', padding: '0 1.5rem' }}>
-        <Alert type="blue">
-          Answer the questions below to classify your research question, identify the appropriate
-          design, and understand what assumptions are required — located within the Magenta Book
-          Test and Learn framework.
-        </Alert>
-      </div>
-      <DecisionTree
-        tree={tree}
-        namedNodes={namedNodes}
-        accentColor={T.purple}
-        renderResult={renderQuantResult}
-      />
-      <div style={{ maxWidth: '720px', margin: '0 auto', padding: '0 1.5rem 2rem' }}>
-        <NavButtons>
-          <Button variant="secondary" onClick={() => navigate('/')}>← Home</Button>
-        </NavButtons>
-        <p className="govuk-body-s" style={{ color: T.greyText, borderTop: `1px solid ${T.greyLine}`, paddingTop: '1rem', marginTop: '1rem' }}>
-          Use alongside the combined Research Question Typology reference document · Herman &amp; Hsu (2017) extended · Magenta Book Test and Learn Annex (2026)
-        </p>
+      <div className="page-content tool-column">
+          <Alert type="blue">
+            Answer the questions below to classify your research question, identify the appropriate
+            design, and understand what assumptions are required — located within the Magenta Book
+            Test and Learn framework.
+          </Alert>
+          <DecisionTree
+            tree={tree}
+            namedNodes={namedNodes}
+            accentColor={T.purple}
+            renderResult={renderQuantResult}
+          />
+          <NavButtons>
+            <Button variant="secondary" onClick={() => navigate('/')}>← Home</Button>
+          </NavButtons>
+          <p className="govuk-body-s" style={{ color: T.greyText, borderTop: `1px solid ${T.greyLine}`, paddingTop: '1rem', marginTop: '1rem' }}>
+            Use alongside the combined Research Question Typology reference document · Herman &amp; Hsu (2017) extended · Magenta Book Test and Learn Annex (2026)
+          </p>
       </div>
     </div>
   )
