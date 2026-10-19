@@ -402,7 +402,7 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
             </a>
           </div>
           <span className="govuk-body-s" style={{ color: T.greyText }}>
-            Impact Evaluation Feasibility Tool — Prototype v0.7. This tool should be used to inform — not replace —
+            Impact Evaluation Feasibility Tool — Prototype v0.7.1. This tool should be used to inform — not replace —
             professional methodological judgement.
           </span>
         </div>

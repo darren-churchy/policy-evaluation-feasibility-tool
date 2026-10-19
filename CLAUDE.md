@@ -6,13 +6,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 A static React/Vite single-page application for assessing the feasibility of impact evaluation designs. It guides government social researchers through a structured seven-section questionnaire and produces a ranked feasibility table for 32 evaluation design variants. There is no backend — all scoring is pure JavaScript computed in the browser.
 
-Prototype v0.7, Ministry of Justice | Government Social Research. Not for public release.
+Prototype v0.7.1, Ministry of Justice | Government Social Research. Not for public release.
+
+> **Redesign in progress.** See `docs/REDESIGN_PLAN.md`. Redesign work happens on the
+> `redesign` branch; `dev` continues to serve the current tool.
 
 ## Commands
 
 ```
 npm install        # Install dependencies (Node 18+ required)
-npm run dev        # Start dev server at http://localhost:5173/policy-evaluation-feasibility-tool/
+npm run dev        # Start dev server at http://localhost:5173/
 npm run build      # Build to dist/ (static files, no server required)
 npm run preview    # Serve the dist/ build locally for final checks
 ```
@@ -34,7 +37,7 @@ All derived values (gate status, scoring results, flagged next steps, section co
 
 ### Routing
 
-`HashRouter` is used for GitHub Pages compatibility. Routes use **semantic paths** (changed in v0.7 — no longer `/page1` through `/page7`):
+`HashRouter` is used (originally for GitHub Pages compatibility; now on Cloudflare Pages a `_redirects` SPA fallback is in place, so `BrowserRouter` is viable — see `docs/REDESIGN_PLAN.md`). Routes use **semantic paths** (changed in v0.7 — no longer `/page1` through `/page7`):
 
 | Route | Component | Section |
 |---|---|---|
@@ -133,18 +136,22 @@ Bayesian considerations are surfaced in two places:
 - **PageStatistical** — Bayesian analysis approach option in the analysis section, with sub-questions for prior data source if Bayesian selected
 - **nextSteps.js** — Bayesian notes woven into guidance for power calculation, ITS pre-period, confounder confidence, and synthetic control pre-fit items
 
-### Companion tools (public/)
+### Companion tools
 
-Standalone HTML tools hosted at the same GitHub Pages URL. No build step required — Vite copies everything in `public/` verbatim to `dist/`. These are linked from the landing page.
+The four companion tools are **React routes**, not standalone HTML. The files in `public/`
+are seven-line redirect stubs kept so old bookmarked URLs still resolve.
 
-| File | Tool | Linked from |
+| Route | Component | Stub kept for old URLs |
 |---|---|---|
-| `public/questionFramework.html` | Research Question Framework | Landing page Section 1 |
-| `public/quantTree.html` | Quantitative Decision Tree | Landing page Section 1 |
-| `public/qualTree.html` | Qualitative Decision Tree | Landing page Section 1 |
-| `public/designFinder.html` | Evaluation Design Finder | Landing page Section 2 |
+| `/question-framework` | `tools/PageQuestionFramework.jsx` | `public/questionFramework.html` |
+| `/quant-tree` | `tools/PageQuantTree.jsx` | `public/quantTree.html` |
+| `/qual-tree` | `tools/PageQualTree.jsx` | `public/qualTree.html` |
+| `/design-finder` | `tools/PageDesignFinder.jsx` | `public/designFinder.html` |
 
-Tool link constants are defined at the top of `LandingPage.jsx` as `TOOL_LINKS` — update paths there if filenames change.
+`TOOL_LINKS` at the top of `LandingPage.jsx` holds the hash routes.
+
+Tool pages share the assessment shell: `PageHeader` > `.page-content.tool-column`, with the
+app sidebar visible (it carries an ungated **Tools** group alongside the assessment sections).
 
 ---
 
@@ -159,7 +166,7 @@ Tool link constants are defined at the top of `LandingPage.jsx` as `TOOL_LINKS` 
 | Add/edit next steps guidance (Results page) | `src/data/nextSteps.js` |
 | Change category ceilings | `src/scoring/config.js` → `CATEGORY_CEILINGS` |
 | Disable the Section 2 gate | `src/scoring/config.js` → `GATE_ENABLED = false` |
-| Change repo name for GitHub Pages base path | `vite.config.js` → `REPO_NAME` |
+| Change the base path or PWA manifest | `vite.config.js` (`base` is `/`; there is no `REPO_NAME`) |
 | Edit landing page tool links | `src/components/pages/LandingPage.jsx` → `TOOL_LINKS` |
 
 ---
@@ -174,7 +181,19 @@ The sidebar is collapsible (v0.7). Hamburger button in the header toggles `open`
 
 ## Deployment
 
-Push to `main` — GitHub Actions (`.github/workflows/deploy.yml`) builds and deploys to GitHub Pages automatically. The `base` path in `vite.config.js` must match the repository name exactly (`policy-evaluation-feasibility-tool`).
+Hosted on **Cloudflare Pages**, built from this repo.
+
+| Branch | Environment |
+|---|---|
+| `main` | Production |
+| `dev` | Staging preview |
+
+Cloudflare runs `npm run build` and serves `dist/`. `base` in `vite.config.js` is `/` —
+the app is served from the domain root, not a subdirectory. `public/_redirects` provides
+the SPA fallback and `public/_headers` sets security headers.
+
+`.github/workflows/deploy.yml` is retained as a manual-dispatch fallback only; it no longer
+runs on push.
 
 ---
 

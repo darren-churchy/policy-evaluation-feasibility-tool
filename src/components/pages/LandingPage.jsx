@@ -158,7 +158,7 @@ export default function LandingPage() {
               background: T.purple50, color: '#ffffff',
               fontSize: '12px', padding: '4px 12px', fontWeight: 600,
             }}>
-              Prototype v0.6
+              Prototype v0.7.1
             </span>
             <span style={{ fontSize: '12px', color: 'rgba(255,255,255,.5)' }}>
               32 design variants · Causal validity scoring · GOV.UK Design System

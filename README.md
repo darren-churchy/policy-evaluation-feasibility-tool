@@ -2,7 +2,7 @@
 
 A decision-support web application for government social researchers assessing the feasibility of different impact evaluation designs. Built with React and Vite, hosted as a static site on GitHub Pages.
 
-> **Status:** Prototype v0.7 — for methodological peer review. Not for public release.
+> **Status:** Prototype v0.7.1 — for methodological peer review. Not for public release.
 > Ministry of Justice | Government Social Research
 
 ---
@@ -467,5 +467,5 @@ This project makes use of the following open source packages, each under their o
 
 ---
 
-*Impact Evaluation Feasibility Tool — Prototype v0.7 — Ministry of Justice | Government Social Research*
+*Impact Evaluation Feasibility Tool — Prototype v0.7.1 — Ministry of Justice | Government Social Research*
 *This tool should be used to inform — not replace — professional methodological judgement.*
