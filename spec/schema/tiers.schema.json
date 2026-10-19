@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tiers.schema.json",
+  "title": "Robustness ladder tiers",
+  "description": "The five counterfactual tiers plus the parallel theory-based strand. Tier order IS the ranking: designs are ranked by the assumption that makes their comparison valid, not by estimator sophistication.",
+  "type": "object",
+  "required": ["spec_version", "tiers", "theory_based"],
+  "additionalProperties": false,
+  "properties": {
+    "spec_version": {
+      "description": "Version of the specification as a whole. Written into every export; a load with a mismatched version warns. Increments on changes to tiers, rules or design identity — not on wording.",
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "tiers": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": { "$ref": "#/$defs/tier" }
+    },
+    "theory_based": { "$ref": "#/$defs/theoryBased" },
+    "contested_placements": {
+      "description": "Placements where published sources disagree. Both views are shown to the user rather than resolved silently.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/contested" }
+    }
+  },
+  "$defs": {
+    "citationKey": {
+      "description": "Must resolve to an entry in spec/references.bib — enforced by the build check, not by this schema.",
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_:-]*$"
+    },
+    "tier": {
+      "type": "object",
+      "required": ["id", "name", "identifying_assumption", "evidence_scales", "citations"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "name": { "type": "string", "minLength": 1 },
+        "identifying_assumption": {
+          "description": "The assumption that makes this tier's comparison valid. This is what the tier ranks on.",
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_scales": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "maryland": {
+              "description": "What Works Growth version of the Maryland SMS. A range where the mapping depends on design detail.",
+              "type": "string",
+              "pattern": "^[1-5]( to [1-5])?$"
+            },
+            "maryland_note": { "type": "string" },
+            "eef_padlocks": { "type": "string", "pattern": "^[0-5]( to [0-5])?$" }
+          }
+        },
+        "citations": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/citationKey" }
+        }
+      }
+    },
+    "theoryBased": {
+      "description": "Runs beside every rung and is never converted into one. Reports confidence in specific causal claims, not an effect size.",
+      "type": "object",
+      "required": ["name", "roles", "citations"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "roles": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "type": "object",
+            "required": ["id", "when"],
+            "additionalProperties": false,
+            "properties": {
+              "id": { "enum": ["primary", "complementary"] },
+              "when": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "citations": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/citationKey" } }
+      }
+    },
+    "contested": {
+      "type": "object",
+      "required": ["subject", "default_tier", "views", "citations"],
+      "additionalProperties": false,
+      "properties": {
+        "subject": { "type": "string", "minLength": 1 },
+        "default_tier": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "signed_off": {
+          "description": "True where the placement has been explicitly agreed rather than merely defaulted.",
+          "type": "boolean"
+        },
+        "views": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "type": "object",
+            "required": ["tier", "argument"],
+            "additionalProperties": false,
+            "properties": {
+              "tier": { "type": "integer", "minimum": 1, "maximum": 5 },
+              "qualifier": { "type": "string" },
+              "argument": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "citations": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/citationKey" } }
+      }
+    }
+  }
+}

@@ -14,13 +14,19 @@ Prototype v0.7.1, Ministry of Justice | Government Social Research. Not for publ
 ## Commands
 
 ```
-npm install        # Install dependencies (Node 18+ required)
+npm install        # Install dependencies (Node 20+ required)
 npm run dev        # Start dev server at http://localhost:5173/
 npm run build      # Build to dist/ (static files, no server required)
 npm run preview    # Serve the dist/ build locally for final checks
+
+npm test           # Vitest, single run
+npm run test:watch # Vitest, watch mode
+npm run spec:check # Validate spec/ against its JSON Schemas
+npm run check      # spec:check + test + build — what CI runs
 ```
 
-There is no test runner configured. There are no linting scripts in `package.json`.
+CI (`.github/workflows/ci.yml`) runs `spec:check`, `test` and `build` on every push and
+pull request. There are no linting scripts.
 
 ---
 
@@ -155,6 +161,40 @@ app sidebar visible (it carries an ungated **Tools** group alongside the assessm
 
 ---
 
+## Specification (`spec/`) — redesign
+
+Questions, rules, tiers and citations live in reviewer-editable files rather than in
+JavaScript, so a rule change appears in every tool at once. Added in phase 1; populated
+in phase 2. See `docs/REDESIGN_PLAN.md`.
+
+| File | Holds | Status |
+|---|---|---|
+| `spec/tiers.yaml` | The five robustness tiers, the theory-based strand, contested placements | Seeded |
+| `spec/references.bib` | Every citation, with a confidence note | Seeded |
+| `spec/designs.csv` | One row per design (not per estimator) | Phase 2 |
+| `spec/questions.yaml` | Question bank shared by all tools | Phase 2 |
+| `spec/rules.yaml` | Per design: blockers, conditions, warnings as JSON Logic | Phase 2 |
+| `spec/stages.yaml` | Stage vocabulary, readiness gates, routing | Phase 2 |
+| `spec/statistics.yaml` | NHST and Bayesian question sets | Phase 3 |
+| `spec/packs/*.yaml` | Context packs: examples, benchmarks, vocabulary | Phase 6 |
+| `spec/schema/*.schema.json` | JSON Schemas (draft 2020-12) for the above | Done |
+
+`scripts/validate-spec.mjs` validates each file against its schema and reports failures as
+`file:line`. It also fails on a **dangling citation** — a key cited anywhere in the spec
+that `references.bib` does not define. Every rule must be traceable to a source.
+
+**Two separate version numbers.** The app version (`package.json`, UI, docs) is 0.7.1 and
+stays 0.7.x through the redesign. The **spec version** in `tiers.yaml` is independent: it
+is written into every export, and a load with a mismatched version warns. It increments on
+changes to tiers, rules or design identity — not on wording.
+
+**Signed-off methodology is guarded by tests**, not just by file contents. `tests/validate-spec.test.mjs`
+asserts the tier ordering, the theory-based strand staying off the ladder, and the three
+contested placements (RDIT → Tier 3, controlled ITS → Tier 3, matching with prior-outcome
+controls → upper Tier 4). Changing any of them requires deliberately changing a test.
+
+---
+
 ## Key files
 
 | Task | File(s) |
@@ -167,6 +207,9 @@ app sidebar visible (it carries an ungated **Tools** group alongside the assessm
 | Change category ceilings | `src/scoring/config.js` → `CATEGORY_CEILINGS` |
 | Disable the Section 2 gate | `src/scoring/config.js` → `GATE_ENABLED = false` |
 | Change the base path or PWA manifest | `vite.config.js` (`base` is `/`; there is no `REPO_NAME`) |
+| Add or change a tier, or a contested placement | `spec/tiers.yaml` + the guard test in `tests/validate-spec.test.mjs` |
+| Add a citation | `spec/references.bib` (dangling keys fail CI) |
+| Change what the spec validator enforces | `spec/schema/*.schema.json`, `scripts/validate-spec.mjs` |
 | Edit landing page tool links | `src/components/pages/LandingPage.jsx` → `TOOL_LINKS` |
 
 ---

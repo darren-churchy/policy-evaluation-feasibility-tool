@@ -1,0 +1,71 @@
+% Every citation used by the specification.
+%
+% The build check fails if a rule, tier or question cites a key that is not defined here,
+% so this file is the single source of truth for provenance.
+%
+% The `note` field carries a confidence assessment: how firmly the source supports the
+% use the specification makes of it. Where a source is a draft or its application is
+% contested, that is recorded here rather than hidden.
+
+@misc{whatworks_sms,
+  title        = {The Maryland Scientific Methods Scale (SMS)},
+  author       = {{What Works Centre for Local Economic Growth}},
+  year         = {2016},
+  url          = {https://whatworksgrowth.org/resource-library/the-maryland-scientific-methods-scale-sms/},
+  urldate      = {2026-10-19},
+  note         = {High confidence for the five-level ranking itself. The mapping from
+                  individual designs to levels is the contested part: the scale was written
+                  for appraisal of completed studies, not for prospective design choice,
+                  and several placements are read differently across the literature.}
+}
+
+@misc{magenta_book,
+  title        = {The Magenta Book: central government guidance on evaluation},
+  author       = {{HM Treasury}},
+  year         = {2020},
+  note         = {Updated 2026; Test and Learn Annex 2026. High confidence as the reference
+                  for stage vocabulary (Explore, Co-design, Test, Grow) and for the general
+                  evaluation framing. Cited as published guidance, not as endorsement.},
+  url          = {https://www.gov.uk/government/publications/the-magenta-book},
+  urldate      = {2026-10-19}
+}
+
+@misc{robins_i_v2,
+  title        = {{ROBINS-I} V2: Risk Of Bias In Non-randomised Studies of Interventions},
+  author       = {{ROBINS-I Development Group}},
+  year         = {2025},
+  month        = nov,
+  note         = {DRAFT dated 20 November 2025. Medium confidence pending the final release.
+                  Used for risk-of-bias domain structure. Revisit when final; the version
+                  date is recorded so the dependency is visible.},
+  url          = {https://www.riskofbias.info/welcome/robins-i-v2},
+  urldate      = {2026-10-19}
+}
+
+@article{lee_etal_2022,
+  title        = {Valid t-ratio Inference for {IV}},
+  author       = {Lee, David S. and McCrary, Justin and Moreira, Marcelo J. and Porter, Jack},
+  journal      = {American Economic Review},
+  volume       = {112},
+  number       = {10},
+  pages        = {3260--3290},
+  year         = {2022},
+  doi          = {10.1257/aer.20211063},
+  note         = {High confidence. Directly relevant to the first-stage F convention:
+                  shows the conventional F > 10 rule of thumb is not a sufficient basis for
+                  valid inference, which is why the specification carries that threshold as
+                  a warning with its range rather than as a blocker.}
+}
+
+@article{mayne_2001,
+  title        = {Addressing Attribution Through Contribution Analysis},
+  author       = {Mayne, John},
+  journal      = {Canadian Journal of Program Evaluation},
+  volume       = {16},
+  number       = {1},
+  pages        = {1--24},
+  year         = {2001},
+  note         = {High confidence for contribution analysis as a theory-based approach that
+                  does not require a counterfactual. Supports the parallel-strand treatment
+                  rather than placement on the counterfactual ladder.}
+}

@@ -1,0 +1,122 @@
+# The robustness ladder
+#
+# Designs are ranked by the assumption that makes their comparison valid, not by how
+# sophisticated the estimator is. The tool recommends the highest rung that is feasible.
+#
+# Tier order IS the ranking. Changing a tier's membership changes every recommendation,
+# so spec_version increments on any edit below.
+
+spec_version: 1.0.0
+
+tiers:
+  - id: 1
+    name: Randomised
+    identifying_assumption: >-
+      Random allocation gives exchangeability: treated and untreated groups differ only
+      by chance, in measured and unmeasured characteristics alike.
+    evidence_scales:
+      maryland: "5"
+      eef_padlocks: "5"
+    citations: [whatworks_sms, magenta_book]
+
+  - id: 2
+    name: Local as-if random
+    identifying_assumption: >-
+      An assignment rule or instrument isolates exogenous variation — but only where its
+      own conditions hold, and those conditions are themselves testable claims.
+    evidence_scales:
+      maryland: "4"
+    citations: [whatworks_sms, lee_etal_2022]
+
+  - id: 3
+    name: Comparison-group panel
+    identifying_assumption: >-
+      Parallel trends — the treated and comparison groups would have moved together absent
+      the intervention — or weighted comparison units that tracked the treated unit before it.
+    evidence_scales:
+      maryland: "3"
+    citations: [whatworks_sms]
+
+  - id: 4
+    name: Selection on observables
+    identifying_assumption: >-
+      No unmeasured confounding given the measured covariates. Untestable in principle;
+      the argument rests on substantive knowledge of the assignment process.
+    evidence_scales:
+      maryland: "2"
+      maryland_note: >-
+        Level 3 where pre-period outcomes are used as controls and comparability is
+        demonstrated rather than asserted.
+    citations: [whatworks_sms, robins_i_v2]
+
+  - id: 5
+    name: Single time series
+    identifying_assumption: >-
+      The pre-intervention trend would have continued unchanged. No comparison group exists
+      to falsify this, so it stands or falls on the plausibility of the counterfactual trend.
+    evidence_scales:
+      maryland: "1 to 2"
+    citations: [whatworks_sms]
+
+# The theory-based strand runs beside every rung and is never converted into one.
+# Its output reports confidence in specific causal claims, not an effect size.
+theory_based:
+  name: Theory-based evaluation
+  roles:
+    - id: primary
+      when: >-
+        Every counterfactual tier is Blocked, or there are too few units for any
+        counterfactual comparison to be informative.
+    - id: complementary
+      when: >-
+        A counterfactual tier is available. Theory-based work then addresses mechanism,
+        implementation and context — questions an effect estimate cannot answer.
+  citations: [magenta_book, mayne_2001]
+
+# Placements where published sources disagree. Both views are shown to the user.
+# signed_off: true means the default has been explicitly agreed, not merely inherited.
+contested_placements:
+  - subject: Regression discontinuity in time (RDIT)
+    default_tier: 3
+    signed_off: true
+    views:
+      - tier: 3
+        argument: >-
+          Identification rests on a continuity assumption across a date, which is a
+          time-series claim: nothing else changed at the cutoff. That is the same class
+          of assumption as a comparison-group panel, not local randomisation.
+      - tier: 2
+        qualifier: where a sharp administrative cutoff in time is externally imposed
+        argument: >-
+          Treated as a discontinuity design proper, on the grounds that the running
+          variable is a genuine assignment rule.
+    citations: [whatworks_sms, robins_i_v2]
+
+  - subject: Controlled interrupted time series
+    default_tier: 3
+    signed_off: true
+    views:
+      - tier: 3
+        argument: >-
+          The control series supplies a comparison group, placing it with the panel
+          designs rather than with as-if-random assignment.
+      - tier: 2
+        argument: >-
+          Sometimes grouped with quasi-experimental designs of higher internal validity
+          where the control series is strongly comparable.
+    citations: [whatworks_sms]
+
+  - subject: Matching and weighting with prior-outcome controls
+    default_tier: 4
+    signed_off: true
+    views:
+      - tier: 4
+        qualifier: upper
+        argument: >-
+          Still selection on observables — conditioning on prior outcomes narrows the
+          scope for unmeasured confounding but does not remove it.
+      - tier: 3
+        argument: >-
+          Where pre-period outcomes are used and comparability is demonstrated, the
+          Maryland scale allows level 3, which maps to Tier 3.
+    citations: [whatworks_sms, robins_i_v2]

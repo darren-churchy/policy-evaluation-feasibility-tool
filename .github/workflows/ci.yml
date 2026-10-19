@@ -1,0 +1,32 @@
+name: CI
+
+# Runs on every push and pull request. Deployment is handled by Cloudflare Pages, not
+# here — this workflow only gates correctness.
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Schema validation runs first: a malformed specification makes every downstream
+      # failure harder to read.
+      - name: Validate specification
+        run: npm run spec:check
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Build
+        run: npm run build

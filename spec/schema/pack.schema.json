@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "pack.schema.json",
+  "title": "Context pack",
+  "description": "Changes what the user sees as examples and reference ranges. NEVER changes a rule or a verdict — the engine does not read packs.",
+  "type": "object",
+  "required": ["id", "label", "vocabulary"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+    "label": { "type": "string", "minLength": 1 },
+    "default": { "type": "boolean" },
+    "vocabulary": {
+      "description": "Domain nouns, e.g. participants / pupils / patients.",
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "examples": {
+      "description": "Keyed by a question's pack_examples key.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "minItems": 1,
+        "items": { "type": "string", "minLength": 1 }
+      }
+    },
+    "benchmarks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "citations", "as_of"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "label": { "type": "string", "minLength": 1 },
+          "range": { "type": "array", "minItems": 2, "maxItems": 2, "items": { "type": "number" } },
+          "units": { "type": "string" },
+          "citations": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+          "as_of": { "type": "string", "format": "date" }
+        }
+      }
+    },
+    "data_sources": { "type": "array", "items": { "type": "string" } }
+  }
+}

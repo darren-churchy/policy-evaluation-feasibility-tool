@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "rules.schema.json",
+  "title": "Per-design blockers, conditions and warnings",
+  "description": "Each design's checks, built on risk-of-bias domains (RoB 2, ROBINS-I). A design takes its WORST state in the order Blocked > Conditional > Unknown > Feasible, so no answer can offset another. Tests are JSON Logic expressions evaluated over the answer store.",
+  "type": "object",
+  "required": ["spec_version", "designs"],
+  "additionalProperties": false,
+  "properties": {
+    "spec_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "designs": {
+      "description": "Keyed by design id — must exist in spec/designs.csv, enforced by the build check.",
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "pattern": "^[a-z][a-z0-9_]*$" },
+      "additionalProperties": { "$ref": "#/$defs/designRules" }
+    }
+  },
+  "$defs": {
+    "citationKey": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_:-]*$" },
+    "jsonLogic": {
+      "description": "A JSON Logic expression over the answer store. Variables are answer ids; an unanswered id resolves to null, which must yield Unknown rather than false.",
+      "type": "object",
+      "minProperties": 1
+    },
+    "designRules": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "blockers": {
+          "description": "If any test is true the design is Blocked — it cannot be made to work with the answers given.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/check" }
+        },
+        "conditions": {
+          "description": "No blocker, but something required is unmet or unevidenced. Yields Conditional, with unlock text saying what would resolve it.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/check" }
+        },
+        "warnings": {
+          "description": "Listed alongside a Feasible verdict. Never changes the state. Numeric thresholds live here, with their range and source.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/check" }
+        }
+      }
+    },
+    "check": {
+      "type": "object",
+      "required": ["id", "test", "message", "citations"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+        "test": { "$ref": "#/$defs/jsonLogic" },
+        "message": {
+          "description": "Shown to the user. States what is wrong, in plain English.",
+          "type": "string",
+          "minLength": 1
+        },
+        "unlock": {
+          "description": "What would resolve this, e.g. 'if rollout order could be randomised: stepped-wedge, Tier 1'. Expected on conditions.",
+          "type": "string"
+        },
+        "rob_domain": {
+          "description": "The risk-of-bias domain this check derives from.",
+          "type": "string"
+        },
+        "threshold": { "$ref": "#/$defs/threshold" },
+        "citations": {
+          "description": "At least one. The build check fails if a key is missing from references.bib — every rule must be traceable to a source.",
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/citationKey" }
+        }
+      }
+    },
+    "threshold": {
+      "description": "Where the literature gives a number. Most are conventions, so the range and its contested status are carried with it and shown to the user.",
+      "type": "object",
+      "required": ["value", "basis"],
+      "additionalProperties": false,
+      "properties": {
+        "value": { "type": "number" },
+        "range": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": { "type": "number" }
+        },
+        "units": { "type": "string" },
+        "basis": {
+          "description": "'convention' where it is a rule of thumb; 'derived' where the source computes it.",
+          "enum": ["convention", "derived", "regulatory"]
+        },
+        "contested": { "type": "boolean" }
+      }
+    }
+  }
+}
