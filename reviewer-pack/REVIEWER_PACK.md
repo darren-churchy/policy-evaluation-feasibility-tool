@@ -29,7 +29,7 @@ Three things are worth knowing before reading:
 | — blockers | 53 |
 | — conditions | 60 |
 | — warnings | 19 |
-| References | 24 |
+| References | 35 |
 
 ## The robustness ladder
 
@@ -544,6 +544,16 @@ Each carries a confidence note: how firmly the source supports the use made of i
 
   *High confidence for propensity score practice and overlap assessment.*
 
+**`bayesian_adaptive_social_policy`** — Data and Policy authors. Bayesian adaptive trials for social policy
+  <https://www.cambridge.org/core/journals/data-and-policy/article/bayesian-adaptive-trials-for-social-policy/95BED92A367269D01A4C367F315A5302>
+
+  *Medium confidence — a methodological proposal rather than field-tested practice. Source of the worked framing the tool uses: an education pilot missing conventional significance can still report a probability that the programme achieves a target improvement, which supports a decision where "not significant" supports none.*
+
+**`bayesian_ssd_review_2025`** — Systematic review authors. A systematic review of sample size determination in Bayesian randomized clinical trials: full Bayesian methods are rarely used (2025)
+  <https://pmc.ncbi.nlm.nih.gov/articles/PMC13220564/>
+
+  *High confidence for the headline proportion: around 4% (7 of 164) of Bayesian RCTs used fully Bayesian sample-size methods, the rest hybrid or frequentist. Supports asking which approach is actually being used for sizing rather than assuming a Bayesian analysis implies Bayesian sizing.*
+
 **`beach_pedersen_2019`** — Beach, Derek and Pedersen, Rasmus Brun. Process-Tracing Methods: Foundations and Guidelines (2019)
 
   *High confidence for process tracing and its requirement for evidence at each step of the hypothesised causal pathway.*
@@ -563,10 +573,25 @@ Each carries a confidence note: how firmly the source supports the use made of i
 
   *High confidence for bandwidth selection and for the point that effective sample size near the cutoff, not total N, governs precision.*
 
+**`fda_bayesian_2026`** — US Food and Drug Administration. Use of Bayesian Methodology in Clinical Trials of Drug and Biological Products (2026)
+  <https://www.fda.gov/regulatory-information/search-fda-guidance-documents/use-bayesian-methodology-clinical-trials-drug-and-biological-products>
+
+  *MEDIUM confidence, and still DRAFT. Title, scope and docket verified against FDA's own listing; the substantive requirements are from legal and academic commentary rather than the text. Scope is drugs and biological products, not devices — at least one secondary source states otherwise. Cited for the four requirements the tool imports: justify the prior's source, quantify its influence, show sensitivity to alternative priors and prior-data conflict, and enable reproduction. Revisit when final.*
+
+**`fda_bayesian_devices_2010`** — US Food and Drug Administration. Guidance for the Use of Bayesian Statistics in Medical Device Clinical Trials (2010)
+  <https://www.federalregister.gov/documents/2010/02/08/2010-2596/guidance-for-industry-and-food-and-drug-administration-guidance-for-the-use-of-bayesian-statistics>
+
+  *High confidence as to existence and scope. Separate from the 2026 draft and still the device reference; recorded because the two are frequently conflated.*
+
 **`goodman_bacon_2021`** — Goodman-Bacon, Andrew. Difference-in-differences with variation in treatment timing (2021)
   <https://doi.org/10.1016/j.jeconom.2021.03.014>
 
   *High confidence. Shows two-way fixed effects under staggered adoption is a weighted average that can place negative weights on some comparisons — the basis for warning on estimator choice rather than on the design.*
+
+**`gosling_2018_shelf`** — Gosling, John Paul. SHELF: The Sheffield Elicitation Framework (2018)
+  <https://doi.org/10.1007/978-3-319-65052-4_4>
+
+  *High confidence for the protocol and its sequence: training, disclosure, individual judgements (min/max/median/quartiles in an order chosen to reduce anchoring), facilitated discussion to a consensus distribution, then fitting. Cited so the tool can signpost a named, auditable elicitation process rather than accepting "based on expert opinion".*
 
 **`hernan_robins_2020`** — Hern\'an, Miguel A. and Robins, James M.. Causal Inference: What If (2020)
 
@@ -576,6 +601,11 @@ Each carries a confidence note: how firmly the source supports the use made of i
   <https://doi.org/10.1016/j.jeconom.2007.05.001>
 
   *High confidence for the sharp/fuzzy distinction and the requirements of a credible discontinuity design.*
+
+**`kruschke_2018`** — Kruschke, John K.. Rejecting or Accepting Parameter Values in Bayesian Estimation (2018)
+  <https://doi.org/10.1177/2515245918771304>
+
+  *High confidence for the HDI+ROPE decision rule. The ROPE bounds themselves are explicitly a practical judgement rather than a statistical quantity — a wider band yields more decisions to accept — so the tool asks who set them and on what basis rather than offering a default. Kruschke has used an 89% HDI to reduce instability at small samples.*
 
 **`lee_etal_2022`** — Lee, David S. and McCrary, Justin and Moreira, Marcelo J. and Porter, Jack. Valid t-ratio Inference for IV (2022)
   <https://doi.org/10.1257/aer.20211063>
@@ -600,6 +630,21 @@ Each carries a confidence note: how firmly the source supports the use made of i
   <https://doi.org/10.1016/j.jeconom.2007.05.005>
 
   *High confidence. The basis for treating an untested running variable as a condition to discharge rather than an assumption to grant.*
+
+**`nichd_strong_prior_2019`** — NICHD Neonatal Research Network commentary. Why results from Bayesian statistical analyses of clinical trials with a strong prior and small sample sizes may be misleading (2019)
+  <https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6618074/>
+
+  *Deliberate counterweight. Argues that with a strong prior and a small sample the posterior largely restates the prior. The tool cites this so that the framing "a small sample does not invalidate a Bayesian inference" is never presented without its corollary: the prior becomes load-bearing and must be defensible.*
+
+**`ohagan_etal_2005`** — O'Hagan, Anthony and Stevens, John W. and Campbell, Michael J.. Assurance in clinical trial design (2005)
+  <https://doi.org/10.1002/pst.175>
+
+  *High confidence. The primary source for assurance as the unconditional probability of a positive result, computed as the prior expectation of power. Used for the distinction the tool draws between "the chance of significance if the effect is exactly d" and "the chance this study succeeds".*
+
+**`opre_bayesian_social_policy`** — Office of Planning, Research, and Evaluation, US Administration for Children and Families. Bayesian Methods for Social Policy Research and Evaluation
+  <https://www.acf.hhs.gov/opre/report/bayesian-methods-social-policy-research-and-evaluation>
+
+  *Medium-high confidence, and the closest source found to this tool's own register. Notes improved precision in small samples and small subgroups, and the value of expressing findings as probabilities — the chance a programme reduced costs — rather than as significance. No UK policy-evaluation equivalent was found; the Magenta Book gives no Bayesian sample-size guidance.*
 
 **`pawson_tilley_1997`** — Pawson, Ray and Tilley, Nick. Realistic Evaluation (1997)
 
@@ -644,3 +689,13 @@ Each carries a confidence note: how firmly the source supports the use made of i
   <https://whatworksgrowth.org/resource-library/the-maryland-scientific-methods-scale-sms/>
 
   *High confidence for the five-level ranking itself. The mapping from individual designs to levels is the contested part: the scale was written for appraisal of completed studies, not for prospective design choice, and several placements are read differently across the literature.*
+
+**`wilson_etal_2021_pilot`** — Wilson, Duncan T. and Wason, James M. S. and Brown, Julia and Farrin, Amanda J. and Walwyn, Rebecca E. A.. Bayesian design and analysis of external pilot trials for complex interventions (2021)
+  <https://doi.org/10.1002/sim.8941>
+
+  *High confidence for decision-theoretic progression rules in pilots, and for the observation that a pilot's small sample makes the analysis prior's effect non-negligible — which is why the tool asks what share of the posterior the prior supplies.*
+
+**`wilson_etal_2022_ssd`** — Wilson, Kevin J. and Williamson, S. Faye and Allen, A. Joy and Williams, Cameron J. and Hellyer, Thomas P. and Lendrem, B. Clare. Bayesian sample size determination for diagnostic accuracy studies (2022)
+  <https://doi.org/10.1002/sim.9393>
+
+  *High confidence for precision-based planning: choosing the smallest sample that yields the required assurance of achieving a target posterior interval width. This is the formulation that fits a fixed-budget evaluation, where the question is whether the estimate will be precise enough to act on.*

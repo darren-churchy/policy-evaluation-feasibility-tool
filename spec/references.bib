@@ -286,3 +286,157 @@
   note      = {High confidence for process tracing and its requirement for evidence at
                each step of the hypothesised causal pathway.}
 }
+
+% ── Bayesian sample size — see docs/BAYESIAN_SAMPLE_SIZE.md ──────────────────
+
+@article{ohagan_etal_2005,
+  title   = {Assurance in clinical trial design},
+  author  = {O'Hagan, Anthony and Stevens, John W. and Campbell, Michael J.},
+  journal = {Pharmaceutical Statistics},
+  volume  = {4}, number = {3}, pages = {187--201},
+  year    = {2005},
+  doi     = {10.1002/pst.175},
+  note    = {High confidence. The primary source for assurance as the unconditional
+             probability of a positive result, computed as the prior expectation of power.
+             Used for the distinction the tool draws between "the chance of significance if
+             the effect is exactly d" and "the chance this study succeeds".}
+}
+
+@incollection{gosling_2018_shelf,
+  title     = {{SHELF}: The Sheffield Elicitation Framework},
+  author    = {Gosling, John Paul},
+  booktitle = {Elicitation: The Science and Art of Structuring Judgement},
+  publisher = {Springer},
+  year      = {2018},
+  doi       = {10.1007/978-3-319-65052-4_4},
+  note      = {High confidence for the protocol and its sequence: training, disclosure,
+               individual judgements (min/max/median/quartiles in an order chosen to reduce
+               anchoring), facilitated discussion to a consensus distribution, then fitting.
+               Cited so the tool can signpost a named, auditable elicitation process rather
+               than accepting "based on expert opinion".}
+}
+
+@article{kruschke_2018,
+  title   = {Rejecting or Accepting Parameter Values in {B}ayesian Estimation},
+  author  = {Kruschke, John K.},
+  journal = {Advances in Methods and Practices in Psychological Science},
+  volume  = {1}, number = {2}, pages = {270--280},
+  year    = {2018},
+  doi     = {10.1177/2515245918771304},
+  note    = {High confidence for the HDI+ROPE decision rule. The ROPE bounds themselves are
+             explicitly a practical judgement rather than a statistical quantity — a wider
+             band yields more decisions to accept — so the tool asks who set them and on
+             what basis rather than offering a default. Kruschke has used an 89% HDI to
+             reduce instability at small samples.}
+}
+
+@article{wilson_etal_2022_ssd,
+  title   = {Bayesian sample size determination for diagnostic accuracy studies},
+  author  = {Wilson, Kevin J. and Williamson, S. Faye and Allen, A. Joy and
+             Williams, Cameron J. and Hellyer, Thomas P. and Lendrem, B. Clare},
+  journal = {Statistics in Medicine},
+  volume  = {41}, number = {15}, pages = {2908--2922},
+  year    = {2022},
+  doi     = {10.1002/sim.9393},
+  note    = {High confidence for precision-based planning: choosing the smallest sample that
+             yields the required assurance of achieving a target posterior interval width.
+             This is the formulation that fits a fixed-budget evaluation, where the question
+             is whether the estimate will be precise enough to act on.}
+}
+
+@article{wilson_etal_2021_pilot,
+  title   = {Bayesian design and analysis of external pilot trials for complex interventions},
+  author  = {Wilson, Duncan T. and Wason, James M. S. and Brown, Julia and
+             Farrin, Amanda J. and Walwyn, Rebecca E. A.},
+  journal = {Statistics in Medicine},
+  volume  = {40}, number = {12}, pages = {2877--2892},
+  year    = {2021},
+  doi     = {10.1002/sim.8941},
+  note    = {High confidence for decision-theoretic progression rules in pilots, and for the
+             observation that a pilot's small sample makes the analysis prior's effect
+             non-negligible — which is why the tool asks what share of the posterior the
+             prior supplies.}
+}
+
+@article{bayesian_ssd_review_2025,
+  title   = {A systematic review of sample size determination in {B}ayesian randomized
+             clinical trials: full {B}ayesian methods are rarely used},
+  author  = {{Systematic review authors}},
+  year    = {2025},
+  url     = {https://pmc.ncbi.nlm.nih.gov/articles/PMC13220564/},
+  urldate = {2026-10-19},
+  note    = {High confidence for the headline proportion: around 4% (7 of 164) of Bayesian
+             RCTs used fully Bayesian sample-size methods, the rest hybrid or frequentist.
+             Supports asking which approach is actually being used for sizing rather than
+             assuming a Bayesian analysis implies Bayesian sizing.}
+}
+
+@article{nichd_strong_prior_2019,
+  title   = {Why results from {B}ayesian statistical analyses of clinical trials with a
+             strong prior and small sample sizes may be misleading},
+  author  = {{NICHD Neonatal Research Network commentary}},
+  year    = {2019},
+  url     = {https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6618074/},
+  urldate = {2026-10-19},
+  note    = {Deliberate counterweight. Argues that with a strong prior and a small sample the
+             posterior largely restates the prior. The tool cites this so that the framing
+             "a small sample does not invalidate a Bayesian inference" is never presented
+             without its corollary: the prior becomes load-bearing and must be defensible.}
+}
+
+@misc{fda_bayesian_2026,
+  title        = {Use of {B}ayesian Methodology in Clinical Trials of Drug and Biological
+                  Products},
+  author       = {{US Food and Drug Administration}},
+  howpublished = {Draft guidance for industry, CDER and CBER, docket FDA-2025-D-3217},
+  month        = jan,
+  year         = {2026},
+  url          = {https://www.fda.gov/regulatory-information/search-fda-guidance-documents/use-bayesian-methodology-clinical-trials-drug-and-biological-products},
+  urldate      = {2026-10-19},
+  note         = {MEDIUM confidence, and still DRAFT. Title, scope and docket verified
+                  against FDA's own listing; the substantive requirements are from legal and
+                  academic commentary rather than the text. Scope is drugs and biological
+                  products, not devices — at least one secondary source states otherwise.
+                  Cited for the four requirements the tool imports: justify the prior's
+                  source, quantify its influence, show sensitivity to alternative priors and
+                  prior-data conflict, and enable reproduction. Revisit when final.}
+}
+
+@misc{fda_bayesian_devices_2010,
+  title        = {Guidance for the Use of {B}ayesian Statistics in Medical Device Clinical
+                  Trials},
+  author       = {{US Food and Drug Administration}},
+  year         = {2010},
+  url          = {https://www.federalregister.gov/documents/2010/02/08/2010-2596/guidance-for-industry-and-food-and-drug-administration-guidance-for-the-use-of-bayesian-statistics},
+  urldate      = {2026-10-19},
+  note         = {High confidence as to existence and scope. Separate from the 2026 draft and
+                  still the device reference; recorded because the two are frequently
+                  conflated.}
+}
+
+@misc{opre_bayesian_social_policy,
+  title        = {{B}ayesian Methods for Social Policy Research and Evaluation},
+  author       = {{Office of Planning, Research, and Evaluation, US Administration for
+                  Children and Families}},
+  url          = {https://www.acf.hhs.gov/opre/report/bayesian-methods-social-policy-research-and-evaluation},
+  urldate      = {2026-10-19},
+  note         = {Medium-high confidence, and the closest source found to this tool's own
+                  register. Notes improved precision in small samples and small subgroups,
+                  and the value of expressing findings as probabilities — the chance a
+                  programme reduced costs — rather than as significance. No UK
+                  policy-evaluation equivalent was found; the Magenta Book gives no Bayesian
+                  sample-size guidance.}
+}
+
+@article{bayesian_adaptive_social_policy,
+  title   = {Bayesian adaptive trials for social policy},
+  journal = {Data \& Policy},
+  author  = {{Data and Policy authors}},
+  url     = {https://www.cambridge.org/core/journals/data-and-policy/article/bayesian-adaptive-trials-for-social-policy/95BED92A367269D01A4C367F315A5302},
+  urldate = {2026-10-19},
+  note    = {Medium confidence — a methodological proposal rather than field-tested practice.
+             Source of the worked framing the tool uses: an education pilot missing
+             conventional significance can still report a probability that the programme
+             achieves a target improvement, which supports a decision where "not
+             significant" supports none.}
+}

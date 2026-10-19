@@ -193,9 +193,16 @@ opt-in ready-reckoner.
 **Accepted when** both approaches have the same number of questions and sections, and a
 test asserts the engine never reads ready-reckoner output.
 
-**Blocked on:** the proposal flags Bayesian sample-size practice as thinly researched. One
-narrow literature pass (assurance, precision-based planning, ROPE decision rules,
-regulator guidance) before this spec block is locked.
+**Research pass complete** — see `docs/BAYESIAN_SAMPLE_SIZE.md`. Covers the role of sample
+size in Bayesian inference (a small sample does not invalidate the inference; it makes the
+prior load-bearing), assurance and precision-based planning as the replacements for power,
+SHELF and the Classical Method for prior elicitation, threshold probabilities and the
+HDI+ROPE rule for effect size, and the FDA's January 2026 draft guidance. Proposes the
+ten-question Bayesian branch. Twelve citations added to `references.bib`.
+
+One gap recorded rather than closed: no UK policy-evaluation source gives Bayesian
+sample-size guidance, and the Magenta Book does not address it. Every substantive source
+is clinical or US federal.
 
 ### Phase 4 — Shared intake and tool consistency
 
