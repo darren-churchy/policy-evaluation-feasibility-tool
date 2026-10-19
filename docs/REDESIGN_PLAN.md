@@ -87,7 +87,7 @@ Every quantitative claim in the proposal was checked against `26dc61e`.
 | --- | --- |
 | ~220 `govuk-*`, 37 `moj-*` class uses | 216 and 36 |
 | ~14 "Magenta Book", 22 "Test and Learn" | 14 and 18 |
-| 32 design variants | 33 |
+| 32 design variants | 32 (an earlier count of 33 was wrong — it matched an explanatory comment) |
 | `did_cs` and `did_sa` share one function | Confirmed — both call `scoreDidCs` |
 | Ideal Trial, data inventory, DAG, `p7_mde`, `p7_attrition`, `p3_equipoise` feed nothing | Confirmed — zero references in `scoring.js` |
 | No tests, nothing persisted | Confirmed |
