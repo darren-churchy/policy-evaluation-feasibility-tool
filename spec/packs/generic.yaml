@@ -1,0 +1,42 @@
+# The default context pack.
+#
+# A pack changes what the user sees as examples and vocabulary. It NEVER changes a rule or
+# a verdict — the engine does not read packs, and a test enforces that.
+
+id: generic
+label: Generic (no sector)
+default: true
+
+vocabulary:
+  participants: participants
+  sites: sites
+  practitioners: practitioners
+  caseload: caseload
+  outcome: outcome
+
+examples:
+  comparison_group:
+    - Another region or local authority area that did not receive the intervention
+    - A cohort who became eligible later
+    - A service with comparable caseload characteristics
+  assignment_threshold:
+    - An eligibility score with a documented cutoff
+    - An age boundary determining entitlement
+    - An income threshold governing access
+  instrument_available:
+    - Distance to the nearest service
+    - A lottery or ballot used to allocate places
+    - An administrative quirk shifting take-up for some people but not others
+  pre_periods:
+    - Monthly administrative returns for the three years before the change
+    - Quarterly management information covering the pre-intervention period
+  cointerventions:
+    - A funding change affecting the same group
+    - A separate policy taking effect in the same month
+    - An external shock affecting the outcome directly
+
+data_sources:
+  - Administrative records held by the delivering body
+  - Management information collected for operational purposes
+  - Linked datasets held under an existing data-sharing agreement
+  - Survey data collected specifically for the evaluation

@@ -1,0 +1,42 @@
+# Criminal justice context pack.
+#
+# Examples and vocabulary only. Nothing here changes a rule or a verdict. Benchmark ranges
+# carry a citation key and the date they were drawn, so a reviewer can check whether they
+# are still current.
+
+id: criminal-justice
+label: Criminal justice
+
+vocabulary:
+  participants: people on the caseload
+  sites: probation delivery units
+  practitioners: probation practitioners
+  caseload: caseload
+  outcome: reoffending outcome
+
+examples:
+  comparison_group:
+    - A probation region that adopted the change later
+    - People just outside the eligibility criteria for the programme
+    - A comparable caseload in an area running business as usual
+  assignment_threshold:
+    - A risk assessment score with a documented intervention cutoff
+    - A sentence length boundary determining eligibility
+    - An age threshold governing which service applies
+  instrument_available:
+    - Distance from home address to the nearest delivery site
+    - Allocation to a practitioner whose caseload affects programme referral
+    - A scheduling quirk affecting which cohort receives an intervention first
+  pre_periods:
+    - Monthly caseload and outcome returns for the years before rollout
+    - Historic reoffending rates for the same cohort definition
+  cointerventions:
+    - A sentencing guideline change taking effect in the same period
+    - A separate commissioning change affecting the same caseload
+    - A change in recording practice altering the measured outcome
+
+data_sources:
+  - Case management system records
+  - Linked offending history data
+  - Court and sentencing records
+  - Programme attendance and completion records

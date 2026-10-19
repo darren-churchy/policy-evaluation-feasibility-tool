@@ -1,3 +1,6 @@
+/* GOV.UK + MoJ Frontend, compiled locally. See index.html. */
+@import "./styles/vendor/govuk-moj.css";
+
 /*
  * Global stylesheet — house-style restyle (purple brand, Source Sans 3).
  * Design tokens mirrored from src/styles/tokens.js as CSS custom properties.
@@ -35,7 +38,8 @@
 }
 
 /* ── Font stack ────────────────────────────────────────────────────────────────
- * Source Sans 3 is loaded from Google Fonts in index.html.
+ * Source Sans 3 is loaded from Google Fonts in index.html. If that fetch fails —
+ * offline, or blocked — the stack falls back to Segoe UI and Arial.
  * Applied globally so GOV.UK / MoJ component classes inherit the right face.
  */
 body,

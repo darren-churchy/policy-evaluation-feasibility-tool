@@ -1,0 +1,7 @@
+// Compiles GOV.UK and MoJ Frontend from the npm dependencies into one local stylesheet,
+// so nothing is fetched from a CDN at runtime. Run with `npm run css:vendor`.
+//
+// The load path is the project root rather than node_modules, because MoJ Frontend's
+// own SCSS imports GOV.UK via a hardcoded `node_modules/...` path.
+@import "node_modules/govuk-frontend/dist/govuk/index";
+@import "node_modules/@ministryofjustice/frontend/moj/all";

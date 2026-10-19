@@ -103,7 +103,7 @@ export default function Page7({ inputs, set, gatePassed }) {
             <div className="govuk-hint">
               The smallest effect your study needs to detect to be policy-relevant. Express
               as an absolute difference where possible (e.g. 3 percentage point reduction
-              in reoffending).
+              in the primary outcome).
             </div>
             <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
               <input className="govuk-input govuk-input--width-10" id="p7_mde" type="number"

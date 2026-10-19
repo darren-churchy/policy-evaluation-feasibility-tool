@@ -149,7 +149,7 @@ export default function LandingPage() {
             <span style={{ color: T.purpleTintMid }}>Feasibility Tool</span>
           </h1>
           <p style={{ fontSize: '16px', color: '#d9d2ec', lineHeight: 1.7, maxWidth: '600px', marginBottom: '28px' }}>
-            A structured decision-support tool for government social researchers planning
+            A structured decision-support tool for analysts and methods reviewers planning
             impact evaluations. Work through seven sections to receive a scored feasibility
             assessment across 32 evaluation design variants.
           </p>

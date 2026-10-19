@@ -14,20 +14,8 @@ export default defineConfig({
       // Include all built assets in the precache so the app works offline
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
-        // Cache GOV.UK and MoJ CDN assets for offline use
-        runtimeCaching: [
-          {
-            urlPattern: /^https:\/\/cdn\.jsdelivr\.net\/.*/i,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'cdn-cache',
-              expiration: {
-                maxEntries: 20,
-                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
-              },
-            },
-          },
-        ],
+        // No runtime caching: GOV.UK and MoJ Frontend are compiled into the bundle,
+        // so every asset the app needs is precached and nothing is fetched at runtime.
       },
 
       // Web app manifest — controls how the app appears when installed

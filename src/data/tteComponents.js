@@ -6,7 +6,7 @@ export const TTE_COMPONENTS = [
     id: 'tte_eligibility',
     title: '1. Eligibility Criteria',
     hint: 'Who would be eligible to participate in the ideal trial? Define inclusion and exclusion criteria precisely. Consider age, geography, prior history, referral route, or other relevant characteristics. Being precise here helps identify whether your target population is observable in your data.',
-    placeholder: 'e.g. All adults referred to probation services in England and Wales, first offence only, aged 18–65',
+    placeholder: 'e.g. All adults referred to the service in the eligible areas, first referral only, aged 18–65',
   },
   {
     id: 'tte_treatment',

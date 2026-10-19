@@ -75,7 +75,7 @@ export default function Page4({ inputs, set, gatePassed, prospectiveOk }) {
             <DesignCard title="Individual RCT" hint="The gold standard for causal inference. Provides the strongest basis for causal claims if implemented with fidelity.">
               {yn('rct_ind_feasible','Is individual-level randomisation feasible?','Consider whether the referral or allocation process could incorporate randomisation.')}
             </DesignCard>
-            <DesignCard title="Cluster RCT" hint="Randomisation at group level (e.g. prisons, probation teams). Requires more total participants than individual randomisation.">
+            <DesignCard title="Cluster RCT" hint="Randomisation at group level (e.g. sites, teams, caseloads). Requires more total participants than individual randomisation.">
               {r('rct_cluster_n','Do you have a sufficient number of clusters?','Cluster RCTs typically require at least 10–20 clusters per arm.',
                 [{ value: 'yes', label: 'Yes — 20+ clusters' }, { value: 'maybe', label: 'Borderline — 10–20' }, { value: 'no', label: 'No — fewer than 10' }], true)}
               {r('rct_cluster_contam','Is there risk of contamination between clusters?','Clusters should be sufficiently separated to prevent treated units influencing control units.',

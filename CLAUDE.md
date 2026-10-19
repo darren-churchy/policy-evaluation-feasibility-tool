@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 A static React/Vite single-page application for assessing the feasibility of impact evaluation designs. It guides government social researchers through a structured seven-section questionnaire and produces a ranked feasibility table for 32 evaluation design variants. There is no backend — all scoring is pure JavaScript computed in the browser.
 
-Prototype v0.7.1, Ministry of Justice | Government Social Research. Not for public release.
+Prototype v0.7.1. Not for public release.
 
 > **Redesign in progress.** See `docs/REDESIGN_PLAN.md`. Redesign work happens on the
 > `redesign` branch; `dev` continues to serve the current tool.

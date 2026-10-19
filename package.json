@@ -15,9 +15,12 @@
     "pack": "node scripts/build-reviewer-pack.mjs",
     "pack:check": "node scripts/build-reviewer-pack.mjs --check",
     "spec:build": "node scripts/build-spec.mjs",
-    "spec:build:check": "node scripts/build-spec.mjs --check"
+    "spec:build:check": "node scripts/build-spec.mjs --check",
+    "css:vendor": "sass --load-path=. --no-source-map --style=compressed --quiet scripts/vendor-css.scss src/styles/vendor/govuk-moj.css"
   },
   "dependencies": {
+    "@ministryofjustice/frontend": "^2.1.2",
+    "govuk-frontend": "^5.4.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.0"
@@ -27,6 +30,7 @@
     "@vitest/coverage-v8": "^3.2.4",
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",
+    "sass": "^1.80.6",
     "vite": "^6.0.0",
     "vite-plugin-pwa": "^0.21.0",
     "vitest": "^3.2.4",

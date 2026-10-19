@@ -313,12 +313,12 @@ export default function PageQuestionFramework() {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.6rem', marginTop: '0.5rem' }}>
                 <div style={{ background: 'white', border: `1px solid ${T.greyLine}`, padding: '0.55rem 0.7rem', fontSize: '0.76rem', lineHeight: 1.5 }}>
                   <div style={{ fontWeight: 600, fontSize: '0.69rem', marginBottom: '0.2rem', color: T.teal }}>→ Prediction</div>
-                  <em>"Which factors are associated with reoffending?"</em><br />
+                  <em>"Which factors are associated with the outcome?"</em><br />
                   Regression, descriptive modelling. Reports association.
                 </div>
                 <div style={{ background: 'white', border: `1px solid ${T.greyLine}`, padding: '0.55rem 0.7rem', fontSize: '0.76rem', lineHeight: 1.5 }}>
                   <div style={{ fontWeight: 600, fontSize: '0.69rem', marginBottom: '0.2rem', color: T.purple25 }}>→ Causal Inference</div>
-                  <em>"Does housing instability cause reoffending?"</em><br />
+                  <em>"Does housing instability cause the outcome to worsen?"</em><br />
                   Requires a credible identification strategy.
                 </div>
               </div>

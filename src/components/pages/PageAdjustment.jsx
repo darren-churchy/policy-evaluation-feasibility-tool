@@ -51,7 +51,7 @@ export default function Page5({ inputs, set, gatePassed }) {
             </label>
             <div className="govuk-hint">List the main variables — one per line or comma-separated.</div>
             <TextArea id="p5_dag_key" value={inputs.p5_dag_key} onChange={v => set('p5_dag_key', v)}
-              rows={3} placeholder="e.g. Age, prior risk score, treatment assignment, employment status, reoffending" />
+              rows={3} placeholder="e.g. Age, prior risk score, treatment assignment, employment status, prior outcome" />
           </div>
         </Card>
 
@@ -66,7 +66,7 @@ export default function Page5({ inputs, set, gatePassed }) {
 
           {[
             { id: 'p5_confounders', label: 'Confounders', hint: 'Variables that cause both treatment assignment and the outcome. Must be adjusted for to block non-causal associations.', placeholder: 'e.g. Age, sex, prior risk score, socioeconomic status, region of delivery' },
-            { id: 'p5_mediators',   label: 'Mediators',   hint: 'Variables on the causal pathway between treatment and outcome — caused by treatment and in turn causing the outcome. Do not adjust for mediators when estimating total treatment effects.', placeholder: 'e.g. Employment status (caused by programme; causes reoffending)' },
+            { id: 'p5_mediators',   label: 'Mediators',   hint: 'Variables on the causal pathway between treatment and outcome — caused by treatment and in turn causing the outcome. Do not adjust for mediators when estimating total treatment effects.', placeholder: 'e.g. Employment status (caused by the programme; in turn affects the outcome)' },
             { id: 'p5_colliders',   label: 'Colliders',   hint: 'Variables caused by both treatment and outcome (or their causes). Never adjust for colliders — this introduces bias by opening a non-causal pathway.', placeholder: 'e.g. Programme completion (caused by engagement and personal stability)' },
             { id: 'p5_competing',   label: 'Competing Exposures', hint: 'Other interventions or exposures occurring simultaneously that may also affect the outcome.', placeholder: 'e.g. Concurrent housing support received by some participants during follow-up' },
           ].map(v => (
