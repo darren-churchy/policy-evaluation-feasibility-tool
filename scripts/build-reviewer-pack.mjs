@@ -131,6 +131,27 @@ function buildCsvs(spec, questionsById, ruleRows) {
     ['id', 'text', 'hint', 'intake', 'tier', 'asked_when', 'options', 'rob_domain', 'used_by', 'references'],
   )
 
+  const stats = spec.statistics
+  if (stats) {
+    const rows = []
+    for (const [approach, body] of Object.entries(stats.approaches ?? {})) {
+      for (const t of body.tensions ?? []) {
+        rows.push({
+          approach,
+          tension_id: t.id,
+          raised_when: describeExpression(t.when, questionsById),
+          reads: questionsRead(t.when).join(' '),
+          message: (t.message ?? '').replace(/\s+/g, ' ').trim(),
+          prompt: (t.prompt ?? '').replace(/\s+/g, ' ').trim(),
+          citations: (t.citations ?? []).join(' '),
+        })
+      }
+    }
+    files['statistics.csv'] = toCsv(rows, [
+      'approach', 'tension_id', 'raised_when', 'reads', 'message', 'prompt', 'citations',
+    ])
+  }
+
   return files
 }
 
@@ -261,6 +282,71 @@ function buildMarkdown(spec, questionsById, ruleRows, bib) {
       w(`| ${r.type} | ${r.fires_when} | ${r.message} | ${r.unlock || '—'} | ${r.threshold || '—'} | ${r.citations} |`)
     }
     w('')
+  }
+
+  const stats = spec.statistics
+  if (stats) {
+    w('## The statistics module', '')
+    w('Asks for the analytical approach first, then gives each approach its own question',
+      'set. Sample size does a different job under each, so the Bayesian questions are not',
+      'translations of the frequentist ones. The module produces questions to take to a',
+      'statistician; it never returns a pass or fail on sample size.', '')
+
+    const nq = stats.approaches.nhst.questions.length
+    const bq = stats.approaches.bayesian.questions.length
+    const nt = stats.approaches.nhst.tensions.length
+    const bt = stats.approaches.bayesian.tensions.length
+    w(`Frequentist: ${nq} questions, ${nt} tensions. Bayesian: ${bq} questions, ${bt} tensions.`,
+      'Equal depth is asserted by test.', '')
+
+    w('### Asked of everyone', '')
+    for (const qid of stats.shared_questions) {
+      const q = questionsById.get(qid)
+      w(`- **${clean(q?.text ?? qid)}** \`${qid}\``)
+    }
+    w('')
+
+    for (const [name, body] of Object.entries(stats.approaches)) {
+      w(`### ${body.label}`, '')
+      w(`*What the sample is for:* ${clean(body.sample_role)}`, '')
+      w('| Question | Options |', '|---|---|')
+      for (const qid of body.questions) {
+        const q = questionsById.get(qid)
+        w(`| **${clean(q?.text ?? qid)}**<br>\`${qid}\` | ${(q?.options ?? []).map(o => o.label).join(' · ')} |`)
+      }
+      w('')
+      w('**Tensions raised**', '')
+      w('| Raised when | Message | Take to a statistician | Sources |', '|---|---|---|---|')
+      for (const t of body.tensions) {
+        w(`| ${describeExpression(t.when, questionsById)} | ${clean(t.message)} | ${clean(t.prompt)} | ${(t.citations ?? []).join(' ')} |`)
+      }
+      w('')
+    }
+
+    if (stats.undecided_comparison?.length) {
+      w('### Shown while the approach is undecided', '')
+      w('| | Frequentist | Bayesian |', '|---|---|---|')
+      for (const row of stats.undecided_comparison) {
+        w(`| **${clean(row.topic)}** | ${clean(row.nhst)} | ${clean(row.bayesian)} |`)
+      }
+      w('')
+    }
+
+    w('### What plays the role of N', '')
+    w('Total sample size is frequently the wrong quantity.', '')
+    w('| Design | Quantity that matters | Note |', '|---|---|---|')
+    for (const q of stats.design_quantities ?? []) {
+      const design = designsById.get(q.design)
+      w(`| ${design?.name ?? q.design} | ${clean(q.quantity)} | ${clean(q.note) || '—'} |`)
+    }
+    w('')
+
+    if (stats.ready_reckoner) {
+      w('### Ready-reckoner', '')
+      w(`${clean(stats.ready_reckoner.note)}`, '')
+      w(`\`engine_reads: ${stats.ready_reckoner.engine_reads}\` — the engine does not read it,`,
+        'so a figure produced here cannot change any verdict. Enforced by test.', '')
+    }
   }
 
   w('## Questions', '')

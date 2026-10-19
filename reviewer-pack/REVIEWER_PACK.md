@@ -24,7 +24,7 @@ Three things are worth knowing before reading:
 | | Count |
 |---|---|
 | Designs | 22 (19 on the ladder, 3 theory-based) |
-| Questions | 38 |
+| Questions | 63 |
 | Checks | 132 |
 | — blockers | 53 |
 | — conditions | 60 |
@@ -483,6 +483,126 @@ Requires stakeholder access to elicit mechanisms
 | Condition | stakeholder_access is “Limited” | Limited access to the people involved in delivery. | Establish which groups can be reached. Partial access narrows which context-mechanism-outcome configurations can be examined rather than ruling the method out. | — | pawson_tilley_1997 |
 | Warning | stakeholder_access is not “No” | Findings are explicitly about what works for whom in which context. They do not generalise in the way an average effect is assumed to. | — | — | pawson_tilley_1997 |
 
+## The statistics module
+
+Asks for the analytical approach first, then gives each approach its own question
+set. Sample size does a different job under each, so the Bayesian questions are not
+translations of the frequentist ones. The module produces questions to take to a
+statistician; it never returns a pass or fail on sample size.
+
+Frequentist: 10 questions, 6 tensions. Bayesian: 10 questions, 6 tensions.
+Equal depth is asserted by test.
+
+### Asked of everyone
+
+- **What is your primary intended analytical approach?** `analysis_approach`
+- **What kind of outcome are you measuring?** `outcome_type`
+- **Are outcomes grouped within sites, practitioners or caseloads?** `outcome_clustered`
+- **How much loss to follow-up do you expect?** `expected_attrition`
+- **Is the number of units fixed by context, or can you choose it?** `sample_fixed`
+
+### Frequentist (null hypothesis significance testing)
+
+*What the sample is for:* The sample controls error rates. It buys power to detect an effect of a chosen size at a chosen significance level, and the calculation runs from an effect you have to nominate in advance.
+
+| Question | Options |
+|---|---|
+| **What is the smallest effect that would be worth detecting?**<br>`nhst_mde` | Agreed and documented · Discussed, not settled · Not yet considered |
+| **Who set that figure, and on what basis?**<br>`nhst_mde_source` | From the decision — the effect that changes what we would do · From prior evidence on similar interventions · From a convention — a standardised effect size benchmark · Not established |
+| **Where do your baseline rate and variability estimates come from?**<br>`nhst_baseline_source` | From this population, recently · From a comparable population or an earlier period · From published literature on other settings · Assumed, with no source |
+| **Have the significance level and target power been agreed?**<br>`nhst_alpha_power` | Yes — agreed and recorded · Using conventional defaults without discussion · Not yet decided |
+| **How many outcomes will be tested, and is there a plan for multiplicity?**<br>`nhst_multiplicity` | One primary outcome, designated in advance · Several outcomes with a stated adjustment or hierarchy · Several outcomes with no plan |
+| **Do you have an intracluster correlation estimate?**<br>`nhst_icc` | From comparable data · From published estimates in this field · Assumed without a source · Not yet obtained |
+| **Has expected attrition been built into the sizing?**<br>`nhst_attrition_modelled` | Yes — with scenarios for different rates · Yes, at a single assumed rate · Not yet |
+| **Will there be interim analyses?**<br>`nhst_sequential` | No — a single analysis at the end · Yes, with a pre-specified spending function · Yes, with no stated adjustment |
+| **Will the sizing be reported across a range of assumptions?**<br>`nhst_sensitivity` | Yes — a range for each key input · No — a single calculation · Not yet decided |
+| **Will the analysis be pre-registered or otherwise recorded before data are seen?**<br>`nhst_preregistration` | Yes — registered or lodged in advance · Documented internally but not registered · No |
+
+**Tensions raised**
+
+| Raised when | Message | Take to a statistician | Sources |
+|---|---|---|---|
+| nhst_mde is “Not yet considered” or nhst_mde_source is “Not established” | The smallest effect worth detecting has not been established, or has no stated basis. Where it is chosen to make an available sample look adequate, the calculation justifies itself. | Ask what effect would actually change the decision, and whether the study can detect one that small. If it cannot, that is worth knowing before fieldwork rather than after. | rob2 magenta_book |
+| nhst_baseline_source is “Assumed, with no source” | The baseline rate and variability are assumed rather than sourced. Every figure in the sizing calculation rests on them. | Ask what happens to the required sample if the baseline is a third higher or lower than assumed. If the answer changes the design, the estimate needs a source. | rob2 |
+| nhst_multiplicity is “Several outcomes with no plan” | Several outcomes will be tested with no stated adjustment or hierarchy. The chance of at least one spurious positive rises with each one. | Ask which single outcome the decision rests on, and whether the others are secondary or exploratory. Record that before the data arrive. | rob2 |
+| nhst_icc is one of “Assumed without a source” or “Not yet obtained” | The design is clustered but the intracluster correlation is assumed or absent. The required number of clusters is sensitive to this value. | Ask for the required sample across a range of plausible correlations rather than at one value, and whether the design still works at the pessimistic end. | rob2 |
+| nhst_sequential is “Yes, with no stated adjustment” | Interim analyses are planned with no stated adjustment. Repeatedly testing and stopping on significance inflates the error rate the design is meant to control. | Ask for a spending function or a formal stopping rule, agreed before the first look at the data. | rob2 |
+| nhst_sensitivity is “No — a single calculation” | The sizing rests on a single value for each input. Variance, baseline and correlation are all estimates, so one number implies more certainty about the design than exists. | Ask for the sample size across a range for each key input, and which input the answer is most sensitive to. | rob2 |
+
+### Bayesian
+
+*What the sample is for:* The sample buys precision for a decision. A small sample does not invalidate the inference — the posterior is as coherent at twenty units as at twenty thousand — but it does mean the prior supplies more of the answer. That is acceptable where the prior can be defended, and not otherwise.
+
+| Question | Options |
+|---|---|
+| **What size of effect would change the decision?**<br>`bayes_decision_threshold` | Agreed with those making the decision · Proposed, not yet agreed · Not yet considered |
+| **Is there a range of effects you would treat as equivalent to no effect?**<br>`bayes_rope` | Yes — bounds set by those making the decision · Using a conventional default band · Not yet considered |
+| **Where does your prior come from?**<br>`bayes_prior_source` | From previous evaluations of similar interventions · From structured expert elicitation · A weakly informative default, chosen to contribute little · Not yet established |
+| **By what protocol were the expert judgements elicited?**<br>`bayes_elicitation_protocol` | SHELF — the Sheffield Elicitation Framework · Cooke's Classical Method, with calibration questions · Another documented protocol · Informal discussion, no protocol |
+| **How much of the posterior will come from the prior rather than the data?**<br>`bayes_prior_share` | Will be quantified and reported · Expected to be small, not yet checked · Not yet considered |
+| **Is a prior sensitivity analysis planned?**<br>`bayes_sensitivity` | Yes — with alternatives specified in advance · Intended, alternatives not yet chosen · No |
+| **What will you do if the prior and the data disagree?**<br>`bayes_prior_data_conflict` | A stated plan, agreed in advance · Not yet considered |
+| **What target will size the study, or characterise it if the sample is fixed?**<br>`bayes_target` | Assurance — the probability the study gives a usable answer · Precision — a target credible interval width · Expected utility or value of information · Not yet chosen |
+| **Will the audience expect frequentist error-rate guarantees?**<br>`bayes_audience_calibration` | No — a probabilistic answer will be accepted · Yes, and operating characteristics will be simulated · Yes, with no simulation planned · Not yet established |
+| **Will the design adapt or stop early based on accumulating data?**<br>`bayes_adaptive_stopping` | No — a single analysis at the end · Yes, with simulated operating characteristics · Yes, without simulation |
+
+**Tensions raised**
+
+| Raised when | Message | Take to a statistician | Sources |
+|---|---|---|---|
+| bayes_prior_source is “Not yet established” or bayes_elicitation_protocol is “Informal discussion, no protocol” | The prior has no stated source, or rests on informal discussion rather than a documented elicitation. At small sample sizes the prior supplies much of the posterior, so an unexaminable prior makes the finding unexaminable. | Ask whether previous evaluations could supply the prior instead, and if expert judgement is the only option, whether a structured elicitation such as SHELF is practicable — individual judgements taken before group discussion, with the basis recorded. | gosling_2018_shelf nichd_strong_prior_2019 |
+| bayes_decision_threshold is one of “Not yet considered” or “Proposed, not yet agreed” and bayes_rope is “Not yet considered” | Neither a decision threshold nor a region of practical equivalence has been agreed. Without one the posterior cannot be turned into a decision, and the analysis reduces to reporting an interval. | Ask those making the decision what size of effect would change it, and what size they would treat as too small to matter. Those two answers are what the analysis reports against. | kruschke_2018 opre_bayesian_social_policy |
+| bayes_prior_source is one of “From previous evaluations of similar interventions” or “From structured expert elicitation” and bayes_prior_share is one of “Not yet considered” or “Expected to be small, not yet checked” | An informative prior is in use but its contribution to the posterior has not been quantified. Where the prior supplies most of the answer, the finding largely restates what was assumed — and a Bayesian analysis chosen to rescue an underpowered study will do exactly that without saying so. | Ask for the prior's effective sample size alongside the actual one, and for the posterior under a deliberately sceptical prior. If the conclusion changes, the study is reporting its assumptions. | nichd_strong_prior_2019 wilson_etal_2021_pilot |
+| bayes_sensitivity is “No” | No prior sensitivity analysis is planned. This is the standard reviewer challenge and a stated regulatory expectation. | Ask which alternative priors will be run — at minimum a sceptical one and a weakly informative one — and agree them before the data are seen. | fda_bayesian_2026 |
+| bayes_audience_calibration is “Yes, with no simulation planned” | The audience expects frequentist error-rate guarantees but no simulation is planned to provide them. A posterior probability does not answer a question about long-run error rates. | Ask whether the operating characteristics can be simulated — the false positive and false negative rates the design would show across repeated hypothetical studies — or whether the audience can be brought to a probabilistic answer. | fda_bayesian_2026 bayesian_ssd_review_2025 |
+| bayes_adaptive_stopping is “Yes, without simulation” | The design stops early on accumulating data without simulated operating characteristics. Adaptive stopping is a real advantage of the approach, and its behaviour has to be established rather than assumed. | Ask for simulations across a range of true effects, including no effect, showing how often the rule stops early and what it concludes when it does. | bayesian_adaptive_social_policy bayesian_ssd_review_2025 |
+
+### Shown while the approach is undecided
+
+| | Frequentist | Bayesian |
+|---|---|---|
+| **What the sample is for** | Controls error rates — power to detect an effect of a nominated size at a chosen significance level. | Buys precision or assurance for a decision. The prior and the data share the work, and their shares can be reported. |
+| **The effect-size question** | The smallest effect worth detecting, and who set it. | The effect that would change the decision, and the range treated as equivalent to no effect. |
+| **What you must establish first** | A baseline rate and variability from a credible source; a significance level and target power; a multiplicity plan if several outcomes are tested. | Where the prior comes from and who accepts it; a target interval width or assurance; a plan for prior-data conflict. |
+| **If the sample is already fixed** | Ask what the minimum detectable effect is, and whether it is plausible. | Ask what posterior precision to expect, and how much of it comes from the prior rather than the data. |
+| **Clustering and attrition** | Number of clusters and the intracluster correlation; attrition scenarios. | The same, plus priors on variation between clusters, which are themselves estimates needing a source. |
+| **Stopping and monitoring** | A pre-specified analysis, with a spending function if interim looks are planned. | Posterior-probability stopping rules, with simulated operating characteristics. |
+| **Sensitivity** | Ranges for variance and intracluster correlation. | Alternative priors, including a sceptical one, and a plan for prior-data conflict. |
+| **What the audience expects** | Pre-registration of the analysis. | Whether readers expect frequentist error-rate calibration, and whether operating characteristics will be simulated if so. |
+
+### What plays the role of N
+
+Total sample size is frequently the wrong quantity.
+
+| Design | Quantity that matters | Note |
+|---|---|---|
+| Individual RCT | People randomised | — |
+| Cluster RCT | Number of clusters | Clusters before cluster size. Adding people to existing sites buys far less than adding sites, and beyond a point buys almost nothing. |
+| Stepped-wedge RCT | Clusters and the number of steps | The sequence length matters as well as the number of units in it. |
+| Crossover RCT | Participants, and periods per participant | — |
+| Waitlist RCT | People randomised, and the length of the window before crossover | The comparison exists only until the waitlist group is treated. |
+| Encouragement design | Those whose take-up the encouragement changed | Not those randomised. A weak encouragement gives a large study that identifies the effect for very few people. |
+| Sharp regression discontinuity | Observations within a plausible bandwidth of the cutoff | Not the total sample. A large dataset can be thin where it matters. |
+| Fuzzy regression discontinuity | Observations near the cutoff, and the size of the jump in take-up | A fuzzy design needs more than a sharp one at the same cutoff. |
+| Instrumental variables | Sample size and first-stage strength together | A large sample does not compensate for a weak instrument. |
+| Difference-in-differences (2x2) | Treated and comparison units, and pre-intervention periods | — |
+| Staggered-adoption difference-in-differences | Treated and comparison units, adoption cohorts, and pre-periods | Each adoption cohort is its own comparison, so cohort size matters as well as total. |
+| Synthetic control | Donor pool size and pre-period length | Inference is by placebo tests across the donor pool, so pool size governs what can be concluded as well as how well the method fits. |
+| Controlled interrupted time series | Time points per segment, on both series | — |
+| Regression discontinuity in time | Observations within a window either side of the date | — |
+| Matching | Units in the region of common support | Not the full sample — unmatched units contribute nothing. |
+| Weighting | Effective sample size after weighting | Can be far below the nominal count where a few observations carry large weights. Worth computing before committing. |
+| G-computation and standardisation | Units within each covariate stratum | — |
+| G-methods for time-varying treatment | Units with complete treatment and confounder histories | Incomplete histories drop out of the analysis rather than being partially used. |
+| Interrupted time series | Number of time points, and the degree of autocorrelation | Correlated observations carry less information than their count suggests, so the effective number is lower than the nominal one. |
+
+### Ready-reckoner
+
+Illustrative only. Produces a rough figure from the user's own inputs to support a conversation with a statistician — not a substitute for one, and never an input to any verdict the tool reaches.
+
+`engine_reads: false` — the engine does not read it,
+so a figure produced here cannot change any verdict. Enforced by test.
+
 ## Questions
 
 | Question | Asked | Options | Read by |
@@ -525,6 +645,31 @@ Requires stakeholder access to elicit mechanisms
 | **Is there a plan to account for correlation between adjacent time points?**<br>`autocorrelation_plan` | always | Yes — it will be modelled · Not yet decided · No | 1 design |
 | **Can you speak to the people who deliver and receive the intervention?**<br>`stakeholder_access` | always | Yes · Limited · No | 1 design |
 | **Is there documentation covering each step of the intended causal chain?**<br>`documentary_evidence` | always | Yes — substantial · Patchy · No | 2 designs |
+| **What is your primary intended analytical approach?**<br>`analysis_approach` | always | Frequentist — significance testing and confidence intervals · Bayesian — posterior distributions and credible intervals · Both — a frequentist primary analysis with Bayesian support, or the reverse · Not yet decided | readiness / routing only |
+| **What kind of outcome are you measuring?**<br>`outcome_type` | always | Continuous — a score, cost or duration · Binary — whether something happened · Count — how many times something happened · Time to event — how long until something happened | readiness / routing only |
+| **Are outcomes grouped within sites, practitioners or caseloads?**<br>`outcome_clustered` | always | Yes · Possibly — not yet established · No | readiness / routing only |
+| **How much loss to follow-up do you expect?**<br>`expected_attrition` | always | Low — under 10% · Moderate — 10% to 25% · High — over 25% · Not yet established | readiness / routing only |
+| **Is the number of units fixed by context, or can you choose it?**<br>`sample_fixed` | always | It can be chosen — recruitment or rollout is still open · It is fixed — the caseload or cohort is what it is | readiness / routing only |
+| **What is the smallest effect that would be worth detecting?**<br>`nhst_mde` | analysis_approach is one of “Frequentist — significance testing and confidence intervals” or “Both — a frequentist primary analysis with Bayesian support, or the reverse” | Agreed and documented · Discussed, not settled · Not yet considered | readiness / routing only |
+| **Who set that figure, and on what basis?**<br>`nhst_mde_source` | analysis_approach is one of “Frequentist — significance testing and confidence intervals” or “Both — a frequentist primary analysis with Bayesian support, or the reverse” | From the decision — the effect that changes what we would do · From prior evidence on similar interventions · From a convention — a standardised effect size benchmark · Not established | readiness / routing only |
+| **Where do your baseline rate and variability estimates come from?**<br>`nhst_baseline_source` | analysis_approach is one of “Frequentist — significance testing and confidence intervals” or “Both — a frequentist primary analysis with Bayesian support, or the reverse” | From this population, recently · From a comparable population or an earlier period · From published literature on other settings · Assumed, with no source | readiness / routing only |
+| **Have the significance level and target power been agreed?**<br>`nhst_alpha_power` | analysis_approach is one of “Frequentist — significance testing and confidence intervals” or “Both — a frequentist primary analysis with Bayesian support, or the reverse” | Yes — agreed and recorded · Using conventional defaults without discussion · Not yet decided | readiness / routing only |
+| **How many outcomes will be tested, and is there a plan for multiplicity?**<br>`nhst_multiplicity` | analysis_approach is one of “Frequentist — significance testing and confidence intervals” or “Both — a frequentist primary analysis with Bayesian support, or the reverse” | One primary outcome, designated in advance · Several outcomes with a stated adjustment or hierarchy · Several outcomes with no plan | readiness / routing only |
+| **Do you have an intracluster correlation estimate?**<br>`nhst_icc` | analysis_approach is one of “Frequentist — significance testing and confidence intervals” or “Both — a frequentist primary analysis with Bayesian support, or the reverse” and outcome_clustered is one of “Yes” or “Possibly — not yet established” | From comparable data · From published estimates in this field · Assumed without a source · Not yet obtained | readiness / routing only |
+| **Has expected attrition been built into the sizing?**<br>`nhst_attrition_modelled` | analysis_approach is one of “Frequentist — significance testing and confidence intervals” or “Both — a frequentist primary analysis with Bayesian support, or the reverse” | Yes — with scenarios for different rates · Yes, at a single assumed rate · Not yet | readiness / routing only |
+| **Will there be interim analyses?**<br>`nhst_sequential` | analysis_approach is one of “Frequentist — significance testing and confidence intervals” or “Both — a frequentist primary analysis with Bayesian support, or the reverse” | No — a single analysis at the end · Yes, with a pre-specified spending function · Yes, with no stated adjustment | readiness / routing only |
+| **Will the sizing be reported across a range of assumptions?**<br>`nhst_sensitivity` | analysis_approach is one of “Frequentist — significance testing and confidence intervals” or “Both — a frequentist primary analysis with Bayesian support, or the reverse” | Yes — a range for each key input · No — a single calculation · Not yet decided | readiness / routing only |
+| **Will the analysis be pre-registered or otherwise recorded before data are seen?**<br>`nhst_preregistration` | analysis_approach is one of “Frequentist — significance testing and confidence intervals” or “Both — a frequentist primary analysis with Bayesian support, or the reverse” | Yes — registered or lodged in advance · Documented internally but not registered · No | readiness / routing only |
+| **What size of effect would change the decision?**<br>`bayes_decision_threshold` | analysis_approach is one of “Bayesian — posterior distributions and credible intervals” or “Both — a frequentist primary analysis with Bayesian support, or the reverse” | Agreed with those making the decision · Proposed, not yet agreed · Not yet considered | readiness / routing only |
+| **Is there a range of effects you would treat as equivalent to no effect?**<br>`bayes_rope` | analysis_approach is one of “Bayesian — posterior distributions and credible intervals” or “Both — a frequentist primary analysis with Bayesian support, or the reverse” | Yes — bounds set by those making the decision · Using a conventional default band · Not yet considered | readiness / routing only |
+| **Where does your prior come from?**<br>`bayes_prior_source` | analysis_approach is one of “Bayesian — posterior distributions and credible intervals” or “Both — a frequentist primary analysis with Bayesian support, or the reverse” | From previous evaluations of similar interventions · From structured expert elicitation · A weakly informative default, chosen to contribute little · Not yet established | readiness / routing only |
+| **By what protocol were the expert judgements elicited?**<br>`bayes_elicitation_protocol` | analysis_approach is one of “Bayesian — posterior distributions and credible intervals” or “Both — a frequentist primary analysis with Bayesian support, or the reverse” and bayes_prior_source is “From structured expert elicitation” | SHELF — the Sheffield Elicitation Framework · Cooke's Classical Method, with calibration questions · Another documented protocol · Informal discussion, no protocol | readiness / routing only |
+| **How much of the posterior will come from the prior rather than the data?**<br>`bayes_prior_share` | analysis_approach is one of “Bayesian — posterior distributions and credible intervals” or “Both — a frequentist primary analysis with Bayesian support, or the reverse” | Will be quantified and reported · Expected to be small, not yet checked · Not yet considered | readiness / routing only |
+| **Is a prior sensitivity analysis planned?**<br>`bayes_sensitivity` | analysis_approach is one of “Bayesian — posterior distributions and credible intervals” or “Both — a frequentist primary analysis with Bayesian support, or the reverse” | Yes — with alternatives specified in advance · Intended, alternatives not yet chosen · No | readiness / routing only |
+| **What will you do if the prior and the data disagree?**<br>`bayes_prior_data_conflict` | analysis_approach is one of “Bayesian — posterior distributions and credible intervals” or “Both — a frequentist primary analysis with Bayesian support, or the reverse” | A stated plan, agreed in advance · Not yet considered | readiness / routing only |
+| **What target will size the study, or characterise it if the sample is fixed?**<br>`bayes_target` | analysis_approach is one of “Bayesian — posterior distributions and credible intervals” or “Both — a frequentist primary analysis with Bayesian support, or the reverse” | Assurance — the probability the study gives a usable answer · Precision — a target credible interval width · Expected utility or value of information · Not yet chosen | readiness / routing only |
+| **Will the audience expect frequentist error-rate guarantees?**<br>`bayes_audience_calibration` | analysis_approach is one of “Bayesian — posterior distributions and credible intervals” or “Both — a frequentist primary analysis with Bayesian support, or the reverse” | No — a probabilistic answer will be accepted · Yes, and operating characteristics will be simulated · Yes, with no simulation planned · Not yet established | readiness / routing only |
+| **Will the design adapt or stop early based on accumulating data?**<br>`bayes_adaptive_stopping` | analysis_approach is one of “Bayesian — posterior distributions and credible intervals” or “Both — a frequentist primary analysis with Bayesian support, or the reverse” | No — a single analysis at the end · Yes, with simulated operating characteristics · Yes, without simulation | readiness / routing only |
 
 ## References
 

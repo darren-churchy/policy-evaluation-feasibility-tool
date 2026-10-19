@@ -4,67 +4,202 @@
   "title": "Statistics module",
   "description": "NHST and Bayesian question sets of equal depth, plus the design/quantity table. Produces questions to take to a statistician, never a pass or fail on N. The ready-reckoner is declared here but the engine must never read it.",
   "type": "object",
-  "required": ["spec_version", "approaches", "shared_questions", "design_quantities"],
+  "required": [
+    "spec_version",
+    "approaches",
+    "shared_questions",
+    "design_quantities"
+  ],
   "additionalProperties": false,
   "properties": {
-    "spec_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "spec_version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
     "approaches": {
       "type": "object",
-      "required": ["nhst", "bayesian"],
+      "required": [
+        "nhst",
+        "bayesian"
+      ],
       "additionalProperties": false,
       "properties": {
-        "nhst": { "$ref": "#/$defs/approach" },
-        "bayesian": { "$ref": "#/$defs/approach" }
+        "nhst": {
+          "$ref": "#/$defs/approach"
+        },
+        "bayesian": {
+          "$ref": "#/$defs/approach"
+        }
       }
     },
-    "shared_questions": { "type": "array", "items": { "type": "string" } },
+    "shared_questions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
     "design_quantities": {
       "description": "What plays the role of N, per design. For RD it is observations near the cutoff, not the total.",
       "type": "array",
       "minItems": 1,
       "items": {
         "type": "object",
-        "required": ["design", "quantity"],
+        "required": [
+          "design",
+          "quantity"
+        ],
         "additionalProperties": false,
         "properties": {
-          "design": { "type": "string" },
-          "quantity": { "type": "string", "minLength": 1 },
-          "note": { "type": "string" }
+          "design": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "string",
+            "minLength": 1
+          },
+          "note": {
+            "type": "string"
+          }
         }
       }
     },
     "ready_reckoner": {
       "description": "Opt-in, collapsed by default, labelled illustrative. engine_reads MUST be false and a test enforces it.",
       "type": "object",
-      "required": ["engine_reads"],
+      "required": [
+        "engine_reads"
+      ],
       "properties": {
-        "engine_reads": { "const": false }
+        "engine_reads": {
+          "const": false
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1
+        },
+        "modes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "approach",
+              "outputs",
+              "inputs"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "approach": {
+                "enum": [
+                  "nhst",
+                  "bayesian"
+                ]
+              },
+              "inputs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "outputs": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "undecided_comparison": {
+      "description": "Shown when the approach is not yet chosen. One row per dimension, contrasting what each approach requires from the design.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "topic",
+          "nhst",
+          "bayesian"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "topic": {
+            "type": "string",
+            "minLength": 1
+          },
+          "nhst": {
+            "type": "string",
+            "minLength": 1
+          },
+          "bayesian": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
       }
     }
   },
   "$defs": {
     "approach": {
       "type": "object",
-      "required": ["label", "questions", "tensions"],
+      "required": [
+        "label",
+        "questions",
+        "tensions"
+      ],
       "additionalProperties": false,
       "properties": {
-        "label": { "type": "string", "minLength": 1 },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
         "sample_role": {
           "description": "What the sample is for under this approach.",
           "type": "string"
         },
-        "questions": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "questions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
         "tensions": {
           "description": "Flagged as questions, never as verdicts.",
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["id", "message"],
+            "required": [
+              "id",
+              "message",
+              "when",
+              "prompt"
+            ],
             "additionalProperties": false,
             "properties": {
-              "id": { "type": "string" },
-              "message": { "type": "string", "minLength": 1 },
-              "citations": { "type": "array", "items": { "type": "string" } }
+              "id": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string",
+                "minLength": 1
+              },
+              "citations": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "when": {
+                "description": "JSON Logic over the answer store. The tension is raised only when this holds. An unanswered input leaves it unraised rather than raised in error.",
+                "type": "object",
+                "minProperties": 1
+              },
+              "prompt": {
+                "description": "What to take to a statistician. The tool produces questions, never a pass or fail on N.",
+                "type": "string",
+                "minLength": 1
+              }
             }
           }
         }

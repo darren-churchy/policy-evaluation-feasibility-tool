@@ -219,8 +219,75 @@ function activeRoutes(answers, stagesSpec) {
  * @param {object} answers  flat map of question id -> answer value
  * @param {object} spec     { tiers, designs, questions, rules, stages }
  */
+/**
+ * The statistics module. Returns the question set for the chosen approach, the tensions
+ * the answers raise, and the quantity that plays the role of N for the designs still in
+ * play.
+ *
+ * Tensions are raised as questions to take to a statistician, never as verdicts, and never
+ * from an unanswered input — an UNKNOWN condition leaves the tension unraised rather than
+ * raised in error.
+ *
+ * The ready-reckoner is deliberately NOT read here. It is declared in the specification so
+ * the UI can render it, and the engine ignores it entirely so an illustrative figure can
+ * never reach a verdict.
+ */
+function assessStatistics(answers, statisticsSpec, designsInPlay) {
+  if (!statisticsSpec) return null
+
+  const approachAnswer = answers?.analysis_approach
+  const selected = approachAnswer === 'both'
+    ? ['nhst', 'bayesian']
+    : approachAnswer === 'nhst' || approachAnswer === 'bayesian'
+      ? [approachAnswer]
+      : []
+
+  const askable = qid => {
+    const q = statisticsSpec._questionsById?.get(qid)
+    if (!q?.applies_when) return true
+    return evaluateLogic(q.applies_when, answers) === true
+  }
+
+  const branches = selected.map(name => {
+    const approach = statisticsSpec.approaches[name]
+    const tensions = (approach.tensions ?? [])
+      .filter(t => evaluateLogic(t.when, answers) === true)
+      .map(t => ({ id: t.id, message: t.message, prompt: t.prompt, citations: t.citations ?? [] }))
+
+    const questions = (approach.questions ?? []).filter(askable)
+    const unanswered = questions.filter(qid => {
+      const v = answers?.[qid]
+      return v === undefined || v === null || v === ''
+    })
+
+    return {
+      approach: name,
+      label: approach.label,
+      sampleRole: approach.sample_role,
+      questions,
+      unanswered,
+      tensions,
+    }
+  })
+
+  const quantities = (statisticsSpec.design_quantities ?? [])
+    .filter(q => !designsInPlay || designsInPlay.has(q.design))
+    .map(q => ({ design: q.design, quantity: q.quantity, note: q.note }))
+
+  return {
+    approach: approachAnswer ?? null,
+    sharedQuestions: statisticsSpec.shared_questions ?? [],
+    branches,
+    // Shown only while the approach is undecided; it contrasts what each asks of the
+    // design rather than arguing for either.
+    comparison: selected.length ? [] : (statisticsSpec.undecided_comparison ?? []),
+    designQuantities: quantities,
+  }
+}
+
 export function evaluate(answers = {}, spec) {
-  const { tiers: tiersSpec, designs: designRegister, questions, rules, stages: stagesSpec } = spec
+  const { tiers: tiersSpec, designs: designRegister, questions, rules, stages: stagesSpec,
+    statistics: statisticsSpec } = spec
 
   const readiness = assessReadiness(answers, stagesSpec)
   const stage = inferStage(answers, stagesSpec)
@@ -293,6 +360,11 @@ export function evaluate(answers = {}, spec) {
     recommendation,
     nextRungUp,
     theoryBased: theoryBasedRole(counterfactual, bestAvailableTier),
+    statistics: assessStatistics(
+      answers,
+      statisticsSpec && { ...statisticsSpec, _questionsById: new Map(questions.map(q => [q.id, q])) },
+      new Set(counterfactual.filter(d => d.state === 'feasible' || d.state === 'conditional').map(d => d.id)),
+    ),
     agenda: buildAgenda(answers, questions, assessed, readiness),
     routes: activeRoutes(answers, stagesSpec),
   }

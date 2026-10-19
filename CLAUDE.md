@@ -174,10 +174,10 @@ in phase 2. See `docs/REDESIGN_PLAN.md`.
 | `spec/tiers.yaml` | The five robustness tiers, the theory-based strand, contested placements | Seeded |
 | `spec/references.bib` | Every citation, with a confidence note | Seeded |
 | `spec/designs.csv` | One row per design (not per estimator) — 22 designs | Seeded |
-| `spec/questions.yaml` | Question bank shared by all tools — 38 questions | Seeded |
+| `spec/questions.yaml` | Question bank shared by all tools — 63 questions | Seeded |
 | `spec/rules.yaml` | Per design: blockers, conditions, warnings as JSON Logic — 130 checks | Seeded |
 | `spec/stages.yaml` | Stage vocabulary, readiness gates, routing | Seeded |
-| `spec/statistics.yaml` | NHST and Bayesian question sets | Phase 3 |
+| `spec/statistics.yaml` | NHST and Bayesian question sets — 10 questions and 6 tensions each | Seeded |
 | `spec/packs/*.yaml` | Context packs: examples, benchmarks, vocabulary | Phase 6 |
 | `spec/schema/*.schema.json` | JSON Schemas (draft 2020-12) for the above | Done |
 
@@ -194,8 +194,8 @@ in phase 2. See `docs/REDESIGN_PLAN.md`.
 The option-value check is the subtle one: a typo'd value makes a blocker silently never
 fire, which surfaces as a design looking Feasible when it has simply never been checked.
 
-**Every question is consumed.** All 38 reach a rule test, a gating condition, a readiness
-gate, the stage inference or a route — asserted by test. The previous tool collected 80
+**Every question is consumed.** All 63 reach a rule test, a gating condition, a readiness
+gate, the stage inference, a route or the statistics module — asserted by test. The previous tool collected 80
 inputs and scored on 23, so this is checked rather than assumed.
 
 ### Stages and readiness
@@ -244,6 +244,37 @@ the ordered question agenda, and the active routes.
 The seven golden scenarios in `tests/golden-scenarios.test.mjs` are phase 2's acceptance
 test. They are mutation-verified: making the logic two-valued, taking the best state
 instead of the worst, or letting a fired gate through all break them.
+
+### The statistics module
+
+`spec/statistics.yaml`. Asks for the analytical approach first, then gives each approach
+its own question set. Sample size does a different job under each, so the Bayesian
+questions are **not** translations of the frequentist ones.
+
+Both branches carry **10 questions and 6 tensions**, asserted by test, so the Bayesian half
+cannot quietly become the thinner one. Research behind it is in
+`docs/BAYESIAN_SAMPLE_SIZE.md`.
+
+The framing the Bayesian branch exists to carry: *a small sample does not invalidate a
+Bayesian inference — it means the prior supplies more of the answer.* That is acceptable
+where the prior can be defended and not otherwise, so the questions make the prior's
+contribution explicit: where it came from, by what elicitation protocol, what share of the
+posterior it supplies, and what happens if it conflicts with the data. The
+`prior_doing_the_work` tension names the failure this guards against — Bayesian methods
+chosen to rescue an underpowered study rather than because the decision is probabilistic.
+
+Tensions are raised **as questions to take to a statistician, never as verdicts**, each
+carrying a `prompt`. A tension whose condition is unresolved is not raised, the same
+guarantee the design verdicts rely on.
+
+`design_quantities` records what plays the role of N per design, because total sample size
+is frequently the wrong quantity — observations near the cutoff for a discontinuity design,
+clusters rather than people for a cluster trial, effective sample size after weighting.
+
+**The engine never reads the ready-reckoner.** It is declared in the spec so the UI can
+render it, and `evaluate()` ignores it entirely, so an illustrative figure can never reach a
+verdict. Two tests enforce this: output is identical when the ready-reckoner is replaced
+wholesale, and the engine source contains no reference to it.
 
 ### The reviewer pack
 

@@ -90,10 +90,29 @@ describe('the reviewer pack', () => {
     ruleRows = parseCsvRecords(pack['rules.csv']).records
   })
 
-  it('writes the five expected files', () => {
+  it('writes the six expected files', () => {
     expect(Object.keys(pack).sort()).toEqual(
-      ['REVIEWER_PACK.md', 'designs.csv', 'questions.csv', 'rules.csv', 'tiers.csv'],
+      ['REVIEWER_PACK.md', 'designs.csv', 'questions.csv', 'rules.csv', 'statistics.csv', 'tiers.csv'],
     )
+  })
+
+  it('renders the statistics module for review', () => {
+    const md = pack['REVIEWER_PACK.md']
+    expect(md).toContain('## The statistics module')
+    expect(md).toMatch(/Equal depth is asserted by test/)
+    expect(md, 'the reviewer must see that the engine cannot read the ready-reckoner')
+      .toMatch(/engine_reads: false/)
+    // Every tension should be reviewable, with its prompt.
+    const tensions = parseCsvRecords(pack['statistics.csv']).records
+    expect(tensions.length).toBe(
+      spec.statistics.approaches.nhst.tensions.length +
+      spec.statistics.approaches.bayesian.tensions.length,
+    )
+    for (const t of tensions) {
+      expect(t.raised_when, `${t.tension_id} unrendered`).toBeTruthy()
+      expect(t.prompt, `${t.tension_id} has no prompt`).toBeTruthy()
+      expect(t.citations, `${t.tension_id} has no source`).toBeTruthy()
+    }
   })
 
   it('is reproducible — generating twice gives identical output', () => {

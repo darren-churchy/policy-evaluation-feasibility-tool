@@ -499,3 +499,346 @@ questions:
       - { value: limited, label: Patchy }
       - { value: 'no',      label: 'No' }
     references: [beach_pedersen_2019]
+
+  # ── Statistics module · shared ─────────────────────────────────────────────
+  #
+  # Asked of everyone before the approach-specific sets. The approach question comes
+  # first because sample size does a different job under each, so the questions that
+  # follow are not translations of one another.
+
+  - id: analysis_approach
+    text: What is your primary intended analytical approach?
+    hint: >-
+      This decides which set of questions follows. Sample size serves a different purpose
+      under each: controlling error rates, or achieving precision for a decision.
+    options:
+      - { value: nhst,      label: 'Frequentist — significance testing and confidence intervals' }
+      - { value: bayesian,  label: 'Bayesian — posterior distributions and credible intervals' }
+      - { value: both,      label: 'Both — a frequentist primary analysis with Bayesian support, or the reverse' }
+      - { value: undecided, label: Not yet decided }
+    references: [magenta_book]
+
+  - id: outcome_type
+    text: What kind of outcome are you measuring?
+    hint: The outcome type governs which sizing formula applies and what varies.
+    options:
+      - { value: continuous,     label: 'Continuous — a score, cost or duration' }
+      - { value: binary,         label: 'Binary — whether something happened' }
+      - { value: count,          label: 'Count — how many times something happened' }
+      - { value: time_to_event,  label: 'Time to event — how long until something happened' }
+    references: [rob2]
+
+  - id: outcome_clustered
+    text: Are outcomes grouped within sites, practitioners or caseloads?
+    hint: >-
+      Outcomes for people sharing a site resemble each other, so they carry less
+      information than the same number of unrelated observations.
+    options:
+      - { value: 'yes',     label: Yes }
+      - { value: unclear, label: Possibly — not yet established }
+      - { value: 'no',      label: 'No' }
+    references: [rob2]
+
+  - id: expected_attrition
+    text: How much loss to follow-up do you expect?
+    hint: >-
+      Attrition reduces the usable sample and, where it differs between groups, threatens
+      the comparison itself rather than only its precision.
+    rob_domain: Missing outcome data
+    options:
+      - { value: low,      label: 'Low — under 10%' }
+      - { value: moderate, label: 'Moderate — 10% to 25%' }
+      - { value: high,     label: 'High — over 25%' }
+      - { value: unknown,  label: Not yet established }
+    references: [rob2]
+
+  - id: sample_fixed
+    text: Is the number of units fixed by context, or can you choose it?
+    hint: >-
+      This reverses the question. Where the sample can be chosen, you size it to a target.
+      Where it is fixed, you ask what that sample can and cannot establish.
+    options:
+      - { value: choosable, label: 'It can be chosen — recruitment or rollout is still open' }
+      - { value: fixed,     label: 'It is fixed — the caseload or cohort is what it is' }
+    references: [ohagan_etal_2005]
+
+  # ── Statistics module · frequentist ────────────────────────────────────────
+
+  - id: nhst_mde
+    text: What is the smallest effect that would be worth detecting?
+    hint: >-
+      Not the effect you hope for — the smallest one that would still change a decision.
+      Sizing on an optimistic effect is the most common way studies end up underpowered.
+    applies_when:
+      in: [{ var: analysis_approach }, [nhst, both]]
+    options:
+      - { value: agreed,     label: Agreed and documented }
+      - { value: informal,   label: 'Discussed, not settled' }
+      - { value: not_set,    label: Not yet considered }
+    references: [rob2]
+
+  - id: nhst_mde_source
+    text: Who set that figure, and on what basis?
+    hint: >-
+      A minimum detectable effect set by the analyst to make the sample work is a
+      circular justification. It should come from the decision or from prior evidence.
+    applies_when:
+      in: [{ var: analysis_approach }, [nhst, both]]
+    options:
+      - { value: decision,   label: 'From the decision — the effect that changes what we would do' }
+      - { value: evidence,   label: From prior evidence on similar interventions }
+      - { value: convention, label: 'From a convention — a standardised effect size benchmark' }
+      - { value: unstated,   label: Not established }
+    references: [rob2, magenta_book]
+
+  - id: nhst_baseline_source
+    text: Where do your baseline rate and variability estimates come from?
+    hint: >-
+      Every sizing calculation rests on these. An estimate from a different population or
+      period can be badly wrong in either direction.
+    applies_when:
+      in: [{ var: analysis_approach }, [nhst, both]]
+    options:
+      - { value: local,    label: 'From this population, recently' }
+      - { value: similar,  label: From a comparable population or an earlier period }
+      - { value: literature, label: From published literature on other settings }
+      - { value: assumed,  label: 'Assumed, with no source' }
+    references: [rob2]
+
+  - id: nhst_alpha_power
+    text: Have the significance level and target power been agreed?
+    hint: >-
+      Conventionally 5% and 80% or 90%. Both are conventions rather than derived figures,
+      and worth stating rather than inheriting.
+    applies_when:
+      in: [{ var: analysis_approach }, [nhst, both]]
+    options:
+      - { value: agreed,   label: 'Yes — agreed and recorded' }
+      - { value: default,  label: Using conventional defaults without discussion }
+      - { value: not_set,  label: Not yet decided }
+    references: [rob2]
+
+  - id: nhst_multiplicity
+    text: How many outcomes will be tested, and is there a plan for multiplicity?
+    hint: >-
+      Testing many outcomes without a plan inflates the chance of a spurious positive, and
+      is the usual route to a finding that does not replicate.
+    applies_when:
+      in: [{ var: analysis_approach }, [nhst, both]]
+    rob_domain: Selection of the reported result
+    options:
+      - { value: single,     label: 'One primary outcome, designated in advance' }
+      - { value: planned,    label: Several outcomes with a stated adjustment or hierarchy }
+      - { value: unplanned,  label: Several outcomes with no plan }
+    references: [rob2]
+
+  - id: nhst_icc
+    text: Do you have an intracluster correlation estimate?
+    hint: >-
+      Required to size a clustered design. The result is sensitive to the value assumed, so
+      a range matters more than a point estimate.
+    applies_when:
+      and:
+        - { in: [{ var: analysis_approach }, [nhst, both]] }
+        - { in: [{ var: outcome_clustered }, ['yes', unclear]] }
+    options:
+      - { value: local,     label: From comparable data }
+      - { value: published, label: From published estimates in this field }
+      - { value: assumed,   label: Assumed without a source }
+      - { value: none,      label: Not yet obtained }
+    references: [rob2]
+
+  - id: nhst_attrition_modelled
+    text: Has expected attrition been built into the sizing?
+    hint: Sizing on the recruited sample rather than the analysed sample overstates precision.
+    applies_when:
+      in: [{ var: analysis_approach }, [nhst, both]]
+    options:
+      - { value: 'yes',       label: 'Yes — with scenarios for different rates' }
+      - { value: single,    label: 'Yes, at a single assumed rate' }
+      - { value: 'no',        label: 'Not yet' }
+    references: [rob2]
+
+  - id: nhst_sequential
+    text: Will there be interim analyses?
+    hint: >-
+      Looking at the data repeatedly and stopping when significant inflates the error rate
+      unless the analysis plan accounts for it.
+    applies_when:
+      in: [{ var: analysis_approach }, [nhst, both]]
+    options:
+      - { value: none,       label: 'No — a single analysis at the end' }
+      - { value: planned,    label: 'Yes, with a pre-specified spending function' }
+      - { value: unplanned,  label: 'Yes, with no stated adjustment' }
+    references: [rob2]
+
+  - id: nhst_sensitivity
+    text: Will the sizing be reported across a range of assumptions?
+    hint: >-
+      Variance, baseline rate and intracluster correlation are all estimates. A single
+      number implies more certainty about the design than exists.
+    applies_when:
+      in: [{ var: analysis_approach }, [nhst, both]]
+    options:
+      - { value: 'yes',      label: 'Yes — a range for each key input' }
+      - { value: 'no',       label: 'No — a single calculation' }
+      - { value: unclear,  label: Not yet decided }
+    references: [rob2]
+
+  - id: nhst_preregistration
+    text: Will the analysis be pre-registered or otherwise recorded before data are seen?
+    hint: >-
+      The protection against analytic choices being made, knowingly or not, to favour a
+      result.
+    applies_when:
+      in: [{ var: analysis_approach }, [nhst, both]]
+    rob_domain: Selection of the reported result
+    options:
+      - { value: 'yes',      label: 'Yes — registered or lodged in advance' }
+      - { value: internal, label: Documented internally but not registered }
+      - { value: 'no',       label: 'No' }
+    references: [rob2]
+
+  # ── Statistics module · Bayesian ───────────────────────────────────────────
+  #
+  # See docs/BAYESIAN_SAMPLE_SIZE.md. These are not translations of the frequentist set:
+  # a small sample does not invalidate a Bayesian inference, it makes the prior
+  # load-bearing, so the questions are built to make the prior's contribution explicit.
+
+  - id: bayes_decision_threshold
+    text: What size of effect would change the decision?
+    hint: >-
+      The analysis can then report the probability that the effect exceeds it — which is
+      the question a decision-maker actually asked, and one a significance test cannot
+      answer.
+    applies_when:
+      in: [{ var: analysis_approach }, [bayesian, both]]
+    options:
+      - { value: agreed,   label: Agreed with those making the decision }
+      - { value: proposed, label: 'Proposed, not yet agreed' }
+      - { value: not_set,  label: Not yet considered }
+    references: [kruschke_2018, opre_bayesian_social_policy]
+
+  - id: bayes_rope
+    text: Is there a range of effects you would treat as equivalent to no effect?
+    hint: >-
+      A region of practical equivalence lets the analysis conclude that an effect is
+      negligible, rather than only failing to find one. Its bounds are a judgement about
+      what the decision treats as too small to matter, not a statistical quantity.
+    applies_when:
+      in: [{ var: analysis_approach }, [bayesian, both]]
+    options:
+      - { value: agreed,     label: 'Yes — bounds set by those making the decision' }
+      - { value: default,    label: Using a conventional default band }
+      - { value: not_set,    label: Not yet considered }
+    references: [kruschke_2018]
+
+  - id: bayes_prior_source
+    text: Where does your prior come from?
+    hint: >-
+      The most consequential question at small sample sizes, because the prior supplies
+      what the data cannot.
+    applies_when:
+      in: [{ var: analysis_approach }, [bayesian, both]]
+    options:
+      - { value: evaluations, label: From previous evaluations of similar interventions }
+      - { value: elicited,    label: From structured expert elicitation }
+      - { value: weak,        label: 'A weakly informative default, chosen to contribute little' }
+      - { value: unstated,    label: Not yet established }
+    references: [gosling_2018_shelf, wilson_etal_2021_pilot]
+
+  - id: bayes_elicitation_protocol
+    text: By what protocol were the expert judgements elicited?
+    hint: >-
+      A named protocol makes the prior auditable. SHELF trains experts first, takes
+      individual judgements before discussion to limit anchoring, then fits a consensus
+      distribution.
+    applies_when:
+      and:
+        - { in: [{ var: analysis_approach }, [bayesian, both]] }
+        - { '==': [{ var: bayes_prior_source }, elicited] }
+    options:
+      - { value: shelf,     label: 'SHELF — the Sheffield Elicitation Framework' }
+      - { value: classical, label: 'Cooke''s Classical Method, with calibration questions' }
+      - { value: other,     label: Another documented protocol }
+      - { value: informal,  label: 'Informal discussion, no protocol' }
+    references: [gosling_2018_shelf]
+
+  - id: bayes_prior_share
+    text: How much of the posterior will come from the prior rather than the data?
+    hint: >-
+      At small sample sizes this can be most of it. That is not disqualifying, but it has
+      to be known and reported — otherwise the finding restates the assumption.
+    applies_when:
+      in: [{ var: analysis_approach }, [bayesian, both]]
+    options:
+      - { value: quantified, label: 'Will be quantified and reported' }
+      - { value: expected_small, label: 'Expected to be small, not yet checked' }
+      - { value: unknown,    label: Not yet considered }
+    references: [wilson_etal_2021_pilot, nichd_strong_prior_2019]
+
+  - id: bayes_sensitivity
+    text: Is a prior sensitivity analysis planned?
+    hint: >-
+      Re-running under alternative priors, including a sceptical one. The standard
+      reviewer challenge, and a stated regulatory expectation.
+    applies_when:
+      in: [{ var: analysis_approach }, [bayesian, both]]
+    options:
+      - { value: planned,  label: 'Yes — with alternatives specified in advance' }
+      - { value: intended, label: 'Intended, alternatives not yet chosen' }
+      - { value: 'no',       label: 'No' }
+    references: [fda_bayesian_2026, nichd_strong_prior_2019]
+
+  - id: bayes_prior_data_conflict
+    text: What will you do if the prior and the data disagree?
+    hint: >-
+      Foreseeable, and better decided before the data arrive than after. Discovering the
+      conflict and then choosing a response is how a prior becomes unfalsifiable.
+    applies_when:
+      in: [{ var: analysis_approach }, [bayesian, both]]
+    options:
+      - { value: planned,   label: 'A stated plan, agreed in advance' }
+      - { value: 'no',        label: Not yet considered }
+    references: [fda_bayesian_2026]
+
+  - id: bayes_target
+    text: What target will size the study, or characterise it if the sample is fixed?
+    hint: >-
+      Where the sample can be chosen: a target assurance, or a target credible interval
+      width. Where it is fixed: the precision the sample can be expected to deliver.
+    applies_when:
+      in: [{ var: analysis_approach }, [bayesian, both]]
+    options:
+      - { value: assurance,    label: 'Assurance — the probability the study gives a usable answer' }
+      - { value: precision,    label: 'Precision — a target credible interval width' }
+      - { value: utility,      label: 'Expected utility or value of information' }
+      - { value: not_set,      label: Not yet chosen }
+    references: [ohagan_etal_2005, wilson_etal_2022_ssd]
+
+  - id: bayes_audience_calibration
+    text: Will the audience expect frequentist error-rate guarantees?
+    hint: >-
+      Common where findings go to a board or an external reviewer accustomed to p-values.
+      Operating characteristics can be simulated, but that has to be planned.
+    applies_when:
+      in: [{ var: analysis_approach }, [bayesian, both]]
+    options:
+      - { value: 'no',         label: 'No — a probabilistic answer will be accepted' }
+      - { value: simulated,  label: 'Yes, and operating characteristics will be simulated' }
+      - { value: unplanned,  label: 'Yes, with no simulation planned' }
+      - { value: unknown,    label: Not yet established }
+    references: [fda_bayesian_2026, bayesian_ssd_review_2025]
+
+  - id: bayes_adaptive_stopping
+    text: Will the design adapt or stop early based on accumulating data?
+    hint: >-
+      Adaptive stopping is a genuine advantage of the Bayesian approach, and its
+      behaviour has to be simulated rather than assumed.
+    applies_when:
+      in: [{ var: analysis_approach }, [bayesian, both]]
+    options:
+      - { value: none,       label: 'No — a single analysis at the end' }
+      - { value: simulated,  label: 'Yes, with simulated operating characteristics' }
+      - { value: unplanned,  label: 'Yes, without simulation' }
+    references: [bayesian_adaptive_social_policy, bayesian_ssd_review_2025]

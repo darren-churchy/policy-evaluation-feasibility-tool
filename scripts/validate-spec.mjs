@@ -247,6 +247,55 @@ function checkReferences(parsed, errors) {
     })
   }
 
+  // statistics.yaml: a question listed in an approach set but absent from the bank would
+  // simply never be asked, and a tension reading a question that does not exist would
+  // never fire — both silent.
+  const statistics = parsed['statistics.yaml']?.data
+  if (statistics && questions) {
+    const sdoc = parsed['statistics.yaml'].doc
+    const ssrc = parsed['statistics.yaml'].source
+    const designIds = new Set((designs ?? []).map(d => d.id))
+
+    const checkQuestionList = (list, path, label) => {
+      ;(list ?? []).forEach((qid, i) => {
+        if (!optionsByQuestion.has(qid)) {
+          errors.push({ file: 'statistics.yaml', line: lineFor(sdoc, ssrc, [...path, i]), message: `${label} lists "${qid}", which is not a question in questions.yaml` })
+        }
+      })
+    }
+
+    checkQuestionList(statistics.shared_questions, ['shared_questions'], 'shared_questions')
+
+    for (const [name, approach] of Object.entries(statistics.approaches ?? {})) {
+      checkQuestionList(approach.questions, ['approaches', name, 'questions'], `approaches.${name}.questions`)
+
+      ;(approach.tensions ?? []).forEach((tension, i) => {
+        const line = lineFor(sdoc, ssrc, ['approaches', name, 'tensions', i])
+        for (const v of collectVars(tension.when)) {
+          if (!optionsByQuestion.has(v)) {
+            errors.push({ file: 'statistics.yaml', line, message: `${name} tension "${tension.id}" tests "${v}", which is not a question` })
+          }
+        }
+        for (const { question, value } of collectComparisons(tension.when)) {
+          const opts = optionsByQuestion.get(question)
+          if (opts && !opts.has(value)) {
+            errors.push({ file: 'statistics.yaml', line, message: `${name} tension "${tension.id}" compares ${question} with "${value}", which is not one of its options (${[...opts].join(', ')})` })
+          }
+        }
+      })
+    }
+
+    ;(statistics.design_quantities ?? []).forEach((entry, i) => {
+      if (designs && !designIds.has(entry.design)) {
+        errors.push({ file: 'statistics.yaml', line: lineFor(sdoc, ssrc, ['design_quantities', i]), message: `design_quantities names "${entry.design}", which is not a design in designs.csv` })
+      }
+    })
+
+    ;(statistics.ready_reckoner?.modes ?? []).forEach((mode, i) => {
+      checkQuestionList(mode.inputs, ['ready_reckoner', 'modes', i, 'inputs'], `ready_reckoner.modes[${i}].inputs`)
+    })
+  }
+
   // questions.yaml applies_when must reference real questions too.
   if (questions && parsed['questions.yaml'].doc) {
     const qdoc = parsed['questions.yaml'].doc

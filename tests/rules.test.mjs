@@ -178,8 +178,28 @@ describe('no question feeds nothing', () => {
     for (const r of stages.inference) varsIn(r.when).forEach(v => consumed.add(v))
     for (const r of stages.routing) varsIn(r.when).forEach(v => consumed.add(v))
 
+    const statistics = parse(read('statistics.yaml'))
+    for (const q of statistics.shared_questions) consumed.add(q)
+    for (const approach of Object.values(statistics.approaches)) {
+      for (const q of approach.questions) consumed.add(q)
+      for (const t of approach.tensions) varsIn(t.when).forEach(v => consumed.add(v))
+    }
+    for (const m of statistics.ready_reckoner?.modes ?? []) for (const q of m.inputs) consumed.add(q)
+
     const orphans = questions.map(q => q.id).filter(id => !consumed.has(id))
     expect(orphans, 'a question reaching nothing is burden without purpose').toEqual([])
+  })
+
+  it('counts a question as consumed by the statistics module too', () => {
+    // Statistics questions reach no design rule — they are consumed by statistics.yaml.
+    // Without this the orphan check above would force them into rules they do not belong in.
+    const statistics = parse(read('statistics.yaml'))
+    const inStatistics = new Set([
+      ...statistics.shared_questions,
+      ...Object.values(statistics.approaches).flatMap(a => a.questions),
+    ])
+    expect(inStatistics.has('analysis_approach')).toBe(true)
+    expect(inStatistics.size).toBe(25)
   })
 
   it('keeps the intake questions marked as intake', () => {

@@ -1,0 +1,358 @@
+# The statistics module.
+#
+# The section asks for the primary analytical approach first, then gives each approach its
+# own question set of equal depth — because sample size does a different job under each,
+# and the Bayesian questions are not translations of the frequentist ones.
+#
+# It produces questions to take to a statistician. It never returns a pass or fail on N.
+#
+# Both branches have ten questions and six tensions. That symmetry is asserted by test, so
+# the Bayesian half cannot quietly become the thinner one.
+#
+# See docs/BAYESIAN_SAMPLE_SIZE.md for the research behind the Bayesian branch.
+
+spec_version: 1.0.0
+
+# Asked of everyone, before the approach splits.
+shared_questions:
+  - analysis_approach
+  - outcome_type
+  - outcome_clustered
+  - expected_attrition
+  - sample_fixed
+
+approaches:
+
+  nhst:
+    label: Frequentist (null hypothesis significance testing)
+    sample_role: >-
+      The sample controls error rates. It buys power to detect an effect of a chosen size
+      at a chosen significance level, and the calculation runs from an effect you have to
+      nominate in advance.
+
+    questions:
+      - nhst_mde
+      - nhst_mde_source
+      - nhst_baseline_source
+      - nhst_alpha_power
+      - nhst_multiplicity
+      - nhst_icc
+      - nhst_attrition_modelled
+      - nhst_sequential
+      - nhst_sensitivity
+      - nhst_preregistration
+
+    tensions:
+      - id: mde_unjustified
+        when:
+          or:
+            - { '==': [{ var: nhst_mde }, not_set] }
+            - { '==': [{ var: nhst_mde_source }, unstated] }
+        message: >-
+          The smallest effect worth detecting has not been established, or has no stated
+          basis. Where it is chosen to make an available sample look adequate, the
+          calculation justifies itself.
+        prompt: >-
+          Ask what effect would actually change the decision, and whether the study can
+          detect one that small. If it cannot, that is worth knowing before fieldwork
+          rather than after.
+        citations: [rob2, magenta_book]
+
+      - id: baseline_assumed
+        when:
+          '==': [{ var: nhst_baseline_source }, assumed]
+        message: >-
+          The baseline rate and variability are assumed rather than sourced. Every figure
+          in the sizing calculation rests on them.
+        prompt: >-
+          Ask what happens to the required sample if the baseline is a third higher or
+          lower than assumed. If the answer changes the design, the estimate needs a
+          source.
+        citations: [rob2]
+
+      - id: multiplicity_unplanned
+        when:
+          '==': [{ var: nhst_multiplicity }, unplanned]
+        message: >-
+          Several outcomes will be tested with no stated adjustment or hierarchy. The
+          chance of at least one spurious positive rises with each one.
+        prompt: >-
+          Ask which single outcome the decision rests on, and whether the others are
+          secondary or exploratory. Record that before the data arrive.
+        citations: [rob2]
+
+      - id: icc_unsourced
+        when:
+          in: [{ var: nhst_icc }, [assumed, none]]
+        message: >-
+          The design is clustered but the intracluster correlation is assumed or absent.
+          The required number of clusters is sensitive to this value.
+        prompt: >-
+          Ask for the required sample across a range of plausible correlations rather than
+          at one value, and whether the design still works at the pessimistic end.
+        citations: [rob2]
+
+      - id: interim_unadjusted
+        when:
+          '==': [{ var: nhst_sequential }, unplanned]
+        message: >-
+          Interim analyses are planned with no stated adjustment. Repeatedly testing and
+          stopping on significance inflates the error rate the design is meant to control.
+        prompt: >-
+          Ask for a spending function or a formal stopping rule, agreed before the first
+          look at the data.
+        citations: [rob2]
+
+      - id: single_point_sizing
+        when:
+          '==': [{ var: nhst_sensitivity }, 'no']
+        message: >-
+          The sizing rests on a single value for each input. Variance, baseline and
+          correlation are all estimates, so one number implies more certainty about the
+          design than exists.
+        prompt: >-
+          Ask for the sample size across a range for each key input, and which input the
+          answer is most sensitive to.
+        citations: [rob2]
+
+  bayesian:
+    label: Bayesian
+    sample_role: >-
+      The sample buys precision for a decision. A small sample does not invalidate the
+      inference — the posterior is as coherent at twenty units as at twenty thousand — but
+      it does mean the prior supplies more of the answer. That is acceptable where the
+      prior can be defended, and not otherwise.
+
+    questions:
+      - bayes_decision_threshold
+      - bayes_rope
+      - bayes_prior_source
+      - bayes_elicitation_protocol
+      - bayes_prior_share
+      - bayes_sensitivity
+      - bayes_prior_data_conflict
+      - bayes_target
+      - bayes_audience_calibration
+      - bayes_adaptive_stopping
+
+    tensions:
+      - id: prior_unjustified
+        when:
+          or:
+            - { '==': [{ var: bayes_prior_source }, unstated] }
+            - { '==': [{ var: bayes_elicitation_protocol }, informal] }
+        message: >-
+          The prior has no stated source, or rests on informal discussion rather than a
+          documented elicitation. At small sample sizes the prior supplies much of the
+          posterior, so an unexaminable prior makes the finding unexaminable.
+        prompt: >-
+          Ask whether previous evaluations could supply the prior instead, and if expert
+          judgement is the only option, whether a structured elicitation such as SHELF is
+          practicable — individual judgements taken before group discussion, with the
+          basis recorded.
+        citations: [gosling_2018_shelf, nichd_strong_prior_2019]
+
+      - id: no_decision_threshold
+        when:
+          and:
+            - { in: [{ var: bayes_decision_threshold }, [not_set, proposed]] }
+            - { '==': [{ var: bayes_rope }, not_set] }
+        message: >-
+          Neither a decision threshold nor a region of practical equivalence has been
+          agreed. Without one the posterior cannot be turned into a decision, and the
+          analysis reduces to reporting an interval.
+        prompt: >-
+          Ask those making the decision what size of effect would change it, and what size
+          they would treat as too small to matter. Those two answers are what the analysis
+          reports against.
+        citations: [kruschke_2018, opre_bayesian_social_policy]
+
+      - id: prior_doing_the_work
+        when:
+          and:
+            - { in: [{ var: bayes_prior_source }, [evaluations, elicited]] }
+            - { in: [{ var: bayes_prior_share }, [unknown, expected_small]] }
+        message: >-
+          An informative prior is in use but its contribution to the posterior has not been
+          quantified. Where the prior supplies most of the answer, the finding largely
+          restates what was assumed — and a Bayesian analysis chosen to rescue an
+          underpowered study will do exactly that without saying so.
+        prompt: >-
+          Ask for the prior's effective sample size alongside the actual one, and for the
+          posterior under a deliberately sceptical prior. If the conclusion changes, the
+          study is reporting its assumptions.
+        citations: [nichd_strong_prior_2019, wilson_etal_2021_pilot]
+
+      - id: sensitivity_absent
+        when:
+          '==': [{ var: bayes_sensitivity }, 'no']
+        message: >-
+          No prior sensitivity analysis is planned. This is the standard reviewer challenge
+          and a stated regulatory expectation.
+        prompt: >-
+          Ask which alternative priors will be run — at minimum a sceptical one and a
+          weakly informative one — and agree them before the data are seen.
+        citations: [fda_bayesian_2026]
+
+      - id: calibration_expected_unplanned
+        when:
+          '==': [{ var: bayes_audience_calibration }, unplanned]
+        message: >-
+          The audience expects frequentist error-rate guarantees but no simulation is
+          planned to provide them. A posterior probability does not answer a question about
+          long-run error rates.
+        prompt: >-
+          Ask whether the operating characteristics can be simulated — the false positive
+          and false negative rates the design would show across repeated hypothetical
+          studies — or whether the audience can be brought to a probabilistic answer.
+        citations: [fda_bayesian_2026, bayesian_ssd_review_2025]
+
+      - id: adaptive_unsimulated
+        when:
+          '==': [{ var: bayes_adaptive_stopping }, unplanned]
+        message: >-
+          The design stops early on accumulating data without simulated operating
+          characteristics. Adaptive stopping is a real advantage of the approach, and its
+          behaviour has to be established rather than assumed.
+        prompt: >-
+          Ask for simulations across a range of true effects, including no effect, showing
+          how often the rule stops early and what it concludes when it does.
+        citations: [bayesian_adaptive_social_policy, bayesian_ssd_review_2025]
+
+# Shown when the approach has not been chosen. One screen, contrasting what each approach
+# asks of the design rather than arguing for either.
+undecided_comparison:
+  - topic: What the sample is for
+    nhst: >-
+      Controls error rates — power to detect an effect of a nominated size at a chosen
+      significance level.
+    bayesian: >-
+      Buys precision or assurance for a decision. The prior and the data share the work,
+      and their shares can be reported.
+
+  - topic: The effect-size question
+    nhst: The smallest effect worth detecting, and who set it.
+    bayesian: >-
+      The effect that would change the decision, and the range treated as equivalent to no
+      effect.
+
+  - topic: What you must establish first
+    nhst: >-
+      A baseline rate and variability from a credible source; a significance level and
+      target power; a multiplicity plan if several outcomes are tested.
+    bayesian: >-
+      Where the prior comes from and who accepts it; a target interval width or assurance;
+      a plan for prior-data conflict.
+
+  - topic: If the sample is already fixed
+    nhst: Ask what the minimum detectable effect is, and whether it is plausible.
+    bayesian: >-
+      Ask what posterior precision to expect, and how much of it comes from the prior
+      rather than the data.
+
+  - topic: Clustering and attrition
+    nhst: Number of clusters and the intracluster correlation; attrition scenarios.
+    bayesian: >-
+      The same, plus priors on variation between clusters, which are themselves estimates
+      needing a source.
+
+  - topic: Stopping and monitoring
+    nhst: A pre-specified analysis, with a spending function if interim looks are planned.
+    bayesian: >-
+      Posterior-probability stopping rules, with simulated operating characteristics.
+
+  - topic: Sensitivity
+    nhst: Ranges for variance and intracluster correlation.
+    bayesian: Alternative priors, including a sceptical one, and a plan for prior-data conflict.
+
+  - topic: What the audience expects
+    nhst: Pre-registration of the analysis.
+    bayesian: >-
+      Whether readers expect frequentist error-rate calibration, and whether operating
+      characteristics will be simulated if so.
+
+# What plays the role of N depends on the design. Total sample size is frequently the
+# wrong quantity — for a discontinuity design it is observations near the cutoff, and for
+# a cluster design it is the number of clusters rather than the number of people.
+design_quantities:
+  - design: rct_individual
+    quantity: People randomised
+  - design: rct_cluster
+    quantity: Number of clusters
+    note: >-
+      Clusters before cluster size. Adding people to existing sites buys far less than
+      adding sites, and beyond a point buys almost nothing.
+  - design: rct_stepped_wedge
+    quantity: Clusters and the number of steps
+    note: The sequence length matters as well as the number of units in it.
+  - design: rct_crossover
+    quantity: Participants, and periods per participant
+  - design: rct_waitlist
+    quantity: People randomised, and the length of the window before crossover
+    note: The comparison exists only until the waitlist group is treated.
+  - design: encouragement
+    quantity: Those whose take-up the encouragement changed
+    note: >-
+      Not those randomised. A weak encouragement gives a large study that identifies the
+      effect for very few people.
+  - design: rd_sharp
+    quantity: Observations within a plausible bandwidth of the cutoff
+    note: Not the total sample. A large dataset can be thin where it matters.
+  - design: rd_fuzzy
+    quantity: Observations near the cutoff, and the size of the jump in take-up
+    note: A fuzzy design needs more than a sharp one at the same cutoff.
+  - design: iv_2sls
+    quantity: Sample size and first-stage strength together
+    note: A large sample does not compensate for a weak instrument.
+  - design: did_2x2
+    quantity: Treated and comparison units, and pre-intervention periods
+  - design: did_staggered
+    quantity: Treated and comparison units, adoption cohorts, and pre-periods
+    note: Each adoption cohort is its own comparison, so cohort size matters as well as total.
+  - design: synth
+    quantity: Donor pool size and pre-period length
+    note: >-
+      Inference is by placebo tests across the donor pool, so pool size governs what can be
+      concluded as well as how well the method fits.
+  - design: its_controlled
+    quantity: Time points per segment, on both series
+  - design: rdit
+    quantity: Observations within a window either side of the date
+  - design: matching
+    quantity: Units in the region of common support
+    note: Not the full sample — unmatched units contribute nothing.
+  - design: weighting
+    quantity: Effective sample size after weighting
+    note: >-
+      Can be far below the nominal count where a few observations carry large weights.
+      Worth computing before committing.
+  - design: gcomp
+    quantity: Units within each covariate stratum
+  - design: gmethods
+    quantity: Units with complete treatment and confounder histories
+    note: Incomplete histories drop out of the analysis rather than being partially used.
+  - design: its
+    quantity: Number of time points, and the degree of autocorrelation
+    note: >-
+      Correlated observations carry less information than their count suggests, so the
+      effective number is lower than the nominal one.
+
+# Opt-in, collapsed by default, explicitly illustrative. The engine must never read it:
+# a figure produced here cannot change a verdict, and a test enforces that.
+ready_reckoner:
+  engine_reads: false
+  note: >-
+    Illustrative only. Produces a rough figure from the user's own inputs to support a
+    conversation with a statistician — not a substitute for one, and never an input to any
+    verdict the tool reaches.
+  modes:
+    - approach: nhst
+      inputs: [outcome_type, expected_attrition, outcome_clustered]
+      outputs: >-
+        A rough minimum detectable effect for the stated sample, outcome type, baseline and
+        intracluster correlation.
+    - approach: bayesian
+      inputs: [outcome_type, expected_attrition]
+      outputs: >-
+        A rough expected credible interval width, and the share of the posterior precision
+        contributed by the prior rather than the data.
