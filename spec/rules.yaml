@@ -1,0 +1,922 @@
+# Per-design blockers, conditions and warnings.
+#
+# Each test is JSON Logic over the answer store. A design takes its WORST state in the
+# order Blocked > Conditional > Unknown > Feasible, so no good answer can offset a bad one.
+#
+#   blockers   the design cannot be made to work with these answers
+#   conditions no blocker, but something required is unmet or not yet evidenced; carries
+#              `unlock` saying what would discharge it
+#   warnings   listed alongside a Feasible verdict; never changes the state
+#
+# An unanswered question leaves every design that depends on it Unknown. The engine derives
+# that from the variables each test references, so there is no separate list to keep in step.
+#
+# Numeric thresholds appear only where the literature gives one, carry their range, and are
+# marked `convention` where that is what they are.
+
+spec_version: 1.0.0
+
+designs:
+
+  # ── Tier 1 · Randomised ────────────────────────────────────────────────────
+
+  rct_individual:
+    blockers:
+      - id: not_prospective
+        test: { '==': [{ var: prospective }, 'no'] }
+        message: Allocation cannot be randomised once the intervention has already been delivered.
+        citations: [rob2]
+      - id: randomisation_ruled_out
+        test: { '==': [{ var: randomisation_barriers }, impossible] }
+        message: Randomisation has been ruled out, so no randomised design is available.
+        citations: [rob2]
+      - id: cluster_delivered
+        test: { '==': [{ var: allocation_unit }, cluster] }
+        message: >-
+          The intervention is delivered to whole groups, so individuals within them cannot be
+          allocated separately.
+        citations: [rob2]
+    conditions:
+      - id: significant_barriers
+        test: { '==': [{ var: randomisation_barriers }, high] }
+        message: Significant barriers to randomisation were identified.
+        unlock: >-
+          Check whether a stepped-wedge, waitlist or encouragement design addresses the
+          specific objection — these are often accepted where straightforward randomisation
+          is not.
+        citations: [rob2, magenta_book]
+      - id: equipoise_absent
+        test: { '==': [{ var: equipoise }, 'no'] }
+        message: >-
+          The effect is considered already established, which makes withholding the
+          intervention hard to justify.
+        unlock: Document the remaining uncertainty, or move to a design that withholds nothing.
+        citations: [magenta_book]
+      - id: equipoise_contested
+        test: { '==': [{ var: equipoise }, unclear] }
+        message: Stakeholders disagree about whether the effect is already established.
+        unlock: Resolve this before an ethics application, since it is the usual ground for refusal.
+        citations: [magenta_book]
+
+  rct_cluster:
+    blockers:
+      - id: not_prospective
+        test: { '==': [{ var: prospective }, 'no'] }
+        message: Allocation cannot be randomised once the intervention has already been delivered.
+        citations: [rob2]
+      - id: randomisation_ruled_out
+        test: { '==': [{ var: randomisation_barriers }, impossible] }
+        message: Randomisation has been ruled out, so no randomised design is available.
+        citations: [rob2]
+      - id: individual_delivery
+        test: { '==': [{ var: allocation_unit }, individual] }
+        message: >-
+          The intervention is delivered to individuals, so there are no natural clusters to
+          allocate.
+        citations: [rob2]
+    conditions:
+      - id: too_few_clusters
+        test: { '==': [{ var: cluster_count }, few] }
+        message: >-
+          Fewer than about 15 clusters. Precision in a cluster design is governed by the
+          number of clusters, so a large number of individuals within them does not
+          compensate.
+        unlock: >-
+          Establish whether more clusters can be recruited, or whether individual allocation
+          is possible after all.
+        threshold: { value: 15, range: [10, 20], units: clusters, basis: convention, contested: true }
+        citations: [rob2]
+      - id: significant_barriers
+        test: { '==': [{ var: randomisation_barriers }, high] }
+        message: Significant barriers to randomisation were identified.
+        unlock: Check whether randomising the order of a phased rollout is acceptable instead.
+        citations: [rob2]
+    warnings:
+      - id: icc_needed
+        test: { in: [{ var: cluster_count }, [moderate, few]] }
+        message: >-
+          A cluster design needs an intracluster correlation estimate to size properly. With
+          this few clusters the result is sensitive to the value assumed, so take a range to
+          your statistician rather than a single figure.
+        citations: [rob2]
+
+  rct_stepped_wedge:
+    blockers:
+      - id: not_prospective
+        test: { '==': [{ var: prospective }, 'no'] }
+        message: The rollout order cannot be randomised once delivery has happened.
+        citations: [rob2]
+      - id: order_fixed
+        test: { '==': [{ var: rollout_order_controllable }, 'no'] }
+        message: >-
+          The rollout order is fixed or externally determined, so there is nothing left to
+          randomise.
+        citations: [magenta_book]
+    conditions:
+      - id: partial_control
+        test: { '==': [{ var: rollout_order_controllable }, partly] }
+        message: Only partial influence over the sequencing of the rollout.
+        unlock: >-
+          Establish which part of the order is genuinely open. Randomising even a subset of
+          the sequence can be enough.
+        citations: [magenta_book]
+      - id: too_few_clusters
+        test: { '==': [{ var: cluster_count }, few] }
+        message: Too few clusters to allocate across a useful number of steps.
+        unlock: Establish whether more sites can join, or whether fewer, larger steps would work.
+        citations: [rob2]
+    warnings:
+      - id: time_confounding
+        test: { '!=': [{ var: rollout_order_controllable }, 'no'] }
+        message: >-
+          In a stepped-wedge design every unit is treated later in the study than it is
+          untreated, so the treatment effect is entangled with any underlying time trend.
+          The analysis must adjust for time.
+        citations: [rob2]
+
+  rct_crossover:
+    blockers:
+      - id: not_prospective
+        test: { '==': [{ var: prospective }, 'no'] }
+        message: Allocation cannot be randomised once the intervention has already been delivered.
+        citations: [rob2]
+      - id: irreversible_outcome
+        test: { '==': [{ var: outcome_reversible }, 'no'] }
+        message: >-
+          The outcome does not return to baseline, so a participant cannot serve as their own
+          control in a later period.
+        citations: [rob2]
+      - id: no_washout
+        test: { '==': [{ var: washout_feasible }, 'no'] }
+        message: Without a washout period the first condition contaminates the second.
+        citations: [rob2]
+    conditions:
+      - id: reversibility_unclear
+        test: { '==': [{ var: outcome_reversible }, unclear] }
+        message: Whether the effect persists has not been established.
+        unlock: >-
+          Check the evidence on how long the effect lasts; this determines both whether a
+          crossover is possible and how long the washout must be.
+        citations: [rob2]
+      - id: washout_unclear
+        test: { '==': [{ var: washout_feasible }, unclear] }
+        message: The feasibility of a washout period has not been established.
+        unlock: Establish the minimum gap needed, then whether delivery can accommodate it.
+        citations: [rob2]
+
+  rct_waitlist:
+    blockers:
+      - id: not_prospective
+        test: { '==': [{ var: prospective }, 'no'] }
+        message: Allocation cannot be randomised once the intervention has already been delivered.
+        citations: [rob2]
+      - id: delay_unacceptable
+        test: { '==': [{ var: delay_acceptable }, 'no'] }
+        message: A waitlist design requires part of the group to receive the intervention later.
+        citations: [magenta_book]
+    conditions:
+      - id: delay_unclear
+        test: { '==': [{ var: delay_acceptable }, unclear] }
+        message: Whether a delay is acceptable has not been settled.
+        unlock: >-
+          Agree the maximum tolerable wait with delivery colleagues. That wait is also the
+          window in which the effect must be measured.
+        citations: [magenta_book]
+    warnings:
+      - id: short_window
+        test: { '==': [{ var: delay_acceptable }, 'yes'] }
+        message: >-
+          The comparison exists only until the waitlist group is treated, so the design
+          measures a short-run effect. Outcomes that take longer to emerge cannot be
+          captured this way.
+        citations: [magenta_book]
+
+  encouragement:
+    blockers:
+      - id: not_prospective
+        test: { '==': [{ var: prospective }, 'no'] }
+        message: The encouragement cannot be randomised once the intervention has been delivered.
+        citations: [angrist_pischke_2009]
+      - id: no_lever
+        test: { '==': [{ var: encouragement_lever }, 'no'] }
+        message: >-
+          No credible way to encourage take-up without assigning the intervention itself,
+          which is what this design requires.
+        citations: [angrist_pischke_2009]
+    conditions:
+      - id: lever_unproven
+        test: { '==': [{ var: encouragement_lever }, unclear] }
+        message: A possible encouragement has been identified but not established.
+        unlock: >-
+          Check that it moves take-up appreciably. A weak encouragement yields an estimate
+          for too few people to be useful.
+        citations: [angrist_pischke_2009, lee_etal_2022]
+      - id: exclusion_doubtful
+        test: { in: [{ var: exclusion_restriction }, [doubtful, unassessed]] }
+        message: >-
+          The encouragement must affect the outcome only by changing take-up. If it carries
+          information or incentive that acts directly, the complier estimate is biased.
+        unlock: >-
+          Set out why the encouragement has no direct route to the outcome. This cannot be
+          tested, so it has to be argued.
+        citations: [angrist_pischke_2009]
+    warnings:
+      - id: late_not_ate
+        test: { '!=': [{ var: encouragement_lever }, 'no'] }
+        message: >-
+          This estimates the effect for those whose take-up the encouragement changed, not
+          for everyone. Those people may differ from the population the decision is about.
+        citations: [angrist_pischke_2009]
+
+  # ── Tier 2 · Local as-if random ────────────────────────────────────────────
+
+  rd_sharp:
+    blockers:
+      - id: no_threshold
+        test: { '==': [{ var: assignment_threshold }, 'no'] }
+        message: A discontinuity design requires assignment by a score, date or threshold.
+        citations: [imbens_lemieux_2008]
+      - id: not_sharp
+        test: { '==': [{ var: threshold_enforced }, fuzzy] }
+        message: >-
+          The cutoff shifts the probability of treatment rather than determining it, which is
+          a fuzzy design rather than a sharp one.
+        citations: [imbens_lemieux_2008]
+      - id: manipulation_present
+        test: { '==': [{ var: threshold_manipulation }, suspected] }
+        message: >-
+          Sorting around the cutoff means those either side differ in ways beyond treatment,
+          which removes the basis for the comparison.
+        citations: [mccrary_2008]
+    conditions:
+      - id: manipulation_untested
+        test: { '==': [{ var: threshold_manipulation }, untested] }
+        message: Whether people can position themselves around the cutoff has not been tested.
+        unlock: >-
+          Run a density test for bunching at the cutoff, and check whether those it affects
+          could know the rule and act on it.
+        citations: [mccrary_2008]
+      - id: enforcement_unclear
+        test: { '==': [{ var: threshold_enforced }, unclear] }
+        message: How strictly the cutoff is applied in practice has not been established.
+        unlock: >-
+          Examine administrative records to see how often the rule was overridden. This
+          decides between a sharp and a fuzzy design.
+        citations: [imbens_lemieux_2008]
+      - id: sparse_at_cutoff
+        test: { '==': [{ var: density_near_cutoff }, few] }
+        message: >-
+          Few observations fall near the cutoff, and only those identify the effect. A large
+          total sample does not help.
+        unlock: >-
+          Count observations within a plausible bandwidth rather than in the dataset as a
+          whole, and take that figure to a power calculation.
+        citations: [cattaneo_etal_2020]
+    warnings:
+      - id: bandwidth_sensitivity
+        test: { '==': [{ var: assignment_threshold }, 'yes'] }
+        message: >-
+          The estimate depends on the bandwidth chosen around the cutoff. Report results
+          across a range of bandwidths rather than only the one that was selected.
+        citations: [cattaneo_etal_2020]
+      - id: local_estimand
+        test: { '==': [{ var: assignment_threshold }, 'yes'] }
+        message: >-
+          The result applies at the cutoff. It says little about people far from it, who may
+          be the group the decision concerns.
+        citations: [imbens_lemieux_2008]
+
+  rd_fuzzy:
+    blockers:
+      - id: no_threshold
+        test: { '==': [{ var: assignment_threshold }, 'no'] }
+        message: A discontinuity design requires assignment by a score, date or threshold.
+        citations: [imbens_lemieux_2008]
+      - id: manipulation_present
+        test: { '==': [{ var: threshold_manipulation }, suspected] }
+        message: Sorting around the cutoff removes the basis for the comparison.
+        citations: [mccrary_2008]
+    conditions:
+      - id: manipulation_untested
+        test: { '==': [{ var: threshold_manipulation }, untested] }
+        message: Whether people can position themselves around the cutoff has not been tested.
+        unlock: Run a density test for bunching at the cutoff.
+        citations: [mccrary_2008]
+      - id: weak_jump
+        test: { in: [{ var: instrument_strength }, [weak, untested]] }
+        message: >-
+          A fuzzy design relies on a clear jump in the probability of treatment at the
+          cutoff. A small jump identifies the effect for very few people.
+        unlock: Estimate the size of the jump in take-up at the cutoff before committing.
+        citations: [lee_etal_2022, imbens_lemieux_2008]
+      - id: sparse_at_cutoff
+        test: { '==': [{ var: density_near_cutoff }, few] }
+        message: Few observations near the cutoff, and a fuzzy design needs more than a sharp one.
+        unlock: Count observations within a plausible bandwidth and power on that figure.
+        citations: [cattaneo_etal_2020]
+    warnings:
+      - id: complier_estimand
+        test: { '!=': [{ var: assignment_threshold }, 'no'] }
+        message: >-
+          This estimates the effect for those at the cutoff whose treatment the rule actually
+          changed — a narrower group than a sharp design addresses.
+        citations: [imbens_lemieux_2008]
+
+  iv_2sls:
+    blockers:
+      - id: no_instrument
+        test: { '==': [{ var: instrument_available }, 'no'] }
+        message: >-
+          No factor identified that shifts take-up without affecting the outcome by any other
+          route.
+        citations: [angrist_pischke_2009]
+      - id: exclusion_fails
+        test: { '==': [{ var: exclusion_restriction }, doubtful] }
+        message: >-
+          Plausible alternative routes from the instrument to the outcome were identified. The
+          exclusion restriction is the whole basis of the design, so this blocks it rather
+          than qualifying it.
+        citations: [angrist_pischke_2009]
+    conditions:
+      - id: instrument_unproven
+        test: { '==': [{ var: instrument_available }, possible] }
+        message: A candidate instrument has been identified but not established.
+        unlock: Check that it predicts take-up, and set out why it cannot affect the outcome directly.
+        citations: [angrist_pischke_2009]
+      - id: exclusion_unassessed
+        test: { '==': [{ var: exclusion_restriction }, unassessed] }
+        message: The exclusion restriction has not yet been considered.
+        unlock: >-
+          Write down every route by which the instrument could reach the outcome, and argue
+          each one away. This cannot be tested statistically.
+        citations: [angrist_pischke_2009]
+      - id: weak_instrument
+        test: { '==': [{ var: instrument_strength }, weak] }
+        message: >-
+          A weak instrument gives estimates that are biased towards the unadjusted
+          association and confidence intervals that understate uncertainty.
+        unlock: >-
+          Report first-stage strength. The conventional F above 10 is a rule of thumb that
+          recent work shows is not sufficient for valid inference, so treat it as a floor
+          rather than a target.
+        threshold: { value: 10, range: [10, 104], units: first-stage F, basis: convention, contested: true }
+        citations: [lee_etal_2022]
+      - id: strength_untested
+        test: { '==': [{ var: instrument_strength }, untested] }
+        message: The strength of the instrument has not been established.
+        unlock: Estimate the first stage before committing to the design.
+        citations: [lee_etal_2022]
+
+  # ── Tier 3 · Comparison-group panel ────────────────────────────────────────
+
+  did_2x2:
+    blockers:
+      - id: no_pre_data
+        test: { '==': [{ var: pre_periods }, none] }
+        message: A difference-in-differences comparison requires outcome data from before the intervention.
+        citations: [angrist_pischke_2009]
+      - id: no_comparison
+        test: { '==': [{ var: comparison_group }, 'no'] }
+        message: No comparison group that did not receive the intervention.
+        citations: [whatworks_sms]
+      - id: trends_diverge
+        test: { '==': [{ var: parallel_trends_evidence }, violated] }
+        message: >-
+          The groups were already moving apart before the intervention, so the difference
+          afterwards cannot be attributed to it.
+        citations: [angrist_pischke_2009]
+      - id: staggered_adoption
+        test: { '==': [{ var: staggered_rollout }, 'yes'] }
+        message: >-
+          Adoption was staggered, so this is not a two-period comparison. The
+          staggered-adoption design applies instead.
+        citations: [goodman_bacon_2021]
+    conditions:
+      - id: single_pre_period
+        test: { '==': [{ var: pre_periods }, one] }
+        message: >-
+          With one pre-period the parallel-trends assumption cannot be examined at all. It
+          would be assumed rather than supported.
+        unlock: Find at least two further pre-periods so the trends can be compared.
+        citations: [angrist_pischke_2009]
+      - id: trends_untested
+        test: { '==': [{ var: parallel_trends_evidence }, untested] }
+        message: Whether the groups moved together before the intervention has not been examined.
+        unlock: >-
+          Plot both series across every available pre-period. This is the main thing a
+          reviewer will look for.
+        citations: [angrist_pischke_2009]
+      - id: comparison_unproven
+        test: { '==': [{ var: comparison_group }, possible] }
+        message: A possible comparison group has been identified but its comparability is not established.
+        unlock: Check that it faced comparable conditions and was not affected by the intervention itself.
+        citations: [whatworks_sms]
+
+  did_staggered:
+    blockers:
+      - id: no_pre_data
+        test: { '==': [{ var: pre_periods }, none] }
+        message: A difference-in-differences comparison requires outcome data from before the intervention.
+        citations: [angrist_pischke_2009]
+      - id: no_comparison
+        test: { '==': [{ var: comparison_group }, 'no'] }
+        message: No comparison group that did not receive the intervention.
+        citations: [whatworks_sms]
+      - id: not_staggered
+        test: { '==': [{ var: staggered_rollout }, 'no'] }
+        message: >-
+          All units started at the same time, so there is no variation in timing. The two-period
+          design applies instead.
+        citations: [goodman_bacon_2021]
+      - id: trends_diverge
+        test: { '==': [{ var: parallel_trends_evidence }, violated] }
+        message: The groups were already moving apart before the intervention.
+        citations: [angrist_pischke_2009]
+    conditions:
+      - id: trends_untested
+        test: { '==': [{ var: parallel_trends_evidence }, untested] }
+        message: Whether the groups moved together before the intervention has not been examined.
+        unlock: >-
+          Compare trends for each adoption cohort separately, not just in aggregate — a
+          single cohort can mask divergence in another.
+        citations: [angrist_pischke_2009, callaway_santanna_2021]
+      - id: rollout_not_begun
+        test: { '==': [{ var: staggered_rollout }, planned] }
+        message: The staggered rollout is planned but has not begun.
+        unlock: >-
+          If the order is still open, randomising it gives a stepped-wedge design at Tier 1
+          for no additional data cost.
+        citations: [goodman_bacon_2021]
+    warnings:
+      - id: twfe_negative_weights
+        test: { in: [{ var: staggered_rollout }, ['yes', planned]] }
+        message: >-
+          Under staggered adoption the conventional two-way fixed effects estimator averages
+          comparisons that include already-treated units acting as controls, and can place
+          negative weights on some of them. Use an estimator built for staggered timing —
+          Callaway-Sant'Anna, Sun-Abraham or Borusyak-Jaravel-Spiess. This is an estimator
+          choice; it does not change the tier.
+        citations: [goodman_bacon_2021, callaway_santanna_2021, sun_abraham_2021]
+
+  synth:
+    blockers:
+      - id: no_pre_data
+        test: { in: [{ var: pre_periods }, [none, one]] }
+        message: >-
+          A synthetic control is built by matching the treated unit's pre-intervention path,
+          which requires a run of periods rather than one.
+        citations: [abadie_2021]
+      - id: no_donors
+        test: { '==': [{ var: donor_pool }, 'no'] }
+        message: No untreated units available to weight into a comparison.
+        citations: [abadie_2021]
+    conditions:
+      - id: short_pre_period
+        test: { '==': [{ var: pre_periods }, few] }
+        message: >-
+          A short pre-period gives the weighting little to match on, so good pre-period fit
+          may be achieved by chance rather than by genuine similarity.
+        unlock: >-
+          Extend the pre-period if the data allow. Where it cannot be extended, the augmented
+          estimator corrects some of the resulting bias.
+        citations: [abadie_2021]
+      - id: thin_donor_pool
+        test: { '==': [{ var: donor_pool }, limited] }
+        message: Few candidate donor units, of uncertain comparability.
+        unlock: >-
+          Check that donors were not themselves affected by the intervention, and that none
+          experienced its own shock during the period.
+        citations: [abadie_2021]
+    warnings:
+      - id: inference_by_placebo
+        test: { '!=': [{ var: donor_pool }, 'no'] }
+        message: >-
+          Conventional confidence intervals do not apply. Inference is by placebo tests
+          across the donor pool, which is why pool size affects what can be concluded as
+          well as how well the method fits.
+        citations: [abadie_2021]
+
+  its_controlled:
+    blockers:
+      - id: no_control_series
+        test: { '==': [{ var: control_series }, 'no'] }
+        message: >-
+          No equivalent series for an unaffected group. Without one this is a single
+          interrupted time series at Tier 5.
+        citations: [bernal_etal_2017]
+      - id: no_pre_data
+        test: { '==': [{ var: pre_periods }, none] }
+        message: A pre-intervention trend must be estimable on both series.
+        citations: [bernal_etal_2017]
+      - id: date_unknown
+        test: { '==': [{ var: policy_date_known }, 'no'] }
+        message: The interruption point must be known to separate before from after.
+        citations: [bernal_etal_2017]
+    conditions:
+      - id: control_unproven
+        test: { '==': [{ var: control_series }, unclear] }
+        message: A possible control series has been identified but not established.
+        unlock: >-
+          Check it was genuinely unaffected by the intervention and is subject to the same
+          external influences.
+        citations: [bernal_etal_2017]
+      - id: few_points
+        test: { '==': [{ var: time_points }, few] }
+        message: >-
+          Too few time points to estimate a trend on each side of the interruption with any
+          confidence.
+        unlock: >-
+          Aim for roughly eight points per segment. This is a working convention rather than
+          a derived minimum.
+        threshold: { value: 8, range: [6, 12], units: time points per segment, basis: convention, contested: true }
+        citations: [wagner_etal_2002, bernal_etal_2017]
+      - id: coinciding_changes
+        test: { '==': [{ var: cointerventions }, known] }
+        message: >-
+          Other changes coincided with the intervention. A control series helps only where it
+          was exposed to those same changes.
+        unlock: Establish whether the control series was affected by the same coinciding changes.
+        citations: [bernal_etal_2017]
+      - id: cointerventions_unchecked
+        test: { '==': [{ var: cointerventions }, possible] }
+        message: Whether anything else changed at the same time has not been checked.
+        unlock: Compile a timeline of other policy and funding changes across the study period.
+        citations: [bernal_etal_2017, robins_i_v2]
+
+  rdit:
+    blockers:
+      - id: date_unknown
+        test: { '==': [{ var: policy_date_known }, 'no'] }
+        message: This design compares either side of a date, so the date must be known precisely.
+        citations: [bernal_etal_2017]
+      - id: no_pre_data
+        test: { '==': [{ var: pre_periods }, none] }
+        message: No data from before the change.
+        citations: [bernal_etal_2017]
+      - id: coinciding_changes
+        test: { '==': [{ var: cointerventions }, known] }
+        message: >-
+          Other changes occurred at the same date. With no comparison group there is nothing
+          to separate their effect from the intervention's.
+        citations: [robins_i_v2]
+    conditions:
+      - id: date_approximate
+        test: { '==': [{ var: policy_date_known }, approximate] }
+        message: The date is approximate or the change was phased, which blurs the discontinuity.
+        unlock: >-
+          Establish a precise date. Where the change was genuinely phased, a design built on
+          the phasing is likely to serve better.
+        citations: [bernal_etal_2017]
+      - id: cointerventions_unchecked
+        test: { '==': [{ var: cointerventions }, possible] }
+        message: Whether anything else changed at the same date has not been checked.
+        unlock: >-
+          Compile a timeline around the date. This is the main threat to the design, so it
+          needs doing before committing to it.
+        citations: [robins_i_v2, bernal_etal_2017]
+    warnings:
+      - id: continuity_is_the_claim
+        test: { '!=': [{ var: policy_date_known }, 'no'] }
+        message: >-
+          Placed at Tier 3 rather than Tier 2: continuity across a date is a claim that
+          nothing else changed then, which is a time-series argument rather than local
+          randomisation. Some sources place it higher where the cutoff is externally imposed.
+        citations: [whatworks_sms, robins_i_v2]
+
+  # ── Tier 4 · Selection on observables ──────────────────────────────────────
+
+  matching:
+    blockers:
+      - id: sparse_covariates
+        test: { '==': [{ var: covariate_richness }, sparse] }
+        message: >-
+          Matching can only adjust for what is measured. With little covariate data there is
+          nothing to match on.
+        citations: [stuart_2010]
+      - id: no_overlap
+        test: { '==': [{ var: overlap }, poor] }
+        message: >-
+          Where treated and untreated units barely resemble each other there are no
+          comparable pairs to form.
+        citations: [austin_2011, li_etal_2018]
+    conditions:
+      - id: limited_overlap
+        test: { '==': [{ var: overlap }, limited] }
+        message: >-
+          Overlap exists only across part of the range, so any estimate applies to that part
+          and not to the whole population.
+        unlock: >-
+          Define the region of common support and state that the result applies there.
+          Weighting handles limited overlap better than matching does.
+        citations: [li_etal_2018]
+      - id: overlap_untested
+        test: { '==': [{ var: overlap }, untested] }
+        message: Whether the groups overlap has not been examined.
+        unlock: Compare covariate distributions between treated and untreated units before committing.
+        citations: [austin_2011]
+      - id: unmeasured_confounding
+        test: { '==': [{ var: confounders_measured }, some_unmeasured] }
+        message: >-
+          Known drivers of selection are not in the data. Matching cannot adjust for them and
+          balance diagnostics will not reveal them.
+        unlock: >-
+          Plan a sensitivity analysis quantifying how strong an unmeasured confounder would
+          need to be to overturn the finding.
+        citations: [vanderweele_ding_2017]
+      - id: confounders_unlisted
+        test: { '==': [{ var: confounders_measured }, unknown] }
+        message: The drivers of who received the intervention have not been established.
+        unlock: >-
+          List them first, then check which are measured. The gap between the two lists is
+          the design's main weakness.
+        citations: [hernan_robins_2020]
+      - id: partial_covariates
+        test: { '==': [{ var: covariate_richness }, partial] }
+        message: Covariate data has known gaps.
+        unlock: Document which variables are missing and why, so reviewers can judge the residual risk.
+        citations: [stuart_2010, robins_i_v2]
+    warnings:
+      - id: balance_not_bias
+        test: { '!=': [{ var: covariate_richness }, sparse] }
+        message: >-
+          Good balance on measured covariates is not evidence that unmeasured confounding is
+          absent. It shows the matching worked, not that the assumption holds.
+        citations: [stuart_2010]
+      - id: prior_outcomes_lift
+        test: { in: [{ var: pre_periods }, [many, few]] }
+        message: >-
+          Pre-intervention outcome data is available. Matching on prior outcomes as well as
+          characteristics places this at the upper end of Tier 4, and the Maryland scale
+          allows level 3 where comparability is demonstrated rather than asserted.
+        citations: [whatworks_sms]
+
+  weighting:
+    blockers:
+      - id: sparse_covariates
+        test: { '==': [{ var: covariate_richness }, sparse] }
+        message: Weighting can only adjust for what is measured.
+        citations: [austin_2011]
+      - id: positivity_violated
+        test: { '==': [{ var: overlap }, poor] }
+        message: >-
+          Where some units had almost no chance of receiving the intervention, their weights
+          become extreme and the estimate is driven by a handful of observations. This is a
+          positivity violation.
+        citations: [li_etal_2018, hernan_robins_2020]
+    conditions:
+      - id: limited_overlap
+        test: { '==': [{ var: overlap }, limited] }
+        message: Limited overlap produces large weights that dominate the estimate.
+        unlock: >-
+          Use overlap weights or trimming, which target the population where the comparison
+          is actually supported, and report how many observations the weights concentrate on.
+        citations: [li_etal_2018]
+      - id: overlap_untested
+        test: { '==': [{ var: overlap }, untested] }
+        message: Whether the groups overlap has not been examined.
+        unlock: >-
+          Examine the distribution of estimated propensity scores in both groups before
+          committing; this is what determines whether weighting is viable at all.
+        citations: [austin_2011, li_etal_2018]
+      - id: unmeasured_confounding
+        test: { '==': [{ var: confounders_measured }, some_unmeasured] }
+        message: Known drivers of selection are not in the data.
+        unlock: Plan a sensitivity analysis for unmeasured confounding.
+        citations: [vanderweele_ding_2017]
+      - id: confounders_unlisted
+        test: { '==': [{ var: confounders_measured }, unknown] }
+        message: The drivers of who received the intervention have not been established.
+        unlock: List them, then check which are measured.
+        citations: [hernan_robins_2020]
+    warnings:
+      - id: report_weight_distribution
+        test: { '!=': [{ var: covariate_richness }, sparse] }
+        message: >-
+          Report the distribution of the weights alongside the estimate. A result resting on
+          a few heavily weighted observations is fragile even where the average looks sound.
+        citations: [li_etal_2018]
+
+  gcomp:
+    blockers:
+      - id: sparse_covariates
+        test: { '==': [{ var: covariate_richness }, sparse] }
+        message: >-
+          Standardisation models the outcome given the covariates, so it needs those
+          covariates to be measured.
+        citations: [hernan_robins_2020]
+      - id: no_overlap
+        test: { '==': [{ var: overlap }, poor] }
+        message: >-
+          With no overlap the outcome model would extrapolate into regions where no
+          comparable units exist, which the method cannot signal.
+        citations: [hernan_robins_2020]
+    conditions:
+      - id: unmeasured_confounding
+        test: { '==': [{ var: confounders_measured }, some_unmeasured] }
+        message: Known drivers of selection are not in the data.
+        unlock: Plan a sensitivity analysis for unmeasured confounding.
+        citations: [vanderweele_ding_2017]
+      - id: confounders_unlisted
+        test: { '==': [{ var: confounders_measured }, unknown] }
+        message: The drivers of who received the intervention have not been established.
+        unlock: List them, then check which are measured.
+        citations: [hernan_robins_2020]
+      - id: overlap_untested
+        test: { '==': [{ var: overlap }, untested] }
+        message: Overlap has not been examined, and extrapolation beyond it is silent here.
+        unlock: >-
+          Check overlap even though this method does not require it as directly as matching,
+          because the model will extrapolate without warning.
+        citations: [hernan_robins_2020]
+    warnings:
+      - id: model_specification
+        test: { '!=': [{ var: covariate_richness }, sparse] }
+        message: >-
+          The estimate depends on the outcome model being correctly specified. A
+          doubly-robust estimator gives a second chance: it remains consistent if either the
+          outcome model or the treatment model is right.
+        citations: [hernan_robins_2020]
+
+  gmethods:
+    blockers:
+      - id: not_time_varying
+        test: { '==': [{ var: time_varying_confounding }, 'no'] }
+        message: >-
+          Treatment is a one-off, so conventional adjustment is appropriate and simpler. The
+          g-methods exist for feedback between treatment and confounders.
+        citations: [robins_etal_2000]
+      - id: no_repeated_measures
+        test: { '==': [{ var: repeated_measures }, 'no'] }
+        message: >-
+          Modelling the feedback between treatment and confounders requires repeated measures
+          of both.
+        citations: [robins_etal_2000]
+      - id: sparse_covariates
+        test: { '==': [{ var: covariate_richness }, sparse] }
+        message: The time-varying confounders must themselves be measured.
+        citations: [hernan_robins_2020]
+    conditions:
+      - id: feedback_unclear
+        test: { '==': [{ var: time_varying_confounding }, unclear] }
+        message: Whether treatment affects later confounders has not been established.
+        unlock: >-
+          Draw the causal structure over time. If no arrow runs from treatment to a later
+          confounder, a simpler design will serve.
+        citations: [hernan_robins_2020]
+      - id: unmeasured_confounding
+        test: { '==': [{ var: confounders_measured }, some_unmeasured] }
+        message: >-
+          Known drivers of selection are not in the data. The g-methods address confounding
+          by measured time-varying factors; they do nothing about unmeasured ones.
+        unlock: Plan a sensitivity analysis for unmeasured confounding.
+        citations: [vanderweele_ding_2017, robins_etal_2000]
+    warnings:
+      - id: standard_adjustment_biased
+        test: { '==': [{ var: time_varying_confounding }, 'yes'] }
+        message: >-
+          Where treatment affects later confounders, adjusting for them conventionally blocks
+          part of the effect, while omitting them leaves confounding. Both directions are
+          wrong, which is why a g-method is needed rather than preferred.
+        citations: [robins_etal_2000, hernan_robins_2020]
+
+  # ── Tier 5 · Single time series ────────────────────────────────────────────
+
+  its:
+    blockers:
+      - id: no_pre_data
+        test: { '==': [{ var: pre_periods }, none] }
+        message: >-
+          The whole design rests on estimating the pre-intervention trend, so pre-period data
+          is required.
+        citations: [bernal_etal_2017]
+      - id: date_unknown
+        test: { '==': [{ var: policy_date_known }, 'no'] }
+        message: The interruption point must be known.
+        citations: [bernal_etal_2017]
+      - id: coinciding_changes
+        test: { '==': [{ var: cointerventions }, known] }
+        message: >-
+          Other changes coincided with the intervention. With no comparison group there is
+          nothing to distinguish their effect from the intervention's.
+        citations: [robins_i_v2, bernal_etal_2017]
+    conditions:
+      - id: few_points
+        test: { '==': [{ var: time_points }, few] }
+        message: Too few time points to estimate a trend on each side of the interruption.
+        unlock: >-
+          Aim for roughly eight points per segment. A working convention rather than a
+          derived minimum, so treat it as a range.
+        threshold: { value: 8, range: [6, 12], units: time points per segment, basis: convention, contested: true }
+        citations: [wagner_etal_2002, bernal_etal_2017]
+      - id: moderate_points
+        test: { '==': [{ var: time_points }, moderate] }
+        message: Enough points to fit a model, but not enough to characterise the trend confidently.
+        unlock: Extend the series if the data allow, and report the estimate's sensitivity to the window chosen.
+        citations: [bernal_etal_2017]
+      - id: autocorrelation_unhandled
+        test: { in: [{ var: autocorrelation_plan }, ['no', unclear]] }
+        message: >-
+          Adjacent time points resemble each other. Ignoring this makes the effect appear
+          more precisely estimated than it is.
+        unlock: Test for autocorrelation and model it, or use an estimator that accounts for it.
+        citations: [bernal_etal_2017]
+      - id: cointerventions_unchecked
+        test: { '==': [{ var: cointerventions }, possible] }
+        message: Whether anything else changed at the same time has not been checked.
+        unlock: >-
+          Compile a timeline of other changes across the study period. Without a comparison
+          group this is the design's central vulnerability.
+        citations: [bernal_etal_2017]
+    warnings:
+      - id: no_counterfactual_check
+        test: { '!=': [{ var: pre_periods }, none] }
+        message: >-
+          Nothing here can test whether the pre-intervention trend would have continued. If a
+          control series can be found the design moves to Tier 3 for no extra data on the
+          treated unit.
+        citations: [bernal_etal_2017, whatworks_sms]
+
+  # ── Theory-based strand ────────────────────────────────────────────────────
+
+  contribution_analysis:
+    conditions:
+      - id: no_theory_of_change
+        test: { '==': [{ var: theory_of_change }, 'no'] }
+        message: >-
+          Contribution analysis tests a stated theory of change. Without one there is no
+          claim to assess.
+        unlock: >-
+          Develop a theory of change with delivery staff and stakeholders. That work is part
+          of the evaluation rather than a prerequisite for it.
+        citations: [mayne_2001]
+      - id: partial_theory_of_change
+        test: { '==': [{ var: theory_of_change }, partial] }
+        message: The theory of change is still in development.
+        unlock: Finalise the causal chain and the assumptions at each link before gathering evidence against it.
+        citations: [mayne_2001]
+      - id: thin_evidence
+        test: { '==': [{ var: documentary_evidence }, limited] }
+        message: Evidence for the steps in the causal chain is patchy.
+        unlock: Identify which links are least evidenced; those determine what can be concluded.
+        citations: [mayne_2001]
+    warnings:
+      - id: confidence_not_magnitude
+        test: { '!=': [{ var: theory_of_change }, 'no'] }
+        message: >-
+          The output is confidence in a contribution claim, not an effect size. Where a
+          number is needed for a business case, this will not produce one.
+        citations: [mayne_2001, magenta_book]
+
+  realist:
+    blockers:
+      - id: no_stakeholder_access
+        test: { '==': [{ var: stakeholder_access }, 'no'] }
+        message: >-
+          Realist evaluation works by eliciting mechanisms from those who deliver and receive
+          the intervention. Without access to them the method has no input.
+        citations: [pawson_tilley_1997]
+    conditions:
+      - id: limited_access
+        test: { '==': [{ var: stakeholder_access }, limited] }
+        message: Limited access to the people involved in delivery.
+        unlock: >-
+          Establish which groups can be reached. Partial access narrows which
+          context-mechanism-outcome configurations can be examined rather than ruling the
+          method out.
+        citations: [pawson_tilley_1997]
+    warnings:
+      - id: context_specific
+        test: { '!=': [{ var: stakeholder_access }, 'no'] }
+        message: >-
+          Findings are explicitly about what works for whom in which context. They do not
+          generalise in the way an average effect is assumed to.
+        citations: [pawson_tilley_1997]
+
+  process_tracing:
+    blockers:
+      - id: no_evidence
+        test: { '==': [{ var: documentary_evidence }, 'no'] }
+        message: >-
+          Process tracing tests a causal pathway step by step against evidence. Without
+          documentation of those steps there is nothing to trace.
+        citations: [beach_pedersen_2019]
+    conditions:
+      - id: patchy_evidence
+        test: { '==': [{ var: documentary_evidence }, limited] }
+        message: Documentation covers only part of the hypothesised pathway.
+        unlock: >-
+          Identify which steps lack evidence. A pathway can still be assessed where the gaps
+          are at links that carry less of the argument.
+        citations: [beach_pedersen_2019]
+      - id: no_theory_of_change
+        test: { '==': [{ var: theory_of_change }, 'no'] }
+        message: There is no stated pathway to trace.
+        unlock: Set out the hypothesised causal chain before gathering evidence against it.
+        citations: [beach_pedersen_2019]
+    warnings:
+      - id: within_case
+        test: { '!=': [{ var: documentary_evidence }, 'no'] }
+        message: >-
+          Conclusions apply within the case examined. Establishing that a mechanism operated
+          here is not evidence about how often it operates elsewhere.
+        citations: [beach_pedersen_2019]

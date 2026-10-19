@@ -103,6 +103,103 @@ function humaniseCsvError(error, row) {
   return where ? `${prefix}: ${where} ${error.message}` : `${prefix}: ${error.message}`
 }
 
+/** Every `var` reference inside a JSON Logic expression. */
+function collectVars(node, found = new Set()) {
+  if (Array.isArray(node)) { node.forEach(n => collectVars(n, found)); return found }
+  if (!node || typeof node !== 'object') return found
+  for (const [key, value] of Object.entries(node)) {
+    if (key === 'var') {
+      const name = Array.isArray(value) ? value[0] : value
+      if (typeof name === 'string') found.add(name)
+    } else {
+      collectVars(value, found)
+    }
+  }
+  return found
+}
+
+/** Literal values compared against a given answer id, for option-value checking. */
+function collectComparisons(node, out = []) {
+  if (Array.isArray(node)) { node.forEach(n => collectComparisons(n, out)); return out }
+  if (!node || typeof node !== 'object') return out
+  for (const [op, args] of Object.entries(node)) {
+    if ((op === '==' || op === '!=' || op === '===' || op === '!==') && Array.isArray(args) && args.length === 2) {
+      const [a, b] = args
+      if (a && typeof a === 'object' && 'var' in a && (typeof b === 'string' || typeof b === 'number')) {
+        out.push({ question: Array.isArray(a.var) ? a.var[0] : a.var, value: String(b) })
+      }
+    } else if (op === 'in' && Array.isArray(args) && args.length === 2 && Array.isArray(args[1])) {
+      const [a, list] = args
+      if (a && typeof a === 'object' && 'var' in a) {
+        for (const v of list) {
+          if (typeof v === 'string' || typeof v === 'number') {
+            out.push({ question: Array.isArray(a.var) ? a.var[0] : a.var, value: String(v) })
+          }
+        }
+      }
+    }
+    collectComparisons(args, out)
+  }
+  return out
+}
+
+/**
+ * Cross-file integrity. The plan requires the build to fail where a rule or question
+ * refers to something that does not exist, so these are errors rather than warnings:
+ * a typo in a question id would otherwise make a blocker silently never fire, which
+ * reads as a design being Feasible when it has simply not been checked.
+ */
+function checkReferences(parsed, errors) {
+  const designs = parsed['designs.csv']?.data
+  const questions = parsed['questions.yaml']?.data?.questions
+  const rules = parsed['rules.yaml']?.data?.designs
+  if (!rules) return
+
+  const designIds = new Set((designs ?? []).map(d => d.id))
+  const optionsByQuestion = new Map(
+    (questions ?? []).map(q => [q.id, new Set((q.options ?? []).map(o => String(o.value)))]),
+  )
+  const doc = parsed['rules.yaml'].doc
+  const source = parsed['rules.yaml'].source
+  const at = path => lineFor(doc, source, ['designs', ...path])
+
+  for (const [designId, groups] of Object.entries(rules)) {
+    if (designs && !designIds.has(designId)) {
+      errors.push({ file: 'rules.yaml', line: at([designId]), message: `rules are defined for "${designId}", which is not a design in designs.csv` })
+    }
+    for (const [group, checks] of Object.entries(groups ?? {})) {
+      ;(checks ?? []).forEach((check, i) => {
+        const where = [designId, group, i]
+        for (const v of collectVars(check.test)) {
+          if (questions && !optionsByQuestion.has(v)) {
+            errors.push({ file: 'rules.yaml', line: at(where), message: `${designId}.${group}[${check.id ?? i}] tests "${v}", which is not a question in questions.yaml` })
+          }
+        }
+        for (const { question, value } of collectComparisons(check.test)) {
+          const opts = optionsByQuestion.get(question)
+          if (opts && !opts.has(value)) {
+            errors.push({ file: 'rules.yaml', line: at(where), message: `${designId}.${group}[${check.id ?? i}] compares ${question} with "${value}", which is not one of its options (${[...opts].join(', ')})` })
+          }
+        }
+      })
+    }
+  }
+
+  // questions.yaml applies_when must reference real questions too.
+  if (questions && parsed['questions.yaml'].doc) {
+    const qdoc = parsed['questions.yaml'].doc
+    const qsrc = parsed['questions.yaml'].source
+    questions.forEach((q, i) => {
+      if (!q.applies_when) return
+      for (const v of collectVars(q.applies_when)) {
+        if (!optionsByQuestion.has(v)) {
+          errors.push({ file: 'questions.yaml', line: lineFor(qdoc, qsrc, ['questions', i]), message: `${q.id}.applies_when tests "${v}", which is not a question` })
+        }
+      }
+    })
+  }
+}
+
 export function validateSpec({ specDir = SPEC, schemaDir = SCHEMA } = {}) {
   const errors = []
   const checked = []
@@ -213,6 +310,8 @@ export function validateSpec({ specDir = SPEC, schemaDir = SCHEMA } = {}) {
       }
     }
   }
+
+  checkReferences(parsed, errors)
 
   // Cross-file: every cited key must be defined in references.bib.
   const bibPath = join(specDir, 'references.bib')

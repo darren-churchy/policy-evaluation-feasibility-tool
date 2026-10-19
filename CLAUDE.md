@@ -172,16 +172,43 @@ in phase 2. See `docs/REDESIGN_PLAN.md`.
 | `spec/tiers.yaml` | The five robustness tiers, the theory-based strand, contested placements | Seeded |
 | `spec/references.bib` | Every citation, with a confidence note | Seeded |
 | `spec/designs.csv` | One row per design (not per estimator) — 22 designs | Seeded |
-| `spec/questions.yaml` | Question bank shared by all tools | Phase 2 |
-| `spec/rules.yaml` | Per design: blockers, conditions, warnings as JSON Logic | Phase 2 |
+| `spec/questions.yaml` | Question bank shared by all tools — 38 questions | Seeded |
+| `spec/rules.yaml` | Per design: blockers, conditions, warnings as JSON Logic — 130 checks | Seeded |
 | `spec/stages.yaml` | Stage vocabulary, readiness gates, routing | Phase 2 |
 | `spec/statistics.yaml` | NHST and Bayesian question sets | Phase 3 |
 | `spec/packs/*.yaml` | Context packs: examples, benchmarks, vocabulary | Phase 6 |
 | `spec/schema/*.schema.json` | JSON Schemas (draft 2020-12) for the above | Done |
 
 `scripts/validate-spec.mjs` validates each file against its schema and reports failures as
-`file:line`. It also fails on a **dangling citation** — a key cited anywhere in the spec
-that `references.bib` does not define. Every rule must be traceable to a source.
+`file:line`, and enforces cross-file integrity. The build fails on:
+
+- a **dangling citation** — a key cited anywhere that `references.bib` does not define
+- a rule defined for a **design that is not in `designs.csv`**
+- a rule or `applies_when` testing a **question that is not in `questions.yaml`**
+- a rule comparing a question against an **option value it does not offer**
+
+The last is the subtle one: a typo'd value makes a blocker silently never fire, which
+surfaces as a design looking Feasible when it has simply never been checked.
+
+### How a verdict is reached
+
+Each design takes its **worst** state across its checks, in the order
+Blocked > Conditional > Unknown > Feasible. No good answer offsets a bad one.
+
+| State | Meaning |
+|---|---|
+| Blocked | A blocker test is true. The design cannot work with these answers. |
+| Conditional | No blocker, but something required is unmet or not yet evidenced. Carries `unlock` text. |
+| Unknown | A question the design depends on is unanswered. |
+| Feasible | Conditions met. Warnings are still listed. |
+
+An unanswered question leaves every design depending on it **Unknown** — nothing is scored
+from a default. The engine derives this from the variables each test references, so there
+is no separate dependency list to keep in step.
+
+Numeric thresholds appear only where the literature gives one, carry a `range`, and are
+marked `basis: convention` where that is what they are. A `contested: true` threshold must
+carry a range — enforced by test.
 
 **Two separate version numbers.** The app version (`package.json`, UI, docs) is 0.7.1 and
 stays 0.7.x through the redesign. The **spec version** in `tiers.yaml` is independent: it

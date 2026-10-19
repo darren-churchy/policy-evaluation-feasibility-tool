@@ -1,0 +1,501 @@
+# The question bank.
+#
+# Every question the tools display lives here, so the trees, the Design Finder and the
+# full assessment cannot diverge in wording, options or meaning. A question answered once
+# is prefilled everywhere.
+#
+# `intake: true` marks the shared intake asked once of everyone.
+# `tier` marks a question that serves one rung; the engine skips it once earlier answers
+# have blocked that rung.
+# `applies_when` is JSON Logic over the answer store — the question is asked only when it
+# evaluates true. Absent means always asked (subject to tier gating).
+#
+# IMPORTANT: every option value is a deliberate state. There is no implicit default and no
+# "unknown" that scores as a middle value — an unanswered question leaves the designs that
+# depend on it Unknown. Where not-yet-established is a real answer it appears explicitly
+# (e.g. `untested`), and rules treat it as a condition to discharge, not as a pass.
+
+spec_version: 1.0.0
+
+questions:
+
+  # ── Shared intake ──────────────────────────────────────────────────────────
+
+  - id: claim_type
+    text: What kind of claim do you need to make?
+    hint: >-
+      This decides which part of the tool applies. Only causal claims need a counterfactual
+      design; description and prediction have their own, different standards.
+    intake: true
+    options:
+      - { value: describe, label: 'Describe what is happening, or who is affected' }
+      - { value: predict,  label: Predict who is likely to experience an outcome }
+      - { value: causal,   label: Establish whether an intervention caused a change }
+    references: [magenta_book]
+
+  - id: intervention_defined
+    text: Is the intervention clearly defined and documented?
+    hint: >-
+      What it consists of, who delivers it, and at what intensity. Without this, an observed
+      effect cannot be attributed to the intervention rather than to variation in delivery.
+    intake: true
+    rob_domain: Deviations from intended intervention
+    options:
+      - { value: 'yes',     label: Yes — specified and documented }
+      - { value: partial, label: Partly — being developed }
+      - { value: 'no',      label: No }
+    references: [magenta_book, robins_i_v2]
+
+  - id: theory_of_change
+    text: Does a theory of change or logic model exist?
+    hint: >-
+      A causal model linking the intervention to expected outcomes. Without one it is unclear
+      what the evaluation should measure or how to interpret what it finds.
+    intake: true
+    options:
+      - { value: 'yes',     label: Yes — documented }
+      - { value: partial, label: Partly — in development }
+      - { value: 'no',      label: No }
+    references: [magenta_book]
+
+  - id: maturity
+    text: Is the intervention operating at sufficient scale and maturity?
+    hint: >-
+      Evaluating impact while delivery is still stabilising risks measuring the immaturity of
+      the intervention rather than its effectiveness.
+    intake: true
+    options:
+      - { value: 'yes',     label: Yes — stable and at scale }
+      - { value: partial, label: Partly — scaling or still changing }
+      - { value: 'no',      label: No — early or small-scale }
+    references: [magenta_book]
+
+  - id: prospective
+    text: Can the evaluation be planned before the intervention reaches participants?
+    hint: >-
+      Randomised designs require allocation to be decided in advance. If the intervention has
+      already rolled out, only observational designs remain available.
+    intake: true
+    options:
+      - { value: 'yes', label: Yes — the evaluation can be designed in advance }
+      - { value: 'no',  label: No — the intervention has already been delivered or allocated }
+    references: [magenta_book]
+
+  # ── Tier 1 · Randomised ────────────────────────────────────────────────────
+
+  - id: randomisation_barriers
+    text: What barriers are there to randomising who receives the intervention?
+    hint: >-
+      Ethical, legal, political or operational. Many common objections are addressed by a
+      design adaptation rather than by abandoning randomisation.
+    tier: 1
+    rob_domain: Randomisation process
+    options:
+      - { value: none,       label: None identified }
+      - { value: some,       label: 'Some, likely addressable by design adaptation' }
+      - { value: high,       label: Significant }
+      - { value: impossible, label: Randomisation is ruled out }
+    references: [rob2, magenta_book]
+
+  - id: allocation_unit
+    text: What is the natural unit of allocation?
+    hint: >-
+      Where the intervention is delivered to whole sites, classes or caseloads, individuals
+      within them cannot be allocated separately.
+    tier: 1
+    options:
+      - { value: individual, label: Individual people }
+      - { value: cluster,    label: 'Groups — sites, teams, areas or caseloads' }
+      - { value: either,     label: Either is possible }
+    references: [rob2]
+
+  - id: cluster_count
+    text: How many clusters could be allocated?
+    hint: >-
+      For a cluster design, precision is governed by the number of clusters far more than by
+      the number of people within them.
+    tier: 1
+    applies_when:
+      in: [{ var: allocation_unit }, [cluster, either]]
+    options:
+      - { value: many,     label: 40 or more }
+      - { value: moderate, label: Roughly 15 to 40 }
+      - { value: few,      label: Fewer than 15 }
+    references: [rob2]
+
+  - id: rollout_order_controllable
+    text: Is there a phased rollout whose order you could set?
+    hint: >-
+      Where everyone is treated eventually but not at once, randomising the order gives a
+      stepped-wedge design without withholding the intervention from anyone.
+    tier: 1
+    options:
+      - { value: 'yes',    label: Yes — the order is ours to decide }
+      - { value: partly, label: Partly — some influence over sequencing }
+      - { value: 'no',     label: No — the order is fixed or externally determined }
+    references: [magenta_book]
+
+  - id: delay_acceptable
+    text: Would delaying the intervention for part of the group be acceptable?
+    hint: Everyone receives the intervention; some receive it later, forming a temporary comparison.
+    tier: 1
+    options:
+      - { value: 'yes',     label: Yes — a delay is tolerable }
+      - { value: unclear, label: Unclear — needs discussion }
+      - { value: 'no',      label: 'No — delay is not acceptable' }
+    references: [magenta_book]
+
+  - id: outcome_reversible
+    text: Does the outcome return to baseline once the intervention stops?
+    hint: Required for a crossover design, where participants act as their own control.
+    tier: 1
+    options:
+      - { value: 'yes',     label: Yes — the effect does not persist }
+      - { value: unclear, label: Unclear }
+      - { value: 'no',      label: 'No — effects persist or accumulate' }
+    references: [rob2]
+
+  - id: washout_feasible
+    text: Can a washout period be built in between conditions?
+    hint: A gap long enough for the first condition's effect to dissipate before the second begins.
+    tier: 1
+    applies_when:
+      in: [{ var: outcome_reversible }, ['yes', unclear]]
+    options:
+      - { value: 'yes',     label: Yes }
+      - { value: unclear, label: Unclear }
+      - { value: 'no',      label: 'No' }
+    references: [rob2]
+
+  - id: encouragement_lever
+    text: Is there a way to encourage take-up without assigning the intervention itself?
+    hint: >-
+      An invitation, reminder or incentive offered at random. Useful where the intervention
+      cannot be withheld but take-up is voluntary.
+    tier: 1
+    options:
+      - { value: 'yes',     label: Yes — a credible encouragement exists }
+      - { value: unclear, label: Possibly — needs exploration }
+      - { value: 'no',      label: 'No' }
+    references: [angrist_pischke_2009]
+
+  - id: equipoise
+    text: Is there genuine uncertainty about whether the intervention works?
+    hint: >-
+      Randomisation is hard to justify where the intervention is already known to be
+      effective or known to be harmful.
+    tier: 1
+    options:
+      - { value: 'yes',     label: Yes — the effect is genuinely uncertain }
+      - { value: unclear, label: Contested among stakeholders }
+      - { value: 'no',      label: 'No — the effect is considered established' }
+    references: [magenta_book]
+
+  # ── Tier 2 · Local as-if random ────────────────────────────────────────────
+
+  - id: assignment_threshold
+    text: Is the intervention assigned by a score, date or threshold?
+    hint: >-
+      An eligibility cutoff on a continuous measure — a risk score, an age, an income
+      boundary. Those just either side of it are comparable.
+    tier: 2
+    options:
+      - { value: 'yes',      label: Yes — a documented cutoff exists }
+      - { value: possible, label: Possibly — needs investigation }
+      - { value: 'no',       label: 'No' }
+    references: [imbens_lemieux_2008]
+
+  - id: threshold_enforced
+    text: How strictly is the cutoff followed in practice?
+    hint: >-
+      Strict enforcement gives a sharp design. Partial compliance gives a fuzzy design, which
+      estimates an effect only for those whose treatment the cutoff actually changed.
+    tier: 2
+    applies_when:
+      in: [{ var: assignment_threshold }, ['yes', possible]]
+    options:
+      - { value: sharp,   label: Strictly — the cutoff determines treatment }
+      - { value: fuzzy,   label: Mostly — the cutoff shifts the probability of treatment }
+      - { value: unclear, label: Not yet established }
+    references: [imbens_lemieux_2008]
+
+  - id: threshold_manipulation
+    text: Could people position themselves either side of the cutoff?
+    hint: >-
+      If the score can be influenced by those it affects, the comparison breaks down. A
+      density test checks for bunching at the cutoff.
+    tier: 2
+    applies_when:
+      in: [{ var: assignment_threshold }, ['yes', possible]]
+    rob_domain: Selection of participants
+    options:
+      - { value: no_evidence, label: Tested — no evidence of sorting }
+      - { value: untested,    label: Not yet tested }
+      - { value: suspected,   label: Sorting is likely or demonstrated }
+    references: [mccrary_2008]
+
+  - id: density_near_cutoff
+    text: How many observations fall close to the cutoff?
+    hint: >-
+      Only observations near the cutoff identify the effect. The total sample is not the
+      relevant quantity here.
+    tier: 2
+    applies_when:
+      in: [{ var: assignment_threshold }, ['yes', possible]]
+    options:
+      - { value: many,     label: Many }
+      - { value: some,     label: Some }
+      - { value: few,      label: Few }
+    references: [cattaneo_etal_2020]
+
+  - id: instrument_available
+    text: Is there a factor that shifts take-up but has no other route to the outcome?
+    hint: >-
+      Distance to a service, a lottery, an administrative quirk. Its credibility rests on an
+      argument about mechanism, not on a statistical test.
+    tier: 2
+    options:
+      - { value: 'yes',      label: Yes — a candidate instrument exists }
+      - { value: possible, label: Possibly — needs investigation }
+      - { value: 'no',       label: 'No' }
+    references: [angrist_pischke_2009]
+
+  - id: instrument_strength
+    text: How strongly does that factor predict take-up?
+    hint: >-
+      A weak instrument gives badly behaved estimates. The conventional first-stage F above
+      10 is a rule of thumb, and a contested one.
+    tier: 2
+    applies_when:
+      in: [{ var: instrument_available }, ['yes', possible]]
+    options:
+      - { value: strong,  label: Strongly }
+      - { value: weak,    label: Weakly }
+      - { value: untested, label: Not yet established }
+    references: [lee_etal_2022]
+
+  - id: exclusion_restriction
+    text: Can you argue the factor affects the outcome only through take-up?
+    hint: >-
+      This cannot be tested. It is defended on substantive grounds, and it is where most
+      instrumental-variable designs fail.
+    tier: 2
+    applies_when:
+      in: [{ var: instrument_available }, ['yes', possible]]
+    options:
+      - { value: defensible,  label: Yes — a clear substantive argument exists }
+      - { value: doubtful,    label: Doubtful — plausible alternative routes exist }
+      - { value: unassessed,  label: Not yet considered }
+    references: [angrist_pischke_2009]
+
+  # ── Tier 3 · Comparison-group panel ────────────────────────────────────────
+
+  - id: pre_periods
+    text: How much outcome data do you have from before the intervention?
+    hint: >-
+      Pre-intervention periods are what make a trend testable rather than assumed. One period
+      permits a difference but allows no check on whether the groups were moving together.
+    tier: 3
+    options:
+      - { value: many, label: Several periods }
+      - { value: few,  label: Two or three periods }
+      - { value: one,  label: One period only }
+      - { value: none, label: None }
+    references: [angrist_pischke_2009]
+
+  - id: comparison_group
+    text: Is there a group that did not receive the intervention but is otherwise similar?
+    hint: Another region, service, cohort or eligibility group facing comparable conditions.
+    tier: 3
+    options:
+      - { value: 'yes',      label: Yes — a credible comparison exists }
+      - { value: possible, label: Possibly — needs investigation }
+      - { value: 'no',       label: 'No' }
+    references: [whatworks_sms]
+
+  - id: parallel_trends_evidence
+    text: Did the two groups move together before the intervention?
+    hint: >-
+      The central assumption of a difference-based design. It is examined in the pre-period,
+      never proved — the periods after the intervention are exactly what cannot be checked.
+    tier: 3
+    applies_when:
+      in: [{ var: pre_periods }, [many, few]]
+    options:
+      - { value: supported, label: Yes — examined and consistent }
+      - { value: untested,  label: Not yet examined }
+      - { value: violated,  label: 'No — the trends clearly diverge' }
+    references: [angrist_pischke_2009, goodman_bacon_2021]
+
+  - id: staggered_rollout
+    text: Did different groups start at different times?
+    hint: >-
+      Variation in start dates can strengthen a design, but it also makes the conventional
+      estimator unreliable, so it changes which estimator is appropriate.
+    tier: 3
+    options:
+      - { value: 'yes',     label: Yes — adoption was staggered }
+      - { value: planned, label: Planned but not yet begun }
+      - { value: 'no',      label: 'No — a single common start date' }
+    references: [goodman_bacon_2021, callaway_santanna_2021]
+
+  - id: donor_pool
+    text: Are there untreated units that resemble the treated one?
+    hint: >-
+      A synthetic control builds a comparison by weighting several untreated units. It needs
+      enough candidates for the weighted combination to track the treated unit beforehand.
+    tier: 3
+    applies_when:
+      in: [{ var: comparison_group }, ['yes', possible, 'no']]
+    options:
+      - { value: 'yes',     label: Yes — a reasonable pool exists }
+      - { value: limited, label: 'A few, of uncertain comparability' }
+      - { value: 'no',      label: 'No comparable units' }
+    references: [abadie_2021]
+
+  - id: control_series
+    text: Is there an equivalent time series for an unaffected group?
+    hint: >-
+      A control series distinguishes a change caused by the intervention from one that was
+      happening anyway.
+    tier: 3
+    options:
+      - { value: 'yes',     label: Yes }
+      - { value: unclear, label: Possibly — needs investigation }
+      - { value: 'no',      label: 'No' }
+    references: [bernal_etal_2017]
+
+  - id: policy_date_known
+    text: Is the date the intervention took effect precisely known?
+    hint: Required where the comparison is between the periods either side of a change.
+    tier: 3
+    options:
+      - { value: 'yes',         label: Yes — a specific date }
+      - { value: approximate, label: Approximately — phased or uncertain }
+      - { value: 'no',          label: 'No' }
+    references: [bernal_etal_2017]
+
+  - id: cointerventions
+    text: Did anything else change at the same time?
+    hint: >-
+      Other policies, funding changes or external shocks coinciding with the intervention
+      cannot be separated from it in a time-series comparison.
+    tier: 3
+    rob_domain: Confounding
+    options:
+      - { value: none_known, label: Nothing else identified }
+      - { value: possible,   label: Possibly — not yet checked }
+      - { value: known,      label: 'Yes — other changes coincided' }
+    references: [bernal_etal_2017, robins_i_v2]
+
+  # ── Tier 4 · Selection on observables ──────────────────────────────────────
+
+  - id: covariate_richness
+    text: How much do you know about the characteristics of both groups?
+    hint: >-
+      Adjustment can only account for what is measured. The question is whether you hold the
+      variables that drove who received the intervention.
+    tier: 4
+    rob_domain: Confounding
+    options:
+      - { value: rich,    label: 'Extensive, for treated and untreated alike' }
+      - { value: partial, label: 'Some, with known gaps' }
+      - { value: sparse,  label: Little }
+    references: [stuart_2010, robins_i_v2]
+
+  - id: overlap
+    text: Do treated and untreated units actually resemble each other?
+    hint: >-
+      Where no untreated unit resembles a treated one, no comparison exists for it. This is
+      positivity, and it is checked rather than assumed.
+    tier: 4
+    applies_when:
+      in: [{ var: covariate_richness }, [rich, partial]]
+    options:
+      - { value: good,     label: Good — the groups overlap substantially }
+      - { value: limited,  label: Limited — overlap only in part of the range }
+      - { value: poor,     label: Poor — the groups barely overlap }
+      - { value: untested, label: Not yet examined }
+    references: [li_etal_2018, austin_2011]
+
+  - id: confounders_measured
+    text: Are the main reasons people received the intervention captured in your data?
+    hint: >-
+      List the drivers of selection, then check which you actually hold. What is left over is
+      what adjustment cannot fix.
+    tier: 4
+    rob_domain: Confounding
+    options:
+      - { value: all_identified,  label: The main drivers are measured }
+      - { value: some_unmeasured, label: Some known drivers are not measured }
+      - { value: unknown,         label: Not yet established }
+    references: [vanderweele_ding_2017, hernan_robins_2020]
+
+  - id: time_varying_confounding
+    text: Does treatment at one point change the factors that drive later treatment?
+    hint: >-
+      Common in ongoing services, where a response to the intervention affects whether it
+      continues. Conventional adjustment is biased here, in either direction.
+    tier: 4
+    options:
+      - { value: 'yes',     label: Yes — treatment and confounders evolve together }
+      - { value: unclear, label: Unclear }
+      - { value: 'no',      label: 'No — treatment is a one-off' }
+    references: [robins_etal_2000, hernan_robins_2020]
+
+  - id: repeated_measures
+    text: Do you hold repeated measures of treatment and of the confounders over time?
+    hint: Required to model the feedback between treatment and the factors that affect it.
+    tier: 4
+    applies_when:
+      in: [{ var: time_varying_confounding }, ['yes', unclear]]
+    options:
+      - { value: 'yes', label: Yes — at several time points }
+      - { value: 'no',  label: 'No' }
+    references: [robins_etal_2000]
+
+  # ── Tier 5 · Single time series ────────────────────────────────────────────
+
+  - id: time_points
+    text: How many time points do you have before and after the intervention?
+    hint: >-
+      A trend has to be estimated on each side of the interruption. Roughly eight points per
+      segment is a common minimum, and a convention rather than a derived figure.
+    tier: 5
+    options:
+      - { value: many,     label: Eight or more each side }
+      - { value: moderate, label: Roughly four to eight each side }
+      - { value: few,      label: Fewer than four each side }
+    references: [wagner_etal_2002, bernal_etal_2017]
+
+  - id: autocorrelation_plan
+    text: Is there a plan to account for correlation between adjacent time points?
+    hint: >-
+      Observations close in time resemble each other. Ignoring this makes the effect look
+      more precisely estimated than it is.
+    tier: 5
+    options:
+      - { value: 'yes',     label: Yes — it will be modelled }
+      - { value: unclear, label: Not yet decided }
+      - { value: 'no',      label: 'No' }
+    references: [bernal_etal_2017]
+
+  # ── Theory-based strand ────────────────────────────────────────────────────
+
+  - id: stakeholder_access
+    text: Can you speak to the people who deliver and receive the intervention?
+    hint: Required to elicit how the intervention is meant to work, and for whom.
+    options:
+      - { value: 'yes',     label: Yes }
+      - { value: limited, label: Limited }
+      - { value: 'no',      label: 'No' }
+    references: [pawson_tilley_1997]
+
+  - id: documentary_evidence
+    text: Is there documentation covering each step of the intended causal chain?
+    hint: Records, monitoring data, case files or correspondence evidencing what happened at each stage.
+    options:
+      - { value: 'yes',     label: Yes — substantial }
+      - { value: limited, label: Patchy }
+      - { value: 'no',      label: 'No' }
+    references: [beach_pedersen_2019]

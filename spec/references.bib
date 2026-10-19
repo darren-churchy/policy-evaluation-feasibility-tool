@@ -69,3 +69,220 @@
                   does not require a counterfactual. Supports the parallel-strand treatment
                   rather than placement on the counterfactual ladder.}
 }
+
+% ── Added for questions.yaml and rules.yaml ──────────────────────────────────
+
+@article{rob2,
+  title   = {{RoB 2}: a revised tool for assessing risk of bias in randomised trials},
+  author  = {Sterne, Jonathan A C and Savovi{\'c}, Jelena and Page, Matthew J and others},
+  journal = {BMJ},
+  volume  = {366},
+  pages   = {l4898},
+  year    = {2019},
+  doi     = {10.1136/bmj.l4898},
+  note    = {High confidence. Used for the risk-of-bias domain structure applied to
+             randomised designs — randomisation process, deviations from intended
+             intervention, missing outcome data, measurement, selective reporting.}
+}
+
+@book{hernan_robins_2020,
+  title     = {Causal Inference: What If},
+  author    = {Hern{\'a}n, Miguel A. and Robins, James M.},
+  publisher = {Chapman \& Hall/CRC},
+  year      = {2020},
+  note      = {High confidence. The reference for exchangeability, positivity and
+               consistency as the identifying conditions behind selection-on-observables
+               designs, and for the g-methods.}
+}
+
+@book{angrist_pischke_2009,
+  title     = {Mostly Harmless Econometrics: An Empiricist's Companion},
+  author    = {Angrist, Joshua D. and Pischke, J{\"o}rn-Steffen},
+  publisher = {Princeton University Press},
+  year      = {2009},
+  note      = {High confidence for instrumental variables, the exclusion restriction and
+               the LATE interpretation, and for the difference-in-differences framing.}
+}
+
+@article{imbens_lemieux_2008,
+  title   = {Regression discontinuity designs: A guide to practice},
+  author  = {Imbens, Guido W. and Lemieux, Thomas},
+  journal = {Journal of Econometrics},
+  volume  = {142}, number = {2}, pages = {615--635},
+  year    = {2008},
+  doi     = {10.1016/j.jeconom.2007.05.001},
+  note    = {High confidence for the sharp/fuzzy distinction and the requirements of a
+             credible discontinuity design.}
+}
+
+@article{mccrary_2008,
+  title   = {Manipulation of the running variable in the regression discontinuity design:
+             A density test},
+  author  = {McCrary, Justin},
+  journal = {Journal of Econometrics},
+  volume  = {142}, number = {2}, pages = {698--714},
+  year    = {2008},
+  doi     = {10.1016/j.jeconom.2007.05.005},
+  note    = {High confidence. The basis for treating an untested running variable as a
+             condition to discharge rather than an assumption to grant.}
+}
+
+@book{cattaneo_etal_2020,
+  title     = {A Practical Introduction to Regression Discontinuity Designs: Foundations},
+  author    = {Cattaneo, Matias D. and Idrobo, Nicol{\'a}s and Titiunik, Roc{\'\i}o},
+  publisher = {Cambridge University Press},
+  year      = {2020},
+  doi       = {10.1017/9781108684606},
+  note      = {High confidence for bandwidth selection and for the point that effective
+               sample size near the cutoff, not total N, governs precision.}
+}
+
+@article{goodman_bacon_2021,
+  title   = {Difference-in-differences with variation in treatment timing},
+  author  = {Goodman-Bacon, Andrew},
+  journal = {Journal of Econometrics},
+  volume  = {225}, number = {2}, pages = {254--277},
+  year    = {2021},
+  doi     = {10.1016/j.jeconom.2021.03.014},
+  note    = {High confidence. Shows two-way fixed effects under staggered adoption is a
+             weighted average that can place negative weights on some comparisons — the
+             basis for warning on estimator choice rather than on the design.}
+}
+
+@article{callaway_santanna_2021,
+  title   = {Difference-in-differences with multiple time periods},
+  author  = {Callaway, Brantly and Sant'Anna, Pedro H. C.},
+  journal = {Journal of Econometrics},
+  volume  = {225}, number = {2}, pages = {200--230},
+  year    = {2021},
+  doi     = {10.1016/j.jeconom.2020.12.001},
+  note    = {High confidence. Group-time average treatment effects; one of the estimators
+             offered under the staggered-adoption design.}
+}
+
+@article{sun_abraham_2021,
+  title   = {Estimating dynamic treatment effects in event studies with heterogeneous
+             treatment effects},
+  author  = {Sun, Liyang and Abraham, Sarah},
+  journal = {Journal of Econometrics},
+  volume  = {225}, number = {2}, pages = {175--199},
+  year    = {2021},
+  doi     = {10.1016/j.jeconom.2020.09.006},
+  note    = {High confidence. Interaction-weighted estimator; an alternative to
+             Callaway-Sant'Anna under the same design.}
+}
+
+@article{abadie_2021,
+  title   = {Using synthetic controls: Feasibility, data requirements, and methodological
+             aspects},
+  author  = {Abadie, Alberto},
+  journal = {Journal of Economic Literature},
+  volume  = {59}, number = {2}, pages = {391--425},
+  year    = {2021},
+  doi     = {10.1257/jel.20191450},
+  note    = {High confidence. States the data requirements directly: a sizeable donor pool,
+             a long pre-period, and good pre-period fit as a precondition rather than a
+             diagnostic to report afterwards.}
+}
+
+@article{bernal_etal_2017,
+  title   = {Interrupted time series regression for the evaluation of public health
+             interventions: a tutorial},
+  author  = {Bernal, James Lopez and Cummins, Steven and Gasparrini, Antonio},
+  journal = {International Journal of Epidemiology},
+  volume  = {46}, number = {1}, pages = {348--355},
+  year    = {2017},
+  doi     = {10.1093/ije/dyw098},
+  note    = {High confidence for ITS requirements: a clearly defined interruption point,
+             autocorrelation handling, and the value of a control series.}
+}
+
+@article{wagner_etal_2002,
+  title   = {Segmented regression analysis of interrupted time series studies in medication
+             use research},
+  author  = {Wagner, Anita K. and Soumerai, Stephen B. and Zhang, Fang and
+             Ross-Degnan, Dennis},
+  journal = {Journal of Clinical Pharmacy and Therapeutics},
+  volume  = {27}, number = {4}, pages = {299--309},
+  year    = {2002},
+  doi     = {10.1046/j.1365-2710.2002.00430.x},
+  note    = {Medium confidence for the commonly cited minimum of roughly eight time points
+             per segment. This is a practical convention, not a derived threshold, and is
+             presented in the tool as a range with its source.}
+}
+
+@article{stuart_2010,
+  title   = {Matching methods for causal inference: A review and a look forward},
+  author  = {Stuart, Elizabeth A.},
+  journal = {Statistical Science},
+  volume  = {25}, number = {1}, pages = {1--21},
+  year    = {2010},
+  doi     = {10.1214/09-STS313},
+  note    = {High confidence for matching requirements and for balance assessment as the
+             characteristic diagnostic.}
+}
+
+@article{austin_2011,
+  title   = {An introduction to propensity score methods for reducing the effects of
+             confounding in observational studies},
+  author  = {Austin, Peter C.},
+  journal = {Multivariate Behavioral Research},
+  volume  = {46}, number = {3}, pages = {399--424},
+  year    = {2011},
+  doi     = {10.1080/00273171.2011.568786},
+  note    = {High confidence for propensity score practice and overlap assessment.}
+}
+
+@article{li_etal_2018,
+  title   = {Balancing covariates via propensity score weighting},
+  author  = {Li, Fan and Morgan, Kari Lock and Zaslavsky, Alan M.},
+  journal = {Journal of the American Statistical Association},
+  volume  = {113}, number = {521}, pages = {390--400},
+  year    = {2018},
+  doi     = {10.1080/01621459.2016.1260466},
+  note    = {High confidence. Overlap weights as the response to limited common support,
+             and the basis for treating weighting as failing on positivity where matching
+             fails on covariate richness.}
+}
+
+@article{vanderweele_ding_2017,
+  title   = {Sensitivity analysis in observational research: Introducing the E-value},
+  author  = {VanderWeele, Tyler J. and Ding, Peng},
+  journal = {Annals of Internal Medicine},
+  volume  = {167}, number = {4}, pages = {268--274},
+  year    = {2017},
+  doi     = {10.7326/M16-2607},
+  note    = {High confidence. Supports requiring a sensitivity analysis, rather than a
+             blocker, where confounders are known to be unmeasured.}
+}
+
+@article{robins_etal_2000,
+  title   = {Marginal structural models and causal inference in epidemiology},
+  author  = {Robins, James M. and Hern{\'a}n, Miguel {\'A}ngel and Brumback, Babette},
+  journal = {Epidemiology},
+  volume  = {11}, number = {5}, pages = {550--560},
+  year    = {2000},
+  doi     = {10.1097/00001648-200009000-00011},
+  note    = {High confidence. Establishes that conventional adjustment is biased where
+             confounders are affected by prior treatment, which is what makes the g-methods
+             a distinct design rather than an estimator choice.}
+}
+
+@book{pawson_tilley_1997,
+  title     = {Realistic Evaluation},
+  author    = {Pawson, Ray and Tilley, Nick},
+  publisher = {SAGE},
+  year      = {1997},
+  note      = {High confidence for realist evaluation and the context-mechanism-outcome
+               framing, including its dependence on stakeholder access.}
+}
+
+@book{beach_pedersen_2019,
+  title     = {Process-Tracing Methods: Foundations and Guidelines},
+  author    = {Beach, Derek and Pedersen, Rasmus Brun},
+  publisher = {University of Michigan Press},
+  edition   = {2nd},
+  year      = {2019},
+  note      = {High confidence for process tracing and its requirement for evidence at
+               each step of the hypothesised causal pathway.}
+}
