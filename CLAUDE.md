@@ -171,7 +171,7 @@ in phase 2. See `docs/REDESIGN_PLAN.md`.
 |---|---|---|
 | `spec/tiers.yaml` | The five robustness tiers, the theory-based strand, contested placements | Seeded |
 | `spec/references.bib` | Every citation, with a confidence note | Seeded |
-| `spec/designs.csv` | One row per design (not per estimator) | Phase 2 |
+| `spec/designs.csv` | One row per design (not per estimator) — 22 designs | Seeded |
 | `spec/questions.yaml` | Question bank shared by all tools | Phase 2 |
 | `spec/rules.yaml` | Per design: blockers, conditions, warnings as JSON Logic | Phase 2 |
 | `spec/stages.yaml` | Stage vocabulary, readiness gates, routing | Phase 2 |
@@ -188,10 +188,18 @@ stays 0.7.x through the redesign. The **spec version** in `tiers.yaml` is indepe
 is written into every export, and a load with a mismatched version warns. It increments on
 changes to tiers, rules or design identity — not on wording.
 
-**Signed-off methodology is guarded by tests**, not just by file contents. `tests/validate-spec.test.mjs`
-asserts the tier ordering, the theory-based strand staying off the ladder, and the three
-contested placements (RDIT → Tier 3, controlled ITS → Tier 3, matching with prior-outcome
-controls → upper Tier 4). Changing any of them requires deliberately changing a test.
+**Signed-off methodology is guarded by tests**, not just by file contents.
+`tests/validate-spec.test.mjs` asserts the tier ordering, the theory-based strand staying
+off the ladder, and the three contested placements (RDIT → Tier 3, controlled ITS →
+Tier 3, matching with prior-outcome controls → upper Tier 4). `tests/designs.test.mjs`
+asserts the agreed 32 → 22 register: the tier distribution (6/3/5/4/1 plus 3 theory-based)
+and every merge. Changing any of them requires deliberately changing a test.
+
+**The design register is one row per design, not per estimator.** Estimator choice never
+moves a design up a tier, so Callaway-Sant'Anna and Sun-Abraham are `estimator_options` of
+`did_staggered` rather than designs. A theory-based row must carry **no** tier — the
+schema rejects one, because the strand runs beside the ladder and is never converted into
+a rung.
 
 ---
 

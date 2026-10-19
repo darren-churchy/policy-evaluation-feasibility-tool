@@ -188,3 +188,44 @@ describe('tiers.yaml — signed-off decisions', () => {
     expect(tiers.spec_version).toMatch(/^\d+\.\d+\.\d+$/)
   })
 })
+
+// designs.csv is edited in a spreadsheet by reviewers, so its errors have to be
+// readable. ajv renders an `if/then/not` failure as "must NOT be valid" plus a generic
+// companion — neither of which tells an editor what to change.
+describe('validateSpec — CSV errors are readable', () => {
+  const HEADER = 'id,strand,tier,family,name,estimand,estimator_options,prospective_only,tier_qualifier,notes\n'
+  const ok = 'a_design,counterfactual,1,Fam,A design,ATE,E1|E2,true,,\n'
+
+  function check(csv) {
+    const d = fixture({ 'designs.csv': HEADER + csv, 'references.bib': MINIMAL_BIB })
+    const { errors } = validateSpec({ specDir: d, schemaDir: SCHEMA_DIR })
+    rmSync(d, { recursive: true, force: true })
+    return errors
+  }
+
+  it('names the row and the rule when a theory-based design is put on the ladder', () => {
+    const errors = check(ok + 'tb,theory_based,4,Fam,Theory thing,Confidence,E,false,,\n')
+    expect(errors.length, 'one clear error, not a pair').toBe(1)
+    expect(errors[0].message).toMatch(/row "tb"/)
+    expect(errors[0].message).toMatch(/must not carry a tier/)
+    expect(errors[0].message, 'ajv wording must not leak through').not.toMatch(/must NOT be valid/)
+  })
+
+  it('drops the redundant "must match then schema" companion error', () => {
+    const errors = check(ok + 'no_tier,counterfactual,,Fam,No tier,ATE,E,false,,\n')
+    expect(errors.length).toBe(1)
+    expect(errors[0].message).toMatch(/row "no_tier".*required property 'tier'/)
+  })
+
+  it('names the row for an ordinary property violation', () => {
+    const errors = check('bad_tier,counterfactual,9,Fam,Bad tier,ATE,E,false,,\n')
+    expect(errors[0].message).toMatch(/row "bad_tier": tier must be <= 5/)
+  })
+
+  it('catches a duplicate design id and points at the first occurrence', () => {
+    const errors = check(ok + 'a_design,counterfactual,2,Fam,Clash,ATE,E,false,,\n')
+    const dup = errors.find(e => e.message.includes('duplicate'))
+    expect(dup).toBeDefined()
+    expect(dup.message).toMatch(/duplicate id "a_design" \(first seen at line \d+\)/)
+  })
+})

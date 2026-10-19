@@ -14,6 +14,7 @@ import { fileURLToPath } from 'node:url'
 import Ajv from 'ajv/dist/2020.js'
 import addFormats from 'ajv-formats'
 import { parseDocument } from 'yaml'
+import { parseCsvRecords } from './lib/csv.mjs'
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url))
 const SPEC = join(ROOT, 'spec')
@@ -28,6 +29,18 @@ const TARGETS = [
   { file: 'rules.yaml',      schema: 'rules.schema.json' },
   { file: 'stages.yaml',     schema: 'stages.schema.json' },
   { file: 'statistics.yaml', schema: 'statistics.schema.json' },
+]
+
+// CSV targets are validated as the array of records parsed from them.
+const CSV_TARGETS = [
+  {
+    file: 'designs.csv',
+    schema: 'designs.schema.json',
+    pipeSeparated: ['estimator_options'],
+    // Design ids are referenced by rules.yaml and questions.yaml, so a duplicate would
+    // silently shadow a rule set rather than raise anything.
+    uniqueBy: 'id',
+  },
 ]
 
 /** Resolve a JSON Pointer-ish instance path to a 1-indexed line in the source YAML. */
@@ -72,6 +85,22 @@ function collectCitations(node, path = [], found = []) {
 /** Keys defined in references.bib, e.g. `@article{lee_etal_2022,` -> lee_etal_2022 */
 function bibKeys(bibSource) {
   return new Set([...bibSource.matchAll(/^\s*@\w+\s*\{\s*([^,\s]+)\s*,/gm)].map(m => m[1]))
+}
+
+/**
+ * Turn ajv's conditional-schema errors into something a reviewer editing a spreadsheet
+ * can act on. ajv reports an `if/then` failure as a pair: a specific error plus a generic
+ * "must match then schema" companion. The companion is dropped, and the `not` case — which
+ * ajv renders as the unhelpful "must NOT be valid" — is named explicitly.
+ */
+function humaniseCsvError(error, row) {
+  if (error.keyword === 'if') return null
+  if (error.keyword === 'not' && row?.strand === 'theory_based') {
+    return `row "${row.id}": a theory-based design must not carry a tier — the theory-based strand runs beside the ladder, never on it`
+  }
+  const where = error.instancePath.split('/').slice(2).join('/')
+  const prefix = row?.id ? `row "${row.id}"` : error.instancePath || '/'
+  return where ? `${prefix}: ${where} ${error.message}` : `${prefix}: ${error.message}`
 }
 
 export function validateSpec({ specDir = SPEC, schemaDir = SCHEMA } = {}) {
@@ -124,6 +153,45 @@ export function validateSpec({ specDir = SPEC, schemaDir = SCHEMA } = {}) {
     }
   }
 
+  for (const { file, schema, pipeSeparated, uniqueBy } of CSV_TARGETS) {
+    const specPath = join(specDir, file)
+    if (!existsSync(specPath)) continue
+
+    const source = readFileSync(specPath, 'utf8')
+    const { records, lines } = parseCsvRecords(source, { pipeSeparated })
+    parsed[file] = { data: records, csvLines: lines }
+    checked.push(file)
+
+    const validate = ajv.compile(JSON.parse(readFileSync(join(schemaDir, schema), 'utf8')))
+    if (!validate(records)) {
+      for (const e of validate.errors) {
+        // instancePath starts /<rowIndex>/... — map the row back to its source line.
+        const rowIndex = Number(e.instancePath.split('/')[1])
+        const row = Number.isInteger(rowIndex) ? records[rowIndex] : undefined
+        const message = humaniseCsvError(e, row)
+        if (message === null) continue   // redundant companion error
+        errors.push({
+          file,
+          line: Number.isInteger(rowIndex) ? (lines[rowIndex] ?? 1) : 1,
+          message,
+        })
+      }
+    }
+
+    if (uniqueBy) {
+      const seen = new Map()
+      records.forEach((r, i) => {
+        const key = r[uniqueBy]
+        if (key === undefined) return
+        if (seen.has(key)) {
+          errors.push({ file, line: lines[i], message: `duplicate ${uniqueBy} "${key}" (first seen at line ${lines[seen.get(key)]})` })
+        } else {
+          seen.set(key, i)
+        }
+      })
+    }
+  }
+
   // Context packs share one schema.
   const packDir = join(specDir, 'packs')
   if (existsSync(packDir) && existsSync(join(schemaDir, 'pack.schema.json'))) {
@@ -150,14 +218,14 @@ export function validateSpec({ specDir = SPEC, schemaDir = SCHEMA } = {}) {
   const bibPath = join(specDir, 'references.bib')
   if (existsSync(bibPath)) {
     const defined = bibKeys(readFileSync(bibPath, 'utf8'))
-    for (const [file, { data, doc, source }] of Object.entries(parsed)) {
+    for (const [file, entry] of Object.entries(parsed)) {
+      const { data, doc, source, csvLines } = entry
       for (const { key, path } of collectCitations(data)) {
         if (!defined.has(key)) {
-          errors.push({
-            file,
-            line: lineFor(doc, source, path),
-            message: `citation "${key}" is not defined in references.bib`,
-          })
+          const line = doc
+            ? lineFor(doc, source, path)
+            : (csvLines?.[Number(path[0])] ?? 1)
+          errors.push({ file, line, message: `citation "${key}" is not defined in references.bib` })
         }
       }
     }

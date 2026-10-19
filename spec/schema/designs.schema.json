@@ -7,16 +7,37 @@
   "minItems": 1,
   "items": {
     "type": "object",
-    "required": ["id", "tier", "family", "name", "estimand"],
+    "required": ["id", "strand", "family", "name", "estimand"],
     "additionalProperties": false,
+    "allOf": [
+      {
+        "$comment": "A counterfactual design must sit on a rung.",
+        "if": { "properties": { "strand": { "const": "counterfactual" } }, "required": ["strand"] },
+        "then": { "required": ["tier"] }
+      },
+      {
+        "$comment": "The theory-based strand runs beside the ladder and is never converted into a rung, so a tier on a theory-based row is an error rather than an omission.",
+        "if": { "properties": { "strand": { "const": "theory_based" } }, "required": ["strand"] },
+        "then": { "not": { "required": ["tier"] } }
+      }
+    ],
     "properties": {
       "id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
-      "tier": { "type": "integer", "minimum": 1, "maximum": 5 },
+      "strand": {
+        "description": "Whether the design identifies an effect by comparison with a counterfactual, or belongs to the parallel theory-based strand.",
+        "enum": ["counterfactual", "theory_based"]
+      },
+      "tier": {
+        "description": "Required for counterfactual designs; forbidden for theory-based ones.",
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 5
+      },
       "family": { "type": "string", "minLength": 1 },
       "name": { "type": "string", "minLength": 1 },
       "estimand": { "type": "string", "minLength": 1 },
       "estimator_options": {
-        "description": "Pipe-separated in the CSV, parsed to an array.",
+        "description": "Pipe-separated in the CSV, parsed to an array. Estimator choice never moves a design up a tier.",
         "type": "array",
         "items": { "type": "string", "minLength": 1 }
       },
