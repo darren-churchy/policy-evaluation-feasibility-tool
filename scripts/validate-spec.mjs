@@ -185,6 +185,68 @@ function checkReferences(parsed, errors) {
     }
   }
 
+  // stages.yaml: readiness gates, stage inference and routing all read answers, and a
+  // bad reference here would make a hard gate silently never fire.
+  const stages = parsed['stages.yaml']?.data
+  if (stages && questions) {
+    const sdoc = parsed['stages.yaml'].doc
+    const ssrc = parsed['stages.yaml'].source
+    const stageIds = new Set((stages.stages ?? []).map(s => s.id))
+
+    ;(stages.readiness ?? []).forEach((r, i) => {
+      const line = lineFor(sdoc, ssrc, ['readiness', i])
+      if (!optionsByQuestion.has(r.question)) {
+        errors.push({ file: 'stages.yaml', line, message: `readiness "${r.id}" reads question "${r.question}", which is not in questions.yaml` })
+      }
+      for (const v of collectVars(r.fires_when)) {
+        if (!optionsByQuestion.has(v)) {
+          errors.push({ file: 'stages.yaml', line, message: `readiness "${r.id}" fires_when tests "${v}", which is not a question` })
+        }
+      }
+      for (const { question, value } of collectComparisons(r.fires_when)) {
+        const opts = optionsByQuestion.get(question)
+        if (opts && !opts.has(value)) {
+          errors.push({ file: 'stages.yaml', line, message: `readiness "${r.id}" compares ${question} with "${value}", which is not one of its options (${[...opts].join(', ')})` })
+        }
+      }
+    })
+
+    ;(stages.inference ?? []).forEach((rule, i) => {
+      const line = lineFor(sdoc, ssrc, ['inference', i])
+      for (const v of collectVars(rule.when)) {
+        if (!optionsByQuestion.has(v)) {
+          errors.push({ file: 'stages.yaml', line, message: `inference[${i}] tests "${v}", which is not a question` })
+        }
+      }
+      for (const { question, value } of collectComparisons(rule.when)) {
+        const opts = optionsByQuestion.get(question)
+        if (opts && !opts.has(value)) {
+          errors.push({ file: 'stages.yaml', line, message: `inference[${i}] compares ${question} with "${value}", which is not one of its options (${[...opts].join(', ')})` })
+        }
+      }
+      for (const st of rule.stages ?? []) {
+        if (!stageIds.has(st)) {
+          errors.push({ file: 'stages.yaml', line, message: `inference[${i}] concludes stage "${st}", which is not defined in stages` })
+        }
+      }
+    })
+
+    ;(stages.routing ?? []).forEach((route, i) => {
+      const line = lineFor(sdoc, ssrc, ['routing', i])
+      for (const v of collectVars(route.when)) {
+        if (!optionsByQuestion.has(v)) {
+          errors.push({ file: 'stages.yaml', line, message: `routing ${route.from} -> ${route.to} tests "${v}", which is not a question` })
+        }
+      }
+      for (const { question, value } of collectComparisons(route.when)) {
+        const opts = optionsByQuestion.get(question)
+        if (opts && !opts.has(value)) {
+          errors.push({ file: 'stages.yaml', line, message: `routing ${route.from} -> ${route.to} compares ${question} with "${value}", which is not one of its options (${[...opts].join(', ')})` })
+        }
+      }
+    })
+  }
+
   // questions.yaml applies_when must reference real questions too.
   if (questions && parsed['questions.yaml'].doc) {
     const qdoc = parsed['questions.yaml'].doc

@@ -1,0 +1,204 @@
+# Stage vocabulary, readiness gates and tool routing.
+#
+# This file holds the single stage rule for the whole app. The Causal Readiness page, the
+# Design Finder and both decision trees all call the engine's stage inference, which reads
+# only what is below. The previous tool implemented stage logic in three places and they
+# disagreed: the quantitative tree tagged RCT, DiD, RD, ITS and IV as Grow-stage only,
+# while the Design Finder and the Causal Readiness page said impact evaluation suits both
+# Test and Grow. That contradiction is resolved here, once.
+#
+# The resolution follows the Test and Learn annex: impact evaluation designs are available
+# at BOTH Test and Grow. What differs between the two is the estimand and the decision the
+# evidence informs — at Test, the effect of a specific component or mechanism, informing
+# whether to keep refining; at Grow, the effect of a stable intervention at full scale,
+# informing whether to continue or expand. The identification requirements are the same at
+# both. A design is therefore never restricted to Grow.
+#
+# Stage labels are published Magenta Book vocabulary and are kept as references. Each
+# carries a gloss so the label does not require prior familiarity to read.
+
+spec_version: 1.0.0
+
+stages:
+  - id: explore
+    label: Explore
+    gloss: >-
+      Understanding the problem and who it affects, before an intervention has been
+      designed.
+    citations: [magenta_book]
+
+  - id: co_design
+    label: Co-design
+    gloss: >-
+      Developing the intervention with the people who will deliver and receive it, and
+      setting out how it is meant to work.
+    citations: [magenta_book]
+
+  - id: test
+    label: Test
+    gloss: >-
+      Trying specific components or mechanisms to find out what works, while the
+      intervention is still being refined.
+    citations: [magenta_book]
+
+  - id: grow
+    label: Grow
+    gloss: >-
+      Evaluating a stable, fully specified intervention operating at scale.
+    citations: [magenta_book]
+
+# ── Readiness ────────────────────────────────────────────────────────────────
+#
+# Two hard gates and one warning. A gate means impact evaluation cannot answer the
+# question yet, whatever the data situation — so it fires before any design is considered.
+# Maturity is deliberately NOT a gate: a partly-scaled intervention can still support a
+# Test-stage evaluation of a component, which is what the redirect says.
+
+readiness:
+  - id: intervention_specified
+    question: intervention_defined
+    severity: gate
+    fires_when:
+      '==': [{ var: intervention_defined }, 'no']
+    message: >-
+      The intervention is not yet specified, so an observed change could not be attributed
+      to it rather than to variation in what was delivered. No impact evaluation design
+      resolves this.
+    redirect: >-
+      Document what the intervention consists of, who delivers it and at what intensity. A
+      process evaluation can describe and standardise delivery first.
+    citations: [magenta_book, robins_i_v2]
+
+  - id: theory_articulated
+    question: theory_of_change
+    severity: gate
+    fires_when:
+      '==': [{ var: theory_of_change }, 'no']
+    message: >-
+      With no theory of change there is nothing to say which outcomes should move, over what
+      period, or how a result should be read. The evaluation would have no stated
+      expectation to test.
+    redirect: >-
+      Develop a logic model with delivery staff and stakeholders. A developmental evaluation
+      can support this while the intervention is still forming.
+    citations: [magenta_book, mayne_2001]
+
+  - id: sufficient_maturity
+    question: maturity
+    severity: warning
+    fires_when:
+      '==': [{ var: maturity }, 'no']
+    message: >-
+      The intervention is early or small-scale, so an evaluation now would largely measure
+      its immaturity rather than its effect.
+    redirect: >-
+      Consider a process or developmental evaluation while delivery stabilises. Where a
+      specific component is already settled, a Test-stage evaluation of that component may
+      still be worthwhile.
+    citations: [magenta_book]
+
+# ── Stage inference ──────────────────────────────────────────────────────────
+#
+# Ordered; the first matching rule wins. The two gates are checked before maturity, since
+# a missing specification or theory of change is the more fundamental problem.
+
+inference:
+  - when:
+      '==': [{ var: intervention_defined }, 'no']
+    stages: [co_design]
+    note: >-
+      The work needed is specifying the intervention, which is Co-design activity.
+    citations: [magenta_book]
+
+  - when:
+      '==': [{ var: theory_of_change }, 'no']
+    stages: [co_design]
+    note: >-
+      Articulating how the intervention is meant to work is Co-design activity.
+    citations: [magenta_book]
+
+  - when:
+      '==': [{ var: maturity }, 'no']
+    stages: [explore]
+    note: >-
+      Where the intervention is early and small, the useful work is understanding the
+      problem and the delivery context rather than estimating an effect.
+    citations: [magenta_book]
+
+  - when:
+      or:
+        - { '==': [{ var: intervention_defined }, partial] }
+        - { '==': [{ var: theory_of_change }, partial] }
+        - { '==': [{ var: maturity }, partial] }
+    stages: [test]
+    note: >-
+      Something is still settling, so the appropriate estimand is the effect of a specific
+      component or mechanism rather than of the whole programme. Every impact evaluation
+      design remains available; what narrows is the claim being made.
+    citations: [magenta_book]
+
+  - when:
+      and:
+        - { '==': [{ var: intervention_defined }, 'yes'] }
+        - { '==': [{ var: theory_of_change }, 'yes'] }
+        - { '==': [{ var: maturity }, 'yes'] }
+    stages: [test, grow]
+    note: >-
+      Defined, theorised and at scale. Both stages apply: the distinction is whether the
+      programme model is still being refined (Test) or is stable and being evaluated at full
+      scale (Grow). Identification requirements are identical, so no design is excluded by
+      the choice between them.
+    citations: [magenta_book]
+
+# ── Tool routing ─────────────────────────────────────────────────────────────
+#
+# Where a user should go next, and why. Answers already given travel with them, so a
+# question answered in one tool is never asked again in another.
+
+routing:
+  - from: research_question_framework
+    to: quant_tree
+    when:
+      '==': [{ var: claim_type }, predict]
+    note: >-
+      Prediction questions are answered by modelling who is likely to experience an outcome.
+      They do not need a counterfactual and do not belong on the ladder.
+    citations: [magenta_book]
+
+  - from: research_question_framework
+    to: qual_tree
+    when:
+      '==': [{ var: claim_type }, describe]
+    note: >-
+      Descriptive and contextual questions are served by the qualitative strand. Sending
+      them to a counterfactual design would answer a question that was not asked.
+    citations: [magenta_book]
+
+  - from: research_question_framework
+    to: design_finder
+    when:
+      '==': [{ var: claim_type }, causal]
+    note: >-
+      Causal claims need a counterfactual design. The Design Finder runs the same engine
+      over a minimal question set as a quick screen.
+    citations: [whatworks_sms]
+
+  - from: design_finder
+    to: full_assessment
+    note: >-
+      Continuing to the full assessment keeps every answer already given and asks only what
+      the remaining rungs require.
+
+  - from: quant_tree
+    to: design_finder
+    when:
+      '==': [{ var: claim_type }, causal]
+    note: >-
+      Where the tree establishes that the question is causal after all, the ladder applies.
+
+  - from: readiness_gate
+    to: qual_tree
+    note: >-
+      Where a readiness gate fires, the useful next step is the theory-based and qualitative
+      strand — process, developmental or contribution work — not a counterfactual design.
+    citations: [magenta_book, mayne_2001]

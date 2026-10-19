@@ -164,24 +164,28 @@ describe('questions.yaml — integrity', () => {
 describe('no question feeds nothing', () => {
   // The defect this redesign exists to fix: the previous tool collected 80 inputs and
   // scored on 23. Any question that reaches no rule is burden without purpose.
-  const PENDING_STAGES = ['claim_type', 'intervention_defined', 'maturity']
+  //
+  // A question counts as consumed if it reaches a rule test, a gating condition, a
+  // readiness gate, the stage inference, or a routing rule.
 
-  it('consumes every question except the intake ones awaiting stages.yaml', () => {
+  it('consumes every question', () => {
+    const stages = parse(read('stages.yaml'))
     const consumed = new Set()
+
     for (const { check } of allChecks) for (const v of varsIn(check.test)) consumed.add(v)
     for (const q of questions) if (q.applies_when) for (const v of varsIn(q.applies_when)) consumed.add(v)
+    for (const r of stages.readiness) { consumed.add(r.question); varsIn(r.fires_when).forEach(v => consumed.add(v)) }
+    for (const r of stages.inference) varsIn(r.when).forEach(v => consumed.add(v))
+    for (const r of stages.routing) varsIn(r.when).forEach(v => consumed.add(v))
 
     const orphans = questions.map(q => q.id).filter(id => !consumed.has(id))
-    expect(orphans.sort(), 'a question reaching no rule is burden without purpose').toEqual([...PENDING_STAGES].sort())
+    expect(orphans, 'a question reaching nothing is burden without purpose').toEqual([])
   })
 
-  it('pins the three pending questions so stages.yaml cannot quietly skip them', () => {
-    // When stages.yaml lands these must be consumed by its readiness gates and routing,
-    // at which point this test and the one above both need updating — deliberately.
-    for (const id of PENDING_STAGES) expect(qById.has(id), `${id} should still exist`).toBe(true)
-    expect(qById.get('intervention_defined').intake).toBe(true)
-    expect(qById.get('maturity').intake).toBe(true)
-    expect(qById.get('claim_type').intake).toBe(true)
+  it('keeps the intake questions marked as intake', () => {
+    for (const id of ['claim_type', 'intervention_defined', 'maturity', 'theory_of_change']) {
+      expect(qById.get(id)?.intake, `${id} should be intake`).toBe(true)
+    }
   })
 })
 

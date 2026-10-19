@@ -174,7 +174,7 @@ in phase 2. See `docs/REDESIGN_PLAN.md`.
 | `spec/designs.csv` | One row per design (not per estimator) — 22 designs | Seeded |
 | `spec/questions.yaml` | Question bank shared by all tools — 38 questions | Seeded |
 | `spec/rules.yaml` | Per design: blockers, conditions, warnings as JSON Logic — 130 checks | Seeded |
-| `spec/stages.yaml` | Stage vocabulary, readiness gates, routing | Phase 2 |
+| `spec/stages.yaml` | Stage vocabulary, readiness gates, routing | Seeded |
 | `spec/statistics.yaml` | NHST and Bayesian question sets | Phase 3 |
 | `spec/packs/*.yaml` | Context packs: examples, benchmarks, vocabulary | Phase 6 |
 | `spec/schema/*.schema.json` | JSON Schemas (draft 2020-12) for the above | Done |
@@ -186,9 +186,37 @@ in phase 2. See `docs/REDESIGN_PLAN.md`.
 - a rule defined for a **design that is not in `designs.csv`**
 - a rule or `applies_when` testing a **question that is not in `questions.yaml`**
 - a rule comparing a question against an **option value it does not offer**
+- a readiness gate, stage inference rule or route in `stages.yaml` reading a question that
+  does not exist, or concluding a stage that is not defined
 
-The last is the subtle one: a typo'd value makes a blocker silently never fire, which
-surfaces as a design looking Feasible when it has simply never been checked.
+The option-value check is the subtle one: a typo'd value makes a blocker silently never
+fire, which surfaces as a design looking Feasible when it has simply never been checked.
+
+**Every question is consumed.** All 38 reach a rule test, a gating condition, a readiness
+gate, the stage inference or a route — asserted by test. The previous tool collected 80
+inputs and scored on 23, so this is checked rather than assumed.
+
+### Stages and readiness
+
+`spec/stages.yaml` holds the **single** stage rule. The Causal Readiness page, the Design
+Finder and both trees all call the engine's inference, which reads only that file.
+
+Two hard gates (intervention specification, theory of change) and one warning (maturity).
+A gate means impact evaluation cannot answer the question yet whatever the data situation,
+so it fires before any design is considered. Maturity warns and redirects rather than
+blocking, because a settled component of a partly-scaled intervention can still support a
+Test-stage evaluation. Every gate carries a redirect — a gate without an alternative is a
+dead end.
+
+**The Grow-only contradiction is resolved here.** The previous tool implemented stage
+logic in three places that disagreed: the quantitative tree tagged RCT, DiD, RD, ITS and
+IV as Grow-stage only, while the Design Finder and Causal Readiness page said impact
+evaluation suits Test and Grow. The resolution follows the Test and Learn annex — impact
+evaluation designs are available at **both**. What differs is the estimand (a component or
+mechanism at Test; the whole programme at Grow) and the decision it informs. Identification
+requirements are identical, so no design is ever restricted to Grow. Tests assert that no
+inference rule concludes Grow without also concluding Test, and that rule order keeps the
+two gates ahead of maturity.
 
 ### How a verdict is reached
 
