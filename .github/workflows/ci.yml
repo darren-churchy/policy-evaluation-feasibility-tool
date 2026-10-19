@@ -25,6 +25,11 @@ jobs:
       - name: Validate specification
         run: npm run spec:check
 
+      # The spec bundle is what the browser actually runs. If it drifts, a rule change
+      # validates and generates a correct reviewer pack while shipping the old behaviour.
+      - name: Spec bundle is current
+        run: npm run spec:build:check
+
       # The reviewer pack is committed so that a rule change shows up in review as a
       # change to the sentence a reviewer reads. This fails if it has drifted.
       - name: Reviewer pack is current

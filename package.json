@@ -11,9 +11,11 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "spec:check": "node scripts/validate-spec.mjs",
-    "check": "npm run spec:check && npm run pack:check && npm test && npm run build",
+    "check": "npm run spec:check && npm run spec:build:check && npm run pack:check && npm test && npm run build",
     "pack": "node scripts/build-reviewer-pack.mjs",
-    "pack:check": "node scripts/build-reviewer-pack.mjs --check"
+    "pack:check": "node scripts/build-reviewer-pack.mjs --check",
+    "spec:build": "node scripts/build-spec.mjs",
+    "spec:build:check": "node scripts/build-spec.mjs --check"
   },
   "dependencies": {
     "react": "^18.3.1",
