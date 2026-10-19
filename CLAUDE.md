@@ -22,11 +22,13 @@ npm run preview    # Serve the dist/ build locally for final checks
 npm test           # Vitest, single run
 npm run test:watch # Vitest, watch mode
 npm run spec:check # Validate spec/ against its JSON Schemas
-npm run check      # spec:check + test + build — what CI runs
+npm run pack       # Regenerate the reviewer pack from spec/
+npm run pack:check # Fail if the committed pack has drifted from spec/
+npm run check      # spec:check + pack:check + test + build — what CI runs
 ```
 
-CI (`.github/workflows/ci.yml`) runs `spec:check`, `test` and `build` on every push and
-pull request. There are no linting scripts.
+CI (`.github/workflows/ci.yml`) runs `spec:check`, `pack:check`, `test` and `build` on
+every push and pull request. There are no linting scripts.
 
 ---
 
@@ -243,6 +245,24 @@ The seven golden scenarios in `tests/golden-scenarios.test.mjs` are phase 2's ac
 test. They are mutation-verified: making the logic two-valued, taking the best state
 instead of the worst, or letting a fired gate through all break them.
 
+### The reviewer pack
+
+`reviewer-pack/` is the specification rendered for a methods reviewer who knows evaluation
+methodology but does not read YAML or JSON Logic. `REVIEWER_PACK.md` reads end to end;
+`rules.csv`, `designs.csv`, `questions.csv` and `tiers.csv` open in a spreadsheet for
+filtering and annotation. Phase 7 is accepted when a methods reviewer has signed it off.
+
+Every rule condition is rendered as a sentence using the **option labels the user sees**,
+not internal values — `pre_periods is “None”` rather than `{"==": [{"var": …}]}`. A
+reviewer cannot judge a rule they cannot read.
+
+**The pack is committed, not just built.** That way a change to a rule appears in a pull
+request as a change to the sentence a reviewer reads, rather than as a YAML diff. To keep
+it honest, `npm run pack:check` regenerates and fails if the committed copy has drifted,
+and CI runs it. The output carries no timestamp, so it is reproducible.
+
+Edit `spec/`, never `reviewer-pack/`, then run `npm run pack` and commit both.
+
 ### How a verdict is reached
 
 Each design takes its **worst** state across its checks, in the order
@@ -298,6 +318,8 @@ a rung.
 | Add or change a tier, or a contested placement | `spec/tiers.yaml` + the guard test in `tests/validate-spec.test.mjs` |
 | Add a citation | `spec/references.bib` (dangling keys fail CI) |
 | Change what the spec validator enforces | `spec/schema/*.schema.json`, `scripts/validate-spec.mjs` |
+| Change how a rule reads to a reviewer | `spec/rules.yaml`, then `npm run pack` |
+| Change the reviewer pack's layout | `scripts/build-reviewer-pack.mjs`, `scripts/lib/describe.mjs` |
 | Edit landing page tool links | `src/components/pages/LandingPage.jsx` → `TOOL_LINKS` |
 
 ---

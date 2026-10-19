@@ -25,6 +25,11 @@ jobs:
       - name: Validate specification
         run: npm run spec:check
 
+      # The reviewer pack is committed so that a rule change shows up in review as a
+      # change to the sentence a reviewer reads. This fails if it has drifted.
+      - name: Reviewer pack is current
+        run: npm run pack:check
+
       - name: Unit tests
         run: npm test
 

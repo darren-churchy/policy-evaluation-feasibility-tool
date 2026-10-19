@@ -94,3 +94,17 @@ export function parseCsvRecords(source, { pipeSeparated = [] } = {}) {
 
   return { records, lines, header }
 }
+
+/**
+ * Write rows as RFC 4180 CSV. Quotes any field containing a comma, quote or newline, so
+ * the result round-trips through parseCsv.
+ */
+export function toCsv(rows, columns) {
+  const escape = value => {
+    const s = value === undefined || value === null ? '' : String(value)
+    return /["\n\r,]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
+  }
+  const lines = [columns.join(',')]
+  for (const row of rows) lines.push(columns.map(c => escape(row[c])).join(','))
+  return lines.join('\n') + '\n'
+}
