@@ -14,6 +14,7 @@ import PageQuantTree       from './components/pages/tools/PageQuantTree.jsx'
 import PageQualTree        from './components/pages/tools/PageQualTree.jsx'
 import PageDesignFinder    from './components/pages/tools/PageDesignFinder.jsx'
 import PageQuestionFramework from './components/pages/tools/PageQuestionFramework.jsx'
+import PageLadder         from './components/pages/PageLadder.jsx'
 
 export default function App() {
   const {
@@ -72,6 +73,10 @@ export default function App() {
             topDesign={topDesign}
           />
         } />
+
+        {/* The redesigned, engine-driven assessment. Runs alongside the existing
+            sections until the switchover in phase 5. */}
+        <Route path="/ladder"            element={<PageLadder />} />
 
         {/* Companion tool pages */}
         <Route path="/quant-tree"          element={<PageQuantTree />} />

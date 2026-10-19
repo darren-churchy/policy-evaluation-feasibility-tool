@@ -16,6 +16,7 @@ const NAV_ITEMS = [
 ]
 
 const TOOL_NAV_ITEMS = [
+  { path: '/ladder',             label: 'Ladder assessment (new)'     },
   { path: '/question-framework', label: 'Research Question Framework' },
   { path: '/quant-tree',         label: 'Quantitative Decision Tree'  },
   { path: '/qual-tree',          label: 'Qualitative Decision Tree'   },

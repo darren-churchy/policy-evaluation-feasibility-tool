@@ -3,17 +3,18 @@ import { createRoot } from 'react-dom/client'
 import { HashRouter } from 'react-router-dom'
 import './index.css'
 import App from './App.jsx'
+import { AnswersProvider } from './state/AnswersContext.jsx'
 
-// HashRouter is used instead of BrowserRouter so that GitHub Pages
-// can serve the app correctly without server-side routing configuration.
-// URLs will be of the form: https://your-org.github.io/repo-name/#/page1
-// If you host on a server that supports SPA fallback routing,
-// replace HashRouter with BrowserRouter for cleaner URLs.
+// HashRouter is retained from the GitHub Pages era. On Cloudflare Pages a _redirects SPA
+// fallback is in place, so BrowserRouter is now viable — see docs/REDESIGN_PLAN.md.
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <HashRouter>
-      <App />
+      {/* One answer store for every tool: a question answered once is never asked again. */}
+      <AnswersProvider>
+        <App />
+      </AnswersProvider>
     </HashRouter>
   </StrictMode>
 )
