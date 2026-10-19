@@ -218,6 +218,31 @@ requirements are identical, so no design is ever restricted to Grow. Tests asser
 inference rule concludes Grow without also concluding Test, and that rule order keeps the
 two gates ahead of maturity.
 
+### The engine
+
+`src/engine/evaluate.js` — `evaluate(answers, spec)`. Pure: no React, no I/O, no clock.
+`scripts/lib/loadSpec.mjs` reads `spec/` for Node consumers, kept out of `src/engine` so
+the engine stays usable in the browser with a spec bundled at build time.
+
+`src/engine/logic.js` implements **three-valued** JSON Logic. This is where the central
+guarantee lives. Under ordinary two-valued logic an unanswered variable reads as null, so
+`{'==': [{var: 'prospective'}, 'no']}` returns false, the blocker does not fire, and a
+design nobody has assessed presents as Feasible — exactly how the previous tool produced a
+recommendation before anything was answered. Here an unanswered variable yields UNKNOWN,
+propagated under Kleene's strong logic, so `or` still resolves when one branch is known
+true. Supported operators are `var`, `==`, `!=`, `in`, `and`, `or`, `!`; anything else
+throws rather than quietly returning false, and a test asserts the spec uses no others.
+
+`evaluate()` returns the stage, readiness (tri-state: `passed` / `failed` / `undetermined`
+— no gate having fired is not the same as readiness being established), every design with
+its state, blockers, conditions, warnings and outstanding questions, the ladder, the
+highest feasible tier, the next rung up with what would unlock it, the theory-based role,
+the ordered question agenda, and the active routes.
+
+The seven golden scenarios in `tests/golden-scenarios.test.mjs` are phase 2's acceptance
+test. They are mutation-verified: making the logic two-valued, taking the best state
+instead of the worst, or letting a fired gate through all break them.
+
 ### How a verdict is reached
 
 Each design takes its **worst** state across its checks, in the order

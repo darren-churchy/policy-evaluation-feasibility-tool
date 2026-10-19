@@ -386,9 +386,9 @@ designs:
           afterwards cannot be attributed to it.
         citations: [angrist_pischke_2009]
       - id: staggered_adoption
-        test: { '==': [{ var: staggered_rollout }, 'yes'] }
+        test: { in: [{ var: staggered_rollout }, ['yes', planned]] }
         message: >-
-          Adoption was staggered, so this is not a two-period comparison. The
+          Adoption is or will be staggered, so this is not a two-period comparison. The
           staggered-adoption design applies instead.
         citations: [goodman_bacon_2021]
     conditions:
@@ -559,7 +559,24 @@ designs:
           Other changes occurred at the same date. With no comparison group there is nothing
           to separate their effect from the intervention's.
         citations: [robins_i_v2]
+      - id: too_sparse_near_date
+        test: { '==': [{ var: time_points }, few] }
+        message: >-
+          This design estimates locally either side of the date, so it needs observations
+          close to it. With very few time points there is nothing to fit a local comparison
+          to, and a plain interrupted time series over the whole series is the available
+          design instead.
+        citations: [cattaneo_etal_2020, bernal_etal_2017]
     conditions:
+      - id: sparse_near_date
+        test: { '==': [{ var: time_points }, moderate] }
+        message: >-
+          Local estimation around the date rests on the observations nearest it, which are
+          fewer than the length of the series suggests.
+        unlock: >-
+          Count the observations within a plausible window either side of the date rather
+          than across the whole series, and power on that figure.
+        citations: [cattaneo_etal_2020]
       - id: date_approximate
         test: { '==': [{ var: policy_date_known }, approximate] }
         message: The date is approximate or the change was phased, which blurs the discontinuity.
