@@ -15,6 +15,9 @@ Claude assisted with the following aspects of the project:
 - **v0.7 updates** — landing page, semantic routing, collapsible sidebar,
   Test and Learn framework integration, Bayesian panel, PWA install button,
   bug fixes, and documentation updates
+- **Redesign** — the specification files (tiers, designs, questions, rules,
+  stages, statistics), the evaluation engine, the reviewer pack generator, the
+  validation and test suite, and the literature pass on Bayesian sample size
 - **R Shiny prototype** — development of the preceding R Shiny version of the
   tool, including the scoring logic subsequently ported to JavaScript
 - **Methodology documentation** — drafting of the specification document,
