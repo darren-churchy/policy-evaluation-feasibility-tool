@@ -276,6 +276,26 @@ render it, and `evaluate()` ignores it entirely, so an illustrative figure can n
 verdict. Two tests enforce this: output is identical when the ready-reckoner is replaced
 wholesale, and the engine source contains no reference to it.
 
+### The statistics UI
+
+`src/components/statistics/` renders the module. `StatisticsModule.jsx` shows the shared
+questions, the undecided comparison, each branch with its questions and tensions, and what
+counts as the sample per design. It is rendered on `/ladder` after the ladder and withheld
+when a readiness gate has fired.
+
+`ReadyReckoner.jsx` is the opt-in panel; `readyReckoner.js` holds its arithmetic, free of
+React, the engine and the spec bundle. The isolation runs both ways: the engine cannot read
+the reckoner, and the panel **never writes to the answer store**, so a sample size typed
+into an illustration cannot reach a verdict by the back door. `tests/ready-reckoner.test.mjs`
+asserts both directions, and both guards are mutation-verified.
+
+The arithmetic is the textbook normal approximation for a two-arm comparison and returns
+its assumptions alongside every figure. Two deliberate refusals: a time-to-event outcome
+produces no figure at all, because power there is driven by events rather than people and a
+sample-size calculation would be wrong in a way that looks plausible; and a blank numeric
+field is parsed as missing rather than as zero, since `Number('')` is `0` and the lazy
+version reintroduces exactly the defect the redesign exists to remove.
+
 ### The reviewer pack
 
 `reviewer-pack/` is the specification rendered for a methods reviewer who knows evaluation

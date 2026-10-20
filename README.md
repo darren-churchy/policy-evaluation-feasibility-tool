@@ -129,11 +129,12 @@ src/
   spec/spec.generated.json Compiled spec the browser imports
   state/                   The single answer store
   components/              Pages and shared UI
+    statistics/              The statistics module and the ready-reckoner
   data/, scoring/          The current tool, until the switchover
 
 reviewer-pack/            The specification rendered for a methods reviewer
 scripts/                  Validation, spec bundle, reviewer pack, CSS
-tests/                    252 tests
+tests/                    273 tests
 docs/                     Redesign plan; Bayesian sample-size research
 ```
 

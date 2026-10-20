@@ -12,6 +12,7 @@ import { T } from '../../styles/tokens.js'
 import {
   PageHeader, Card, SectionTag, Alert, Button, NavButtons, RadioQuestion, TlBadge,
 } from '../ui/GovukComponents.jsx'
+import StatisticsModule from '../statistics/StatisticsModule.jsx'
 
 /** How many questions to reveal at a time. */
 const BATCH = 6
@@ -323,6 +324,11 @@ export default function PageLadder() {
             {result.theoryBasedDesigns.map(id => result.designs[id].name).join(' · ')}
           </p>
         </Card>
+
+        {/* Statistical feasibility. After the ladder, because what counts as the sample
+            depends on which designs are still in play — and withheld when a readiness gate
+            has fired, since no design is in play at all. */}
+        {readiness.status !== 'failed' && <StatisticsModule />}
 
         {stage.stages.length > 0 && (
           <Alert type="blue" title="Test and Learn stage">
