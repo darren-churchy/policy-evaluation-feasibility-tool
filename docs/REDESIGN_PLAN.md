@@ -322,7 +322,10 @@ their source; genuine disagreements are shown rather than resolved silently.
 1. **Migrate the four companion tools to the shared store.** They work, and they now
    agree on stage, but each still holds its own question flow. Until they read
    `spec/questions.yaml` an answer given in one is not prefilled in another — which is
-   phase 4's full acceptance test.
+   phase 4's full acceptance test. The id mapping this depends on is proposed in
+   [`docs/ID_MAPPING.md`](ID_MAPPING.md) and awaits sign-off: 27 of the 63 specification
+   questions have a predecessor, and three of the decisions in it are methodological
+   rather than mechanical.
 2. **Switch over from the seven sections to the ladder flow**, and delete `src/scoring/`.
    Retained so far because `npm run check` builds the app and its consumers are live.
    `ResultsPage.jsx` imports `WEIGHTS` and `CATEGORY_CEILINGS` directly, so it is the one
