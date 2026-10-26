@@ -1,65 +1,118 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "questions.schema.json",
-  "title": "Question bank",
-  "description": "Every question the tools display, in one place, so the trees, Finder and full assessment cannot diverge in wording or options.",
-  "type": "object",
-  "required": ["spec_version", "questions"],
-  "additionalProperties": false,
-  "properties": {
-    "spec_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
-    "questions": {
-      "type": "array",
-      "minItems": 1,
-      "items": { "$ref": "#/$defs/question" }
-    }
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "questions.schema.json",
+ "title": "Question bank",
+ "description": "Every question the tools display, in one place, so the trees, Finder and full assessment cannot diverge in wording or options.",
+ "type": "object",
+ "required": [
+  "spec_version",
+  "questions"
+ ],
+ "additionalProperties": false,
+ "properties": {
+  "spec_version": {
+   "type": "string",
+   "pattern": "^\\d+\\.\\d+\\.\\d+$"
   },
-  "$defs": {
-    "citationKey": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_:-]*$" },
-    "question": {
+  "questions": {
+   "type": "array",
+   "minItems": 1,
+   "items": {
+    "$ref": "#/$defs/question"
+   }
+  }
+ },
+ "$defs": {
+  "citationKey": {
+   "type": "string",
+   "pattern": "^[A-Za-z][A-Za-z0-9_:-]*$"
+  },
+  "question": {
+   "type": "object",
+   "required": [
+    "id",
+    "text",
+    "options",
+    "establishable"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "id": {
+     "type": "string",
+     "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "text": {
+     "type": "string",
+     "minLength": 1
+    },
+    "hint": {
+     "type": "string"
+    },
+    "tier": {
+     "description": "The rung this question serves. Omitted for intake questions asked of everyone. A tier's questions are skipped once earlier answers have blocked it.",
+     "type": "integer",
+     "minimum": 1,
+     "maximum": 5
+    },
+    "intake": {
+     "description": "True for the shared intake asked once and prefilled into every tool: stage, the three readiness checks, claim type.",
+     "type": "boolean"
+    },
+    "applies_when": {
+     "description": "JSON Logic. The question is asked only when this evaluates true. Absent means always asked.",
+     "type": "object",
+     "minProperties": 1
+    },
+    "rob_domain": {
+     "type": "string"
+    },
+    "options": {
+     "type": "array",
+     "minItems": 2,
+     "items": {
       "type": "object",
-      "required": ["id", "text", "options"],
+      "required": [
+       "value",
+       "label"
+      ],
       "additionalProperties": false,
       "properties": {
-        "id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
-        "text": { "type": "string", "minLength": 1 },
-        "hint": { "type": "string" },
-        "tier": {
-          "description": "The rung this question serves. Omitted for intake questions asked of everyone. A tier's questions are skipped once earlier answers have blocked it.",
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 5
-        },
-        "intake": {
-          "description": "True for the shared intake asked once and prefilled into every tool: stage, the three readiness checks, claim type.",
-          "type": "boolean"
-        },
-        "applies_when": {
-          "description": "JSON Logic. The question is asked only when this evaluates true. Absent means always asked.",
-          "type": "object",
-          "minProperties": 1
-        },
-        "rob_domain": { "type": "string" },
-        "options": {
-          "type": "array",
-          "minItems": 2,
-          "items": {
-            "type": "object",
-            "required": ["value", "label"],
-            "additionalProperties": false,
-            "properties": {
-              "value": { "type": "string", "minLength": 1 },
-              "label": { "type": "string", "minLength": 1 },
-              "hint": { "type": "string" }
-            }
-          }
-        },
-        "pack_examples": {
-          "description": "Key looked up in the active context pack for worked examples. Changes what the user sees; never changes a verdict.",
-          "type": "string"
-        },
-        "references": { "type": "array", "items": { "$ref": "#/$defs/citationKey" } }
+       "value": {
+        "type": "string",
+        "minLength": 1
+       },
+       "label": {
+        "type": "string",
+        "minLength": 1
+       },
+       "hint": {
+        "type": "string"
+       },
+       "not_established": {
+        "description": "True where the value means the user has not established this yet, as distinct from having established a negative. Blockers must never fire on such a value.",
+        "const": true
+       }
       }
+     }
+    },
+    "pack_examples": {
+     "description": "Key looked up in the active context pack for worked examples. Changes what the user sees; never changes a verdict.",
+     "type": "string"
+    },
+    "references": {
+     "type": "array",
+     "items": {
+      "$ref": "#/$defs/citationKey"
+     }
+    },
+    "establishable": {
+     "description": "Whether this can be settled before the data are in hand. `needs_data` marks a question that cannot honestly be answered until the dataset exists \u2014 overlap, density at a cutoff, first-stage strength. Such a question must offer an option marked `not_established`, and no blocker may fire on it: an unchecked assumption is a condition to discharge, never a verdict.",
+     "enum": [
+      "ex_ante",
+      "needs_data"
+     ]
     }
+   }
   }
+ }
 }

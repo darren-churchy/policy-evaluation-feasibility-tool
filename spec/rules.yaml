@@ -14,7 +14,7 @@
 # Numeric thresholds appear only where the literature gives one, carry their range, and are
 # marked `convention` where that is what they are.
 
-spec_version: 1.0.0
+spec_version: 1.1.0
 
 designs:
 
@@ -272,6 +272,16 @@ designs:
           Count observations within a plausible bandwidth rather than in the dataset as a
           whole, and take that figure to a power calculation.
         citations: [cattaneo_etal_2020]
+      - id: density_unchecked
+        test: { '==': [{ var: density_near_cutoff }, unknown] }
+        message: >-
+          How many observations sit near the cutoff has not been established. It cannot be
+          read off the total sample, and it is what decides whether the design is viable.
+        unlock: >-
+          Once the data are available, count observations within a plausible bandwidth
+          either side of the cutoff. Until then this design is unproven rather than ruled
+          out.
+        citations: [cattaneo_etal_2020]
     warnings:
       - id: bandwidth_sensitivity
         test: { '==': [{ var: assignment_threshold }, 'yes'] }
@@ -313,6 +323,15 @@ designs:
         test: { '==': [{ var: density_near_cutoff }, few] }
         message: Few observations near the cutoff, and a fuzzy design needs more than a sharp one.
         unlock: Count observations within a plausible bandwidth and power on that figure.
+        citations: [cattaneo_etal_2020]
+      - id: density_unchecked
+        test: { '==': [{ var: density_near_cutoff }, unknown] }
+        message: >-
+          The number of observations near the cutoff has not been established, and a fuzzy
+          design needs more of them than a sharp one at the same cutoff.
+        unlock: >-
+          Once the data are available, count observations within a plausible bandwidth and
+          estimate the jump in take-up across it.
         citations: [cattaneo_etal_2020]
     warnings:
       - id: complier_estimand

@@ -134,7 +134,7 @@ src/
 
 reviewer-pack/            The specification rendered for a methods reviewer
 scripts/                  Validation, spec bundle, reviewer pack, CSS
-tests/                    273 tests
+tests/                    281 tests
 docs/                     Redesign plan; Bayesian sample-size research
 ```
 
@@ -154,6 +154,13 @@ which surfaces as a design looking feasible when it has simply never been checke
 
 **Every question is consumed.** All 63 reach a rule, a gate, a route or the statistics
 module, asserted by test. The previous tool collected 80 inputs and scored on 23.
+
+**The tool assesses prospective feasibility.** Some things cannot honestly be established
+until the data exist — overlap between treated and untreated units, how many observations
+sit near a cutoff, first-stage strength. Those questions are marked `needs_data` and offer
+an explicit "not yet established" answer. **No blocker fires on such an answer**, enforced
+by the build: not having checked something is never treated as having found it wanting. It
+raises a condition carrying what to go and do.
 
 **Numeric thresholds appear only where the literature gives one**, carry their range, and
 are marked as conventions where that is what they are. A contested threshold must carry a

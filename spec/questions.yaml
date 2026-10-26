@@ -15,13 +15,14 @@
 # depend on it Unknown. Where not-yet-established is a real answer it appears explicitly
 # (e.g. `untested`), and rules treat it as a condition to discharge, not as a pass.
 
-spec_version: 1.0.0
+spec_version: 1.1.0
 
 questions:
 
   # ── Shared intake ──────────────────────────────────────────────────────────
 
   - id: claim_type
+    establishable: ex_ante
     text: What kind of claim do you need to make?
     hint: >-
       This decides which part of the tool applies. Only causal claims need a counterfactual
@@ -34,6 +35,7 @@ questions:
     references: [magenta_book]
 
   - id: intervention_defined
+    establishable: ex_ante
     text: Is the intervention clearly defined and documented?
     hint: >-
       What it consists of, who delivers it, and at what intensity. Without this, an observed
@@ -47,6 +49,7 @@ questions:
     references: [magenta_book, robins_i_v2]
 
   - id: theory_of_change
+    establishable: ex_ante
     text: Does a theory of change or logic model exist?
     hint: >-
       A causal model linking the intervention to expected outcomes. Without one it is unclear
@@ -59,6 +62,7 @@ questions:
     references: [magenta_book]
 
   - id: maturity
+    establishable: ex_ante
     text: Is the intervention operating at sufficient scale and maturity?
     hint: >-
       Evaluating impact while delivery is still stabilising risks measuring the immaturity of
@@ -71,6 +75,7 @@ questions:
     references: [magenta_book]
 
   - id: prospective
+    establishable: ex_ante
     text: Can the evaluation be planned before the intervention reaches participants?
     hint: >-
       Randomised designs require allocation to be decided in advance. If the intervention has
@@ -84,6 +89,7 @@ questions:
   # ── Tier 1 · Randomised ────────────────────────────────────────────────────
 
   - id: randomisation_barriers
+    establishable: ex_ante
     text: What barriers are there to randomising who receives the intervention?
     hint: >-
       Ethical, legal, political or operational. Many common objections are addressed by a
@@ -98,6 +104,7 @@ questions:
     references: [rob2, magenta_book]
 
   - id: allocation_unit
+    establishable: ex_ante
     text: What is the natural unit of allocation?
     hint: >-
       Where the intervention is delivered to whole sites, classes or caseloads, individuals
@@ -110,6 +117,7 @@ questions:
     references: [rob2]
 
   - id: cluster_count
+    establishable: ex_ante
     text: How many clusters could be allocated?
     hint: >-
       For a cluster design, precision is governed by the number of clusters far more than by
@@ -124,6 +132,7 @@ questions:
     references: [rob2]
 
   - id: rollout_order_controllable
+    establishable: ex_ante
     text: Is there a phased rollout whose order you could set?
     hint: >-
       Where everyone is treated eventually but not at once, randomising the order gives a
@@ -136,26 +145,29 @@ questions:
     references: [magenta_book]
 
   - id: delay_acceptable
+    establishable: ex_ante
     text: Would delaying the intervention for part of the group be acceptable?
     hint: Everyone receives the intervention; some receive it later, forming a temporary comparison.
     tier: 1
     options:
       - { value: 'yes',     label: Yes — a delay is tolerable }
-      - { value: unclear, label: Unclear — needs discussion }
+      - { value: unclear, label: Unclear — needs discussion, not_established: true }
       - { value: 'no',      label: 'No — delay is not acceptable' }
     references: [magenta_book]
 
   - id: outcome_reversible
+    establishable: ex_ante
     text: Does the outcome return to baseline once the intervention stops?
     hint: Required for a crossover design, where participants act as their own control.
     tier: 1
     options:
       - { value: 'yes',     label: Yes — the effect does not persist }
-      - { value: unclear, label: Unclear }
+      - { value: unclear, label: Unclear, not_established: true }
       - { value: 'no',      label: 'No — effects persist or accumulate' }
     references: [rob2]
 
   - id: washout_feasible
+    establishable: ex_ante
     text: Can a washout period be built in between conditions?
     hint: A gap long enough for the first condition's effect to dissipate before the second begins.
     tier: 1
@@ -163,11 +175,12 @@ questions:
       in: [{ var: outcome_reversible }, ['yes', unclear]]
     options:
       - { value: 'yes',     label: Yes }
-      - { value: unclear, label: Unclear }
+      - { value: unclear, label: Unclear, not_established: true }
       - { value: 'no',      label: 'No' }
     references: [rob2]
 
   - id: encouragement_lever
+    establishable: ex_ante
     text: Is there a way to encourage take-up without assigning the intervention itself?
     hint: >-
       An invitation, reminder or incentive offered at random. Useful where the intervention
@@ -175,11 +188,12 @@ questions:
     tier: 1
     options:
       - { value: 'yes',     label: Yes — a credible encouragement exists }
-      - { value: unclear, label: Possibly — needs exploration }
+      - { value: unclear, label: Possibly — needs exploration, not_established: true }
       - { value: 'no',      label: 'No' }
     references: [angrist_pischke_2009]
 
   - id: equipoise
+    establishable: ex_ante
     text: Is there genuine uncertainty about whether the intervention works?
     hint: >-
       Randomisation is hard to justify where the intervention is already known to be
@@ -194,6 +208,7 @@ questions:
   # ── Tier 2 · Local as-if random ────────────────────────────────────────────
 
   - id: assignment_threshold
+    establishable: ex_ante
     text: Is the intervention assigned by a score, date or threshold?
     hint: >-
       An eligibility cutoff on a continuous measure — a risk score, an age, an income
@@ -206,6 +221,7 @@ questions:
     references: [imbens_lemieux_2008]
 
   - id: threshold_enforced
+    establishable: needs_data
     text: How strictly is the cutoff followed in practice?
     hint: >-
       Strict enforcement gives a sharp design. Partial compliance gives a fuzzy design, which
@@ -216,10 +232,11 @@ questions:
     options:
       - { value: sharp,   label: Strictly — the cutoff determines treatment }
       - { value: fuzzy,   label: Mostly — the cutoff shifts the probability of treatment }
-      - { value: unclear, label: Not yet established }
+      - { value: unclear, label: Not yet established, not_established: true }
     references: [imbens_lemieux_2008]
 
   - id: threshold_manipulation
+    establishable: needs_data
     text: Could people position themselves either side of the cutoff?
     hint: >-
       If the score can be influenced by those it affects, the comparison breaks down. A
@@ -230,11 +247,12 @@ questions:
     rob_domain: Selection of participants
     options:
       - { value: no_evidence, label: Tested — no evidence of sorting }
-      - { value: untested,    label: Not yet tested }
+      - { value: untested,    label: Not yet tested, not_established: true }
       - { value: suspected,   label: Sorting is likely or demonstrated }
     references: [mccrary_2008]
 
   - id: density_near_cutoff
+    establishable: needs_data
     text: How many observations fall close to the cutoff?
     hint: >-
       Only observations near the cutoff identify the effect. The total sample is not the
@@ -246,9 +264,11 @@ questions:
       - { value: many,     label: Many }
       - { value: some,     label: Some }
       - { value: few,      label: Few }
+      - { value: unknown,  label: Not yet established, not_established: true }
     references: [cattaneo_etal_2020]
 
   - id: instrument_available
+    establishable: ex_ante
     text: Is there a factor that shifts take-up but has no other route to the outcome?
     hint: >-
       Distance to a service, a lottery, an administrative quirk. Its credibility rests on an
@@ -261,6 +281,7 @@ questions:
     references: [angrist_pischke_2009]
 
   - id: instrument_strength
+    establishable: needs_data
     text: How strongly does that factor predict take-up?
     hint: >-
       A weak instrument gives badly behaved estimates. The conventional first-stage F above
@@ -271,10 +292,11 @@ questions:
     options:
       - { value: strong,  label: Strongly }
       - { value: weak,    label: Weakly }
-      - { value: untested, label: Not yet established }
+      - { value: untested, label: Not yet established, not_established: true }
     references: [lee_etal_2022]
 
   - id: exclusion_restriction
+    establishable: ex_ante
     text: Can you argue the factor affects the outcome only through take-up?
     hint: >-
       This cannot be tested. It is defended on substantive grounds, and it is where most
@@ -285,12 +307,13 @@ questions:
     options:
       - { value: defensible,  label: Yes — a clear substantive argument exists }
       - { value: doubtful,    label: Doubtful — plausible alternative routes exist }
-      - { value: unassessed,  label: Not yet considered }
+      - { value: unassessed,  label: Not yet considered, not_established: true }
     references: [angrist_pischke_2009]
 
   # ── Tier 3 · Comparison-group panel ────────────────────────────────────────
 
   - id: pre_periods
+    establishable: ex_ante
     text: How much outcome data do you have from before the intervention?
     hint: >-
       Pre-intervention periods are what make a trend testable rather than assumed. One period
@@ -304,6 +327,7 @@ questions:
     references: [angrist_pischke_2009]
 
   - id: comparison_group
+    establishable: ex_ante
     text: Is there a group that did not receive the intervention but is otherwise similar?
     hint: Another region, service, cohort or eligibility group facing comparable conditions.
     tier: 3
@@ -314,6 +338,7 @@ questions:
     references: [whatworks_sms]
 
   - id: parallel_trends_evidence
+    establishable: needs_data
     text: Did the two groups move together before the intervention?
     hint: >-
       The central assumption of a difference-based design. It is examined in the pre-period,
@@ -323,11 +348,12 @@ questions:
       in: [{ var: pre_periods }, [many, few]]
     options:
       - { value: supported, label: Yes — examined and consistent }
-      - { value: untested,  label: Not yet examined }
+      - { value: untested,  label: Not yet examined, not_established: true }
       - { value: violated,  label: 'No — the trends clearly diverge' }
     references: [angrist_pischke_2009, goodman_bacon_2021]
 
   - id: staggered_rollout
+    establishable: ex_ante
     text: Did different groups start at different times?
     hint: >-
       Variation in start dates can strengthen a design, but it also makes the conventional
@@ -340,6 +366,7 @@ questions:
     references: [goodman_bacon_2021, callaway_santanna_2021]
 
   - id: donor_pool
+    establishable: ex_ante
     text: Are there untreated units that resemble the treated one?
     hint: >-
       A synthetic control builds a comparison by weighting several untreated units. It needs
@@ -354,6 +381,7 @@ questions:
     references: [abadie_2021]
 
   - id: control_series
+    establishable: ex_ante
     text: Is there an equivalent time series for an unaffected group?
     hint: >-
       A control series distinguishes a change caused by the intervention from one that was
@@ -361,11 +389,12 @@ questions:
     tier: 3
     options:
       - { value: 'yes',     label: Yes }
-      - { value: unclear, label: Possibly — needs investigation }
+      - { value: unclear, label: Possibly — needs investigation, not_established: true }
       - { value: 'no',      label: 'No' }
     references: [bernal_etal_2017]
 
   - id: policy_date_known
+    establishable: ex_ante
     text: Is the date the intervention took effect precisely known?
     hint: Required where the comparison is between the periods either side of a change.
     tier: 3
@@ -376,6 +405,7 @@ questions:
     references: [bernal_etal_2017]
 
   - id: cointerventions
+    establishable: ex_ante
     text: Did anything else change at the same time?
     hint: >-
       Other policies, funding changes or external shocks coinciding with the intervention
@@ -391,6 +421,7 @@ questions:
   # ── Tier 4 · Selection on observables ──────────────────────────────────────
 
   - id: covariate_richness
+    establishable: ex_ante
     text: How much do you know about the characteristics of both groups?
     hint: >-
       Adjustment can only account for what is measured. The question is whether you hold the
@@ -404,6 +435,7 @@ questions:
     references: [stuart_2010, robins_i_v2]
 
   - id: overlap
+    establishable: needs_data
     text: Do treated and untreated units actually resemble each other?
     hint: >-
       Where no untreated unit resembles a treated one, no comparison exists for it. This is
@@ -415,10 +447,11 @@ questions:
       - { value: good,     label: Good — the groups overlap substantially }
       - { value: limited,  label: Limited — overlap only in part of the range }
       - { value: poor,     label: Poor — the groups barely overlap }
-      - { value: untested, label: Not yet examined }
+      - { value: untested, label: Not yet examined, not_established: true }
     references: [li_etal_2018, austin_2011]
 
   - id: confounders_measured
+    establishable: ex_ante
     text: Are the main reasons people received the intervention captured in your data?
     hint: >-
       List the drivers of selection, then check which you actually hold. What is left over is
@@ -428,10 +461,11 @@ questions:
     options:
       - { value: all_identified,  label: The main drivers are measured }
       - { value: some_unmeasured, label: Some known drivers are not measured }
-      - { value: unknown,         label: Not yet established }
+      - { value: unknown,         label: Not yet established, not_established: true }
     references: [vanderweele_ding_2017, hernan_robins_2020]
 
   - id: time_varying_confounding
+    establishable: ex_ante
     text: Does treatment at one point change the factors that drive later treatment?
     hint: >-
       Common in ongoing services, where a response to the intervention affects whether it
@@ -439,11 +473,12 @@ questions:
     tier: 4
     options:
       - { value: 'yes',     label: Yes — treatment and confounders evolve together }
-      - { value: unclear, label: Unclear }
+      - { value: unclear, label: Unclear, not_established: true }
       - { value: 'no',      label: 'No — treatment is a one-off' }
     references: [robins_etal_2000, hernan_robins_2020]
 
   - id: repeated_measures
+    establishable: ex_ante
     text: Do you hold repeated measures of treatment and of the confounders over time?
     hint: Required to model the feedback between treatment and the factors that affect it.
     tier: 4
@@ -457,6 +492,7 @@ questions:
   # ── Tier 5 · Single time series ────────────────────────────────────────────
 
   - id: time_points
+    establishable: ex_ante
     text: How many time points do you have before and after the intervention?
     hint: >-
       A trend has to be estimated on each side of the interruption. Roughly eight points per
@@ -469,6 +505,7 @@ questions:
     references: [wagner_etal_2002, bernal_etal_2017]
 
   - id: autocorrelation_plan
+    establishable: ex_ante
     text: Is there a plan to account for correlation between adjacent time points?
     hint: >-
       Observations close in time resemble each other. Ignoring this makes the effect look
@@ -476,13 +513,14 @@ questions:
     tier: 5
     options:
       - { value: 'yes',     label: Yes — it will be modelled }
-      - { value: unclear, label: Not yet decided }
+      - { value: unclear, label: Not yet decided, not_established: true }
       - { value: 'no',      label: 'No' }
     references: [bernal_etal_2017]
 
   # ── Theory-based strand ────────────────────────────────────────────────────
 
   - id: stakeholder_access
+    establishable: ex_ante
     text: Can you speak to the people who deliver and receive the intervention?
     hint: Required to elicit how the intervention is meant to work, and for whom.
     options:
@@ -492,6 +530,7 @@ questions:
     references: [pawson_tilley_1997]
 
   - id: documentary_evidence
+    establishable: ex_ante
     text: Is there documentation covering each step of the intended causal chain?
     hint: Records, monitoring data, case files or correspondence evidencing what happened at each stage.
     options:
@@ -507,6 +546,7 @@ questions:
   # follow are not translations of one another.
 
   - id: analysis_approach
+    establishable: ex_ante
     text: What is your primary intended analytical approach?
     hint: >-
       This decides which set of questions follows. Sample size serves a different purpose
@@ -519,6 +559,7 @@ questions:
     references: [magenta_book]
 
   - id: outcome_type
+    establishable: ex_ante
     text: What kind of outcome are you measuring?
     hint: The outcome type governs which sizing formula applies and what varies.
     options:
@@ -529,17 +570,19 @@ questions:
     references: [rob2]
 
   - id: outcome_clustered
+    establishable: ex_ante
     text: Are outcomes grouped within sites, practitioners or caseloads?
     hint: >-
       Outcomes for people sharing a site resemble each other, so they carry less
       information than the same number of unrelated observations.
     options:
       - { value: 'yes',     label: Yes }
-      - { value: unclear, label: Possibly — not yet established }
+      - { value: unclear, label: Possibly — not yet established, not_established: true }
       - { value: 'no',      label: 'No' }
     references: [rob2]
 
   - id: expected_attrition
+    establishable: ex_ante
     text: How much loss to follow-up do you expect?
     hint: >-
       Attrition reduces the usable sample and, where it differs between groups, threatens
@@ -549,10 +592,11 @@ questions:
       - { value: low,      label: 'Low — under 10%' }
       - { value: moderate, label: 'Moderate — 10% to 25%' }
       - { value: high,     label: 'High — over 25%' }
-      - { value: unknown,  label: Not yet established }
+      - { value: unknown,  label: Not yet established, not_established: true }
     references: [rob2]
 
   - id: sample_fixed
+    establishable: ex_ante
     text: Is the number of units fixed by context, or can you choose it?
     hint: >-
       This reverses the question. Where the sample can be chosen, you size it to a target.
@@ -565,6 +609,7 @@ questions:
   # ── Statistics module · frequentist ────────────────────────────────────────
 
   - id: nhst_mde
+    establishable: ex_ante
     text: What is the smallest effect that would be worth detecting?
     hint: >-
       Not the effect you hope for — the smallest one that would still change a decision.
@@ -574,10 +619,11 @@ questions:
     options:
       - { value: agreed,     label: Agreed and documented }
       - { value: informal,   label: 'Discussed, not settled' }
-      - { value: not_set,    label: Not yet considered }
+      - { value: not_set,    label: Not yet considered, not_established: true }
     references: [rob2]
 
   - id: nhst_mde_source
+    establishable: ex_ante
     text: Who set that figure, and on what basis?
     hint: >-
       A minimum detectable effect set by the analyst to make the sample work is a
@@ -588,10 +634,11 @@ questions:
       - { value: decision,   label: 'From the decision — the effect that changes what we would do' }
       - { value: evidence,   label: From prior evidence on similar interventions }
       - { value: convention, label: 'From a convention — a standardised effect size benchmark' }
-      - { value: unstated,   label: Not established }
+      - { value: unstated,   label: Not established, not_established: true }
     references: [rob2, magenta_book]
 
   - id: nhst_baseline_source
+    establishable: ex_ante
     text: Where do your baseline rate and variability estimates come from?
     hint: >-
       Every sizing calculation rests on these. An estimate from a different population or
@@ -606,6 +653,7 @@ questions:
     references: [rob2]
 
   - id: nhst_alpha_power
+    establishable: ex_ante
     text: Have the significance level and target power been agreed?
     hint: >-
       Conventionally 5% and 80% or 90%. Both are conventions rather than derived figures,
@@ -615,10 +663,11 @@ questions:
     options:
       - { value: agreed,   label: 'Yes — agreed and recorded' }
       - { value: default,  label: Using conventional defaults without discussion }
-      - { value: not_set,  label: Not yet decided }
+      - { value: not_set,  label: Not yet decided, not_established: true }
     references: [rob2]
 
   - id: nhst_multiplicity
+    establishable: ex_ante
     text: How many outcomes will be tested, and is there a plan for multiplicity?
     hint: >-
       Testing many outcomes without a plan inflates the chance of a spurious positive, and
@@ -633,6 +682,7 @@ questions:
     references: [rob2]
 
   - id: nhst_icc
+    establishable: ex_ante
     text: Do you have an intracluster correlation estimate?
     hint: >-
       Required to size a clustered design. The result is sensitive to the value assumed, so
@@ -649,6 +699,7 @@ questions:
     references: [rob2]
 
   - id: nhst_attrition_modelled
+    establishable: ex_ante
     text: Has expected attrition been built into the sizing?
     hint: Sizing on the recruited sample rather than the analysed sample overstates precision.
     applies_when:
@@ -660,6 +711,7 @@ questions:
     references: [rob2]
 
   - id: nhst_sequential
+    establishable: ex_ante
     text: Will there be interim analyses?
     hint: >-
       Looking at the data repeatedly and stopping when significant inflates the error rate
@@ -673,6 +725,7 @@ questions:
     references: [rob2]
 
   - id: nhst_sensitivity
+    establishable: ex_ante
     text: Will the sizing be reported across a range of assumptions?
     hint: >-
       Variance, baseline rate and intracluster correlation are all estimates. A single
@@ -682,10 +735,11 @@ questions:
     options:
       - { value: 'yes',      label: 'Yes — a range for each key input' }
       - { value: 'no',       label: 'No — a single calculation' }
-      - { value: unclear,  label: Not yet decided }
+      - { value: unclear,  label: Not yet decided, not_established: true }
     references: [rob2]
 
   - id: nhst_preregistration
+    establishable: ex_ante
     text: Will the analysis be pre-registered or otherwise recorded before data are seen?
     hint: >-
       The protection against analytic choices being made, knowingly or not, to favour a
@@ -706,6 +760,7 @@ questions:
   # load-bearing, so the questions are built to make the prior's contribution explicit.
 
   - id: bayes_decision_threshold
+    establishable: ex_ante
     text: What size of effect would change the decision?
     hint: >-
       The analysis can then report the probability that the effect exceeds it — which is
@@ -716,10 +771,11 @@ questions:
     options:
       - { value: agreed,   label: Agreed with those making the decision }
       - { value: proposed, label: 'Proposed, not yet agreed' }
-      - { value: not_set,  label: Not yet considered }
+      - { value: not_set,  label: Not yet considered, not_established: true }
     references: [kruschke_2018, opre_bayesian_social_policy]
 
   - id: bayes_rope
+    establishable: ex_ante
     text: Is there a range of effects you would treat as equivalent to no effect?
     hint: >-
       A region of practical equivalence lets the analysis conclude that an effect is
@@ -730,10 +786,11 @@ questions:
     options:
       - { value: agreed,     label: 'Yes — bounds set by those making the decision' }
       - { value: default,    label: Using a conventional default band }
-      - { value: not_set,    label: Not yet considered }
+      - { value: not_set,    label: Not yet considered, not_established: true }
     references: [kruschke_2018]
 
   - id: bayes_prior_source
+    establishable: ex_ante
     text: Where does your prior come from?
     hint: >-
       The most consequential question at small sample sizes, because the prior supplies
@@ -744,10 +801,11 @@ questions:
       - { value: evaluations, label: From previous evaluations of similar interventions }
       - { value: elicited,    label: From structured expert elicitation }
       - { value: weak,        label: 'A weakly informative default, chosen to contribute little' }
-      - { value: unstated,    label: Not yet established }
+      - { value: unstated,    label: Not yet established, not_established: true }
     references: [gosling_2018_shelf, wilson_etal_2021_pilot]
 
   - id: bayes_elicitation_protocol
+    establishable: ex_ante
     text: By what protocol were the expert judgements elicited?
     hint: >-
       A named protocol makes the prior auditable. SHELF trains experts first, takes
@@ -765,6 +823,7 @@ questions:
     references: [gosling_2018_shelf]
 
   - id: bayes_prior_share
+    establishable: ex_ante
     text: How much of the posterior will come from the prior rather than the data?
     hint: >-
       At small sample sizes this can be most of it. That is not disqualifying, but it has
@@ -774,10 +833,11 @@ questions:
     options:
       - { value: quantified, label: 'Will be quantified and reported' }
       - { value: expected_small, label: 'Expected to be small, not yet checked' }
-      - { value: unknown,    label: Not yet considered }
+      - { value: unknown,    label: Not yet considered, not_established: true }
     references: [wilson_etal_2021_pilot, nichd_strong_prior_2019]
 
   - id: bayes_sensitivity
+    establishable: ex_ante
     text: Is a prior sensitivity analysis planned?
     hint: >-
       Re-running under alternative priors, including a sceptical one. The standard
@@ -791,6 +851,7 @@ questions:
     references: [fda_bayesian_2026, nichd_strong_prior_2019]
 
   - id: bayes_prior_data_conflict
+    establishable: ex_ante
     text: What will you do if the prior and the data disagree?
     hint: >-
       Foreseeable, and better decided before the data arrive than after. Discovering the
@@ -803,6 +864,7 @@ questions:
     references: [fda_bayesian_2026]
 
   - id: bayes_target
+    establishable: ex_ante
     text: What target will size the study, or characterise it if the sample is fixed?
     hint: >-
       Where the sample can be chosen: a target assurance, or a target credible interval
@@ -813,10 +875,11 @@ questions:
       - { value: assurance,    label: 'Assurance — the probability the study gives a usable answer' }
       - { value: precision,    label: 'Precision — a target credible interval width' }
       - { value: utility,      label: 'Expected utility or value of information' }
-      - { value: not_set,      label: Not yet chosen }
+      - { value: not_set,      label: Not yet chosen, not_established: true }
     references: [ohagan_etal_2005, wilson_etal_2022_ssd]
 
   - id: bayes_audience_calibration
+    establishable: ex_ante
     text: Will the audience expect frequentist error-rate guarantees?
     hint: >-
       Common where findings go to a board or an external reviewer accustomed to p-values.
@@ -827,10 +890,11 @@ questions:
       - { value: 'no',         label: 'No — a probabilistic answer will be accepted' }
       - { value: simulated,  label: 'Yes, and operating characteristics will be simulated' }
       - { value: unplanned,  label: 'Yes, with no simulation planned' }
-      - { value: unknown,    label: Not yet established }
+      - { value: unknown,    label: Not yet established, not_established: true }
     references: [fda_bayesian_2026, bayesian_ssd_review_2025]
 
   - id: bayes_adaptive_stopping
+    establishable: ex_ante
     text: Will the design adapt or stop early based on accumulating data?
     hint: >-
       Adaptive stopping is a genuine advantage of the Bayesian approach, and its

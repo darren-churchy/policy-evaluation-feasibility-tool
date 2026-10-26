@@ -98,7 +98,10 @@ export function Question({ id, label, hint, children }) {
   )
 }
 
-export function RadioQuestion({ id, label, hint, value, onChange, options, inline = false }) {
+// `note` sits between the hint and the options. It carries something about the question
+// itself rather than about the subject matter — currently, that the question cannot be
+// settled until the data exist.
+export function RadioQuestion({ id, label, hint, note, value, onChange, options, inline = false }) {
   return (
     <div className="govuk-form-group" style={{ marginBottom: '1.5rem' }}>
       <fieldset className="govuk-fieldset">
@@ -106,6 +109,7 @@ export function RadioQuestion({ id, label, hint, value, onChange, options, inlin
           {label}
         </legend>
         {hint && <Hint>{hint}</Hint>}
+        {note}
         <Radios id={id} value={value} onChange={onChange} options={options} inline={inline} />
       </fieldset>
     </div>

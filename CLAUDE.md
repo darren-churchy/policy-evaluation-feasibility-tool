@@ -296,6 +296,37 @@ sample-size calculation would be wrong in a way that looks plausible; and a blan
 field is parsed as missing rather than as zero, since `Number('')` is `0` and the lazy
 version reintroduces exactly the defect the redesign exists to remove.
 
+### Prospective feasibility
+
+The tool assesses what can be established **before** the data exist. Some questions cannot
+honestly be answered until they do — overlap between treated and untreated units (which is
+positivity), how many observations sit near a cutoff, how strong a first stage is.
+
+Every question carries `establishable: ex_ante | needs_data`. Six are `needs_data`:
+`overlap`, `density_near_cutoff`, `instrument_strength`, `parallel_trends_evidence`,
+`threshold_enforced`, `threshold_manipulation`. Options meaning "I have not established
+this yet" carry `not_established: true` — 26 of them, across both categories.
+
+Three invariants hold this in place. The first two fail the build, the third is a test:
+
+- **No blocker fires on a `not_established` value.** A blocker says the design cannot
+  work; firing one on an unchecked value rules a design out on the strength of an absent
+  answer. Not having checked is never the same as having found a problem. This is the
+  mirror of the guarantee the three-valued logic provides.
+- **Every `needs_data` question offers a `not_established` option.** Without one a user
+  with no data must guess, and the guess then drives a condition as though it were a
+  finding. `density_near_cutoff` failed this and was fixed.
+- **Every unchecked value a rule reads discharges through a condition carrying `unlock`.**
+  An honest "not yet" has to produce a task, otherwise it is indistinguishable from
+  silence.
+
+So `overlap: untested` leaves matching **Conditional** with "compare covariate
+distributions before committing", while `overlap: poor` — an actual finding — blocks it.
+The ladder UI marks a `needs_data` question so it does not read as an invitation to guess.
+
+`tests/prospective-feasibility.test.mjs` pins the classification, so reclassifying a
+question is a deliberate act.
+
 ### The reviewer pack
 
 `reviewer-pack/` is the specification rendered for a methods reviewer who knows evaluation

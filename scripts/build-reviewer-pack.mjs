@@ -122,13 +122,14 @@ function buildCsvs(spec, questionsById, ruleRows) {
       hint: (q.hint ?? '').replace(/\s+/g, ' ').trim(),
       intake: Boolean(q.intake),
       tier: q.tier ?? '',
+      establishable: q.establishable ?? '',
       asked_when: q.applies_when ? describeExpression(q.applies_when, questionsById) : '(always)',
       options: q.options.map(o => `${o.value}=${o.label}`).join(' | '),
       rob_domain: q.rob_domain ?? '',
       used_by: [...(usedBy.get(q.id) ?? [])].sort().join(' '),
       references: (q.references ?? []).join(' '),
     })),
-    ['id', 'text', 'hint', 'intake', 'tier', 'asked_when', 'options', 'rob_domain', 'used_by', 'references'],
+    ['id', 'text', 'hint', 'intake', 'tier', 'establishable', 'asked_when', 'options', 'rob_domain', 'used_by', 'references'],
   )
 
   const stats = spec.statistics
@@ -166,6 +167,7 @@ function buildMarkdown(spec, questionsById, ruleRows, bib) {
     counterfactual: spec.designs.filter(d => d.strand === 'counterfactual').length,
     theory: spec.designs.filter(d => d.strand === 'theory_based').length,
     questions: spec.questions.length,
+    needsData: spec.questions.filter(q => q.establishable === 'needs_data').length,
     checks: ruleRows.length,
     blockers: ruleRows.filter(r => r.type === 'Blocker').length,
     conditions: ruleRows.filter(r => r.type === 'Condition').length,
@@ -182,17 +184,25 @@ function buildMarkdown(spec, questionsById, ruleRows, bib) {
   w('Whether each rule below is methodologically correct: that the condition it fires on is',
     'the right one, that blocking, conditioning or warning is the right response, and that',
     'the source cited supports it.', '')
-  w('Three things are worth knowing before reading:', '')
+  w('Four things are worth knowing before reading:', '')
   w('1. **A design takes its worst state.** No good answer offsets a bad one. A design with',
     '   one blocker is blocked regardless of everything else being in place.',
     '2. **Nothing is scored.** There are no weights and no thresholds that trade one quality',
     '   against another. The tool recommends the highest rung that is feasible.',
-    '3. **An unanswered question leaves a design Unknown**, never feasible by default.', '')
+    '3. **An unanswered question leaves a design Unknown**, never feasible by default.',
+    '4. **The tool assesses prospective feasibility.** Some questions cannot honestly be',
+    '   answered until the data exist — overlap between treated and untreated units, how',
+    '   many observations sit near a cutoff, how strong a first stage is. Each of those is',
+    '   marked `needs_data` in `questions.csv` and offers an explicit "not yet established"',
+    '   answer. **No blocker fires on such an answer**, enforced by the build: not having',
+    '   checked something is never treated as having found it wanting. It raises a condition',
+    '   carrying what to go and do instead.', '')
 
   w('## Summary', '')
   w('| | Count |', '|---|---|')
   w(`| Designs | ${counts.designs} (${counts.counterfactual} on the ladder, ${counts.theory} theory-based) |`)
   w(`| Questions | ${counts.questions} |`)
+  w(`| — needing the data in hand | ${counts.needsData} |`)
   w(`| Checks | ${counts.checks} |`)
   w(`| — blockers | ${counts.blockers} |`)
   w(`| — conditions | ${counts.conditions} |`)

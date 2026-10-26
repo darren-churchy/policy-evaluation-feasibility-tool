@@ -6,7 +6,7 @@
 # Tier order IS the ranking. Changing a tier's membership changes every recommendation,
 # so spec_version increments on any edit below.
 
-spec_version: 1.0.0
+spec_version: 1.1.0
 
 tiers:
   - id: 1

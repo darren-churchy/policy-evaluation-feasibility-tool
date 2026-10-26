@@ -36,6 +36,26 @@ function StateTag({ state }) {
   )
 }
 
+/**
+ * Some questions cannot honestly be answered until the data exist — whether treated and
+ * untreated units overlap, how many observations sit near a cutoff. Saying so is marked
+ * here, so the question does not read as an invitation to guess: a guess would then drive
+ * a condition as though it were a finding.
+ */
+function NeedsDataNote({ question }) {
+  if (question.establishable !== 'needs_data') return null
+  const escape = question.options.find(o => o.not_established)
+  return (
+    <p className="govuk-body-s" style={{
+      color: T.purple25, background: T.purpleTint, padding: '6px 10px', margin: '0 0 10px',
+    }}>
+      This one usually needs the data in hand.{escape && <> <strong>{escape.label}</strong> is
+      a real answer — it leaves the designs that depend on it conditional, with something to
+      go and check, rather than ruling them out.</>}
+    </p>
+  )
+}
+
 /** Stage, highest feasible rung, open questions. Visible throughout. */
 function SummaryPanel({ result }) {
   const { stage, highestFeasibleTier, highestConditionalTier, agenda, readiness } = result
@@ -255,6 +275,7 @@ export default function PageLadder() {
                   id={id}
                   label={question.text}
                   hint={question.hint}
+                  note={<NeedsDataNote question={question} />}
                   value={answers[id]}
                   onChange={v => set(id, v)}
                   options={question.options}

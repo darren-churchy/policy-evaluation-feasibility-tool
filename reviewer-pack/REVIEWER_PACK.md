@@ -1,6 +1,6 @@
 # Reviewer pack
 
-**Specification version 1.0.0**
+**Specification version 1.1.0**
 
 Generated from `spec/` by `npm run pack`. Do not edit — edit the specification and
 regenerate. `npm run pack:check` fails if this file has drifted from the spec.
@@ -11,13 +11,20 @@ Whether each rule below is methodologically correct: that the condition it fires
 the right one, that blocking, conditioning or warning is the right response, and that
 the source cited supports it.
 
-Three things are worth knowing before reading:
+Four things are worth knowing before reading:
 
 1. **A design takes its worst state.** No good answer offsets a bad one. A design with
    one blocker is blocked regardless of everything else being in place.
 2. **Nothing is scored.** There are no weights and no thresholds that trade one quality
    against another. The tool recommends the highest rung that is feasible.
 3. **An unanswered question leaves a design Unknown**, never feasible by default.
+4. **The tool assesses prospective feasibility.** Some questions cannot honestly be
+   answered until the data exist — overlap between treated and untreated units, how
+   many observations sit near a cutoff, how strong a first stage is. Each of those is
+   marked `needs_data` in `questions.csv` and offers an explicit "not yet established"
+   answer. **No blocker fires on such an answer**, enforced by the build: not having
+   checked something is never treated as having found it wanting. It raises a condition
+   carrying what to go and do instead.
 
 ## Summary
 
@@ -25,9 +32,10 @@ Three things are worth knowing before reading:
 |---|---|
 | Designs | 22 (19 on the ladder, 3 theory-based) |
 | Questions | 63 |
-| Checks | 132 |
+| — needing the data in hand | 6 |
+| Checks | 134 |
 | — blockers | 53 |
-| — conditions | 60 |
+| — conditions | 62 |
 | — warnings | 19 |
 | References | 35 |
 
@@ -236,6 +244,7 @@ Absorbs the former iv_frd entry: fuzzy RD and fuzzy-RD-as-IV are one design unde
 | Condition | threshold_manipulation is “Not yet tested” | Whether people can position themselves around the cutoff has not been tested. | Run a density test for bunching at the cutoff. | — | mccrary_2008 |
 | Condition | instrument_strength is one of “Weakly” or “Not yet established” | A fuzzy design relies on a clear jump in the probability of treatment at the cutoff. A small jump identifies the effect for very few people. | Estimate the size of the jump in take-up at the cutoff before committing. | — | lee_etal_2022 imbens_lemieux_2008 |
 | Condition | density_near_cutoff is “Few” | Few observations near the cutoff, and a fuzzy design needs more than a sharp one. | Count observations within a plausible bandwidth and power on that figure. | — | cattaneo_etal_2020 |
+| Condition | density_near_cutoff is “Not yet established” | The number of observations near the cutoff has not been established, and a fuzzy design needs more of them than a sharp one at the same cutoff. | Once the data are available, count observations within a plausible bandwidth and estimate the jump in take-up across it. | — | cattaneo_etal_2020 |
 | Warning | assignment_threshold is not “No” | This estimates the effect for those at the cutoff whose treatment the rule actually changed — a narrower group than a sharp design addresses. | — | — | imbens_lemieux_2008 |
 
 ### Sharp regression discontinuity — Tier 2
@@ -254,6 +263,7 @@ Requires a continuous running variable and a cutoff that is actually enforced
 | Condition | threshold_manipulation is “Not yet tested” | Whether people can position themselves around the cutoff has not been tested. | Run a density test for bunching at the cutoff, and check whether those it affects could know the rule and act on it. | — | mccrary_2008 |
 | Condition | threshold_enforced is “Not yet established” | How strictly the cutoff is applied in practice has not been established. | Examine administrative records to see how often the rule was overridden. This decides between a sharp and a fuzzy design. | — | imbens_lemieux_2008 |
 | Condition | density_near_cutoff is “Few” | Few observations fall near the cutoff, and only those identify the effect. A large total sample does not help. | Count observations within a plausible bandwidth rather than in the dataset as a whole, and take that figure to a power calculation. | — | cattaneo_etal_2020 |
+| Condition | density_near_cutoff is “Not yet established” | How many observations sit near the cutoff has not been established. It cannot be read off the total sample, and it is what decides whether the design is viable. | Once the data are available, count observations within a plausible bandwidth either side of the cutoff. Until then this design is unproven rather than ruled out. | — | cattaneo_etal_2020 |
 | Warning | assignment_threshold is “Yes — a documented cutoff exists” | The estimate depends on the bandwidth chosen around the cutoff. Report results across a range of bandwidths rather than only the one that was selected. | — | — | cattaneo_etal_2020 |
 | Warning | assignment_threshold is “Yes — a documented cutoff exists” | The result applies at the cutoff. It says little about people far from it, who may be the group the decision concerns. | — | — | imbens_lemieux_2008 |
 
@@ -624,7 +634,7 @@ so a figure produced here cannot change any verdict. Enforced by test.
 | **Is the intervention assigned by a score, date or threshold?**<br>`assignment_threshold` | always | Yes — a documented cutoff exists · Possibly — needs investigation · No | 2 designs |
 | **How strictly is the cutoff followed in practice?**<br>`threshold_enforced` | assignment_threshold is one of “Yes — a documented cutoff exists” or “Possibly — needs investigation” | Strictly — the cutoff determines treatment · Mostly — the cutoff shifts the probability of treatment · Not yet established | 1 design |
 | **Could people position themselves either side of the cutoff?**<br>`threshold_manipulation` | assignment_threshold is one of “Yes — a documented cutoff exists” or “Possibly — needs investigation” | Tested — no evidence of sorting · Not yet tested · Sorting is likely or demonstrated | 2 designs |
-| **How many observations fall close to the cutoff?**<br>`density_near_cutoff` | assignment_threshold is one of “Yes — a documented cutoff exists” or “Possibly — needs investigation” | Many · Some · Few | 2 designs |
+| **How many observations fall close to the cutoff?**<br>`density_near_cutoff` | assignment_threshold is one of “Yes — a documented cutoff exists” or “Possibly — needs investigation” | Many · Some · Few · Not yet established | 2 designs |
 | **Is there a factor that shifts take-up but has no other route to the outcome?**<br>`instrument_available` | always | Yes — a candidate instrument exists · Possibly — needs investigation · No | 1 design |
 | **How strongly does that factor predict take-up?**<br>`instrument_strength` | instrument_available is one of “Yes — a candidate instrument exists” or “Possibly — needs investigation” | Strongly · Weakly · Not yet established | 2 designs |
 | **Can you argue the factor affects the outcome only through take-up?**<br>`exclusion_restriction` | instrument_available is one of “Yes — a candidate instrument exists” or “Possibly — needs investigation” | Yes — a clear substantive argument exists · Doubtful — plausible alternative routes exist · Not yet considered | 2 designs |

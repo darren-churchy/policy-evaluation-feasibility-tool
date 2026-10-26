@@ -141,7 +141,7 @@ describe('questions.yaml — integrity', () => {
   it('carries no stray option properties from unquoted commas in YAML flow mappings', () => {
     // A comma inside an unquoted flow-mapping value starts a new key, silently turning
     // part of a label into a bogus property. Caught once already in this file.
-    const allowed = new Set(['value', 'label', 'hint'])
+    const allowed = new Set(['value', 'label', 'hint', 'not_established'])
     const stray = []
     for (const q of questions) {
       for (const o of q.options) {

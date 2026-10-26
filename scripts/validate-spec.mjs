@@ -301,13 +301,48 @@ function checkReferences(parsed, errors) {
     const qdoc = parsed['questions.yaml'].doc
     const qsrc = parsed['questions.yaml'].source
     questions.forEach((q, i) => {
-      if (!q.applies_when) return
-      for (const v of collectVars(q.applies_when)) {
-        if (!optionsByQuestion.has(v)) {
-          errors.push({ file: 'questions.yaml', line: lineFor(qdoc, qsrc, ['questions', i]), message: `${q.id}.applies_when tests "${v}", which is not a question` })
+      if (q.applies_when) {
+        for (const v of collectVars(q.applies_when)) {
+          if (!optionsByQuestion.has(v)) {
+            errors.push({ file: 'questions.yaml', line: lineFor(qdoc, qsrc, ['questions', i]), message: `${q.id}.applies_when tests "${v}", which is not a question` })
+          }
         }
       }
+
+      // The tool assesses PROSPECTIVE feasibility. A question that cannot honestly be
+      // answered until the data exist must let the user say so, or it forces a guess —
+      // and a guess then drives a condition as if it were a finding.
+      if (q.establishable === 'needs_data' && !(q.options ?? []).some(o => o.not_established)) {
+        errors.push({ file: 'questions.yaml', line: lineFor(qdoc, qsrc, ['questions', i]), message: `${q.id} is marked establishable: needs_data but offers no option marked not_established, so a user without the data must guess` })
+      }
     })
+  }
+
+  // The central prospective-feasibility guarantee: not having checked something is never
+  // the same as having found it wanting. A blocker says the design cannot work; firing one
+  // on an unchecked value would rule out a design on the strength of an absent answer.
+  if (questions && rules && parsed['rules.yaml'].doc) {
+    const rdoc = parsed['rules.yaml'].doc
+    const rsrc = parsed['rules.yaml'].source
+    const unestablished = new Map()
+    for (const q of questions) {
+      const values = (q.options ?? []).filter(o => o.not_established).map(o => o.value)
+      if (values.length) unestablished.set(q.id, new Set(values))
+    }
+
+    for (const [design, spec] of Object.entries(rules)) {
+      ;(spec.blockers ?? []).forEach((blocker, i) => {
+        for (const { question, value } of collectComparisons(blocker.test)) {
+          if (unestablished.get(question)?.has(value)) {
+            errors.push({
+              file: 'rules.yaml',
+              line: lineFor(rdoc, rsrc, ['designs', design, 'blockers', i]),
+              message: `${design} blocker "${blocker.id}" fires on ${question} = "${value}", which means the user has not established this yet. An unchecked assumption is a condition to discharge, not a blocker.`,
+            })
+          }
+        }
+      })
+    }
   }
 }
 

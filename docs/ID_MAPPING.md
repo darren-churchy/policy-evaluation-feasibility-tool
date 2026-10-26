@@ -115,6 +115,14 @@ compensatory logic the redesign exists to remove.
 
 If they are kept, they must be kept as something other than a score.
 
+**Since drafting this, the point has been generalised and enforced.** Positivity and
+overlap cannot be established before the data exist at all, so the question is not only
+whether to score them but whether the tool may *conclude* anything from them in advance.
+Every question now carries `establishable: ex_ante | needs_data`, and the build fails if a
+blocker fires on a value meaning "not yet established". `overlap` is one of the six
+`needs_data` questions: answering it honestly leaves a design Conditional with a check to
+perform, never Blocked. See the prospective-feasibility section of `CLAUDE.md`.
+
 ### 5b. `p7_n` — estimated total sample size
 
 **Recommendation: drop from the answer store.**
