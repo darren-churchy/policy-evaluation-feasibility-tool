@@ -51,7 +51,13 @@ describe('institutional identity is removed', () => {
 })
 
 describe('justice-specific wording is removed from the neutral core', () => {
-  const JUSTICE = [/reoffend/i, /\bprobation\b/i, /\bcustody\b/i, /\bprisons?\b/i, /England and Wales/i]
+  // `reconvict` and the named record system were missed by the first pass: the term list
+  // had `reoffend` but not its near-synonym, and no entry for a sector-specific data
+  // source by name. Both were still shipping in src/data/tteComponents.js.
+  const JUSTICE = [
+    /reoffend/i, /reconvict/i, /\bprobation\b/i, /\bcustody\b/i, /\bprisons?\b/i,
+    /England and Wales/i, /Police National Computer/i, /\bkeyworker\b/i,
+  ]
 
   it.each(JUSTICE.map(p => [p.source, p]))('no "%s" in shipped source', (_label, pattern) => {
     const offenders = shippedFiles().filter(f => pattern.test(readFileSync(join(ROOT, f), 'utf8')))

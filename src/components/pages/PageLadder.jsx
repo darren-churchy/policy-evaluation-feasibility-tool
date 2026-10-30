@@ -169,7 +169,7 @@ function Rung({ rung, isBest }) {
 
 export default function PageLadder() {
   const navigate = useNavigate()
-  const { answers, set, clear, replace, result, spec } = useAnswers()
+  const { answers, set, notes, clear, replace, result, spec } = useAnswers()
   const [loadWarnings, setLoadWarnings] = useState([])
   const fileInput = useRef(null)
 
@@ -200,7 +200,7 @@ export default function PageLadder() {
   const { readiness, stage, agenda, recommendation, nextRungUp, theoryBased, ladder } = result
 
   function save() {
-    const file = buildSaveFile(answers, spec.tiers.spec_version)
+    const file = buildSaveFile(answers, spec.tiers.spec_version, notes)
     const blob = new Blob([JSON.stringify(file, null, 2)], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
@@ -215,11 +215,11 @@ export default function PageLadder() {
     if (!file) return
     const reader = new FileReader()
     reader.onload = () => {
-      const { answers: loaded, warnings } = parseSaveFile(
+      const { answers: loaded, notes: loadedNotes, warnings } = parseSaveFile(
         String(reader.result), spec.tiers.spec_version, new Set(questionsById.keys()),
       )
       setLoadWarnings(warnings)
-      if (loaded) replace(loaded)
+      if (loaded) replace(loaded, loadedNotes)
     }
     reader.readAsText(file)
     event.target.value = ''
@@ -366,7 +366,7 @@ export default function PageLadder() {
         <NavButtons>
           <Button
             variant="moj"
-            onClick={() => downloadReport({ result, answers, spec })}
+            onClick={() => downloadReport({ result, answers, notes, spec })}
           >
             ↓ Download report
           </Button>

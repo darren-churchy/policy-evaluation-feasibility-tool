@@ -62,7 +62,7 @@ export default function Page6({ inputs, set, gatePassed, dataRows, addDataRow, r
               <tbody>
                 {rows.map((row, i) => (
                   <tr key={i} style={{ background: i % 2 === 0 ? '#fff' : '#f8f8f8' }}>
-                    <td style={tdStyle}>{inp(row.name,    v => updateRow(i,'name',v),    'e.g. Police National Computer')}</td>
+                    <td style={tdStyle}>{inp(row.name,    v => updateRow(i,'name',v),    'e.g. Case management system')}</td>
                     <td style={tdStyle}>{inp(row.type,    v => updateRow(i,'type',v),    'e.g. Administrative')}</td>
                     <td style={tdStyle}>{inp(row.period,  v => updateRow(i,'period',v),  'e.g. 2010–present')}</td>
                     <td style={tdStyle}>{inp(row.geo,     v => updateRow(i,'geo',v),     'e.g. England & Wales')}</td>

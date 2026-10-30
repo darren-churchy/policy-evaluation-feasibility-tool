@@ -1,0 +1,162 @@
+# The guides.
+#
+# Structured prompts that produce NOTES, not answers. Nothing here reaches the engine: a
+# guide field cannot block a design, discharge a condition or move a rung. They exist
+# because the reasoning they capture is what a methods reviewer actually reads, and because
+# the previous tool gated them behind a scored assessment — which implied they were part of
+# the verdict, and they never were.
+#
+# The separation is enforced, not merely intended:
+#   - notes live in their own object in the answer store, never merged into answers
+#   - `evaluate()` is never passed them, and its source mentions neither notes nor guides
+#   - no guide field may share an id with a question, so a note can never be mistaken for
+#     an answer even if some future code did merge the two
+#
+# Examples are deliberately sector-neutral. A context pack supplies sector wording.
+
+spec_version: 1.0.0
+
+guides:
+
+  - id: ideal_trial
+    title: Ideal trial specification
+    purpose: >-
+      Describing the randomised trial you would run if nothing stood in the way. It is done
+      before choosing a design, not after, because it settles what effect you are trying to
+      estimate — and most disagreements about method turn out to be disagreements about the
+      estimand.
+    when: >-
+      Worth doing early, and worth revisiting once the ladder has narrowed the options. An
+      observational design is an attempt to approximate this trial, so the gap between the
+      two is where the assumptions live.
+    fields:
+      - id: trial_eligibility
+        label: Eligibility criteria
+        hint: >-
+          Who would be eligible, precisely enough that you could decide for any given case.
+          Being precise here reveals whether the target population is observable in the data
+          you have.
+        placeholder: e.g. all adults first referred to the service in the eligible areas, aged 18 to 65
+      - id: trial_strategies
+        label: Treatment strategies being compared
+        hint: >-
+          What each arm receives, including what the comparator involves. A vague treatment
+          definition hides variation that later undermines identification.
+        placeholder: e.g. A — enrolment in the 12-week programme; B — existing provision only
+      - id: trial_assignment
+        label: How assignment would happen
+        hint: >-
+          The randomisation mechanism: individual, cluster, stepped wedge. If a third party
+          would assign, note it — it bears on compliance and on whether intention-to-treat
+          is the right contrast.
+        placeholder: e.g. individual randomisation at the point of referral, stratified by area
+      - id: trial_followup
+        label: Follow-up period, and when it starts
+        hint: >-
+          Time zero is the moment of assignment, not of receipt. Misaligning the two is one
+          of the most common sources of bias in observational work, and naming it here is
+          what prevents it later.
+        placeholder: e.g. begins at randomisation; ends 12 months after exit
+      - id: trial_outcome
+        label: Primary outcome, and how it would be measured
+        hint: >-
+          The measure, its timing, its source, and what would happen to a missing outcome.
+          Whether it is binary, continuous, a count or a time to an event decides what the
+          sample has to support.
+        placeholder: e.g. binary — any recorded instance within 12 months, from the administrative record
+      - id: trial_contrast
+        label: The causal contrast
+        hint: >-
+          Intention-to-treat estimates the effect of being assigned; per-protocol the effect
+          of actually receiving. They answer different questions and are not interchangeable.
+        placeholder: e.g. intention-to-treat — the effect of being offered the programme
+      - id: trial_analysis
+        label: How the ideal trial would be analysed
+        hint: >-
+          Unit of randomisation, primary estimator, covariates, and the approach to missing
+          data. This is the target analysis; the chosen design will approximate it.
+        placeholder: e.g. regression of the outcome on assignment, adjusted for pre-specified covariates
+
+  - id: causal_diagram
+    title: Causal diagram and adjustment set
+    purpose: >-
+      Writing down which variables cause which others, so that what to adjust for follows
+      from the structure rather than from habit. The common failures are symmetrical:
+      adjusting for a mediator removes part of the effect being estimated, and adjusting for
+      a collider creates an association that was not there.
+    when: >-
+      Before settling an analysis plan for any design that rests on measured covariates —
+      matching, weighting, standardisation, the g-methods. Useful for the others too, since
+      it is where unmeasured confounding gets named.
+    fields:
+      - id: dag_narrative
+        label: Describe the causal relationships between your key variables
+        hint: >-
+          Plain language is enough; a drawing is not required. Say which variables cause
+          which others, and which are caused by the treatment.
+        placeholder: e.g. prior history affects both who is referred and the outcome; area affects referral and outcome
+        rows: 6
+      - id: dag_variables
+        label: The key variables
+        hint: One per line.
+        rows: 4
+      - id: dag_confounders
+        label: Confounders
+        hint: >-
+          Causes of both treatment and outcome. These are what must be adjusted for — the
+          adjustment set is drawn from here.
+        placeholder: e.g. prior history, area, age at referral
+      - id: dag_mediators
+        label: Mediators
+        hint: >-
+          On the pathway between treatment and outcome — caused by treatment and in turn
+          causing the outcome. Do not adjust for these: doing so removes part of the effect
+          you are trying to estimate.
+        placeholder: e.g. engagement with the programme
+      - id: dag_colliders
+        label: Colliders
+        hint: >-
+          Caused by both treatment and outcome, or by their causes. Never adjust for these:
+          conditioning on a collider opens a path that was closed, creating an association
+          from nothing.
+        placeholder: e.g. selection into a follow-up survey
+      - id: dag_competing
+        label: Competing exposures
+        hint: >-
+          Other interventions or changes happening at the same time that could also move the
+          outcome. These are what a single time series cannot separate from the effect.
+        placeholder: e.g. a concurrent change in eligibility rules
+      - id: dag_unmeasured
+        label: Unmeasured confounders you are concerned about
+        hint: >-
+          Named explicitly, because an adjustment-based design rests on there being none
+          that matter. Naming them is what makes the assumption reviewable rather than
+          implicit.
+        placeholder: e.g. motivation at the point of referral
+
+  - id: data_sources
+    title: Data source inventory
+    purpose: >-
+      Mapping what data exists, who holds it, how it would be obtained and what it covers.
+      Access and governance decide more evaluations than methodology does, and they take
+      longer to resolve than people expect.
+    when: >-
+      Early. The answers to the linkage and pre-period questions in the assessment come from
+      this exercise, so doing it first makes those answers evidenced rather than assumed.
+    table:
+      id: data_sources
+      add_label: Add a source
+      columns:
+        - { id: name,        label: Source }
+        - { id: holder,      label: Who holds it }
+        - { id: access,      label: How it would be obtained }
+        - { id: coverage,    label: Who or what it covers }
+        - { id: period,      label: Period available }
+        - { id: identifiers, label: Identifiers available for linking }
+    fields:
+      - id: data_gaps
+        label: Known gaps, quality concerns or access barriers
+        hint: >-
+          Completeness, accuracy, timeliness, consistency — and anything in the governance
+          route that could delay or prevent access.
+        rows: 4

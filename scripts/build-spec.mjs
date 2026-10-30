@@ -27,6 +27,7 @@ export function buildSpecBundle(specDir) {
       rules: spec.rules,
       stages: spec.stages,
       statistics: spec.statistics,
+      guides: spec.guides,
     },
     null,
     2,

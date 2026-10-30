@@ -117,6 +117,7 @@ spec/                     The methodology, in reviewer-editable files
   rules.yaml               Per design: blockers, conditions, warnings
   stages.yaml              Stage vocabulary, readiness gates, routing
   statistics.yaml          Frequentist and Bayesian question sets
+  guides.yaml              Ideal trial, causal diagram, data inventory — notes, not answers
   packs/                   Context packs: examples and vocabulary by sector
   references.bib           Every citation, with a confidence note
   schema/                  JSON Schemas for the above
@@ -128,6 +129,7 @@ src/
     stage.js                 The one place the app infers a stage
   spec/spec.generated.json Compiled spec the browser imports
   report/                  The shareable HTML report
+  components/guides/       The guides — one component, driven by the spec
   state/                   The single answer store
   components/              Pages and shared UI
     statistics/              The statistics module and the ready-reckoner
@@ -135,7 +137,7 @@ src/
 
 reviewer-pack/            The specification rendered for a methods reviewer
 scripts/                  Validation, spec bundle, reviewer pack, CSS
-tests/                    327 tests
+tests/                    349 tests
 docs/                     Redesign plan; Bayesian sample-size research
 ```
 

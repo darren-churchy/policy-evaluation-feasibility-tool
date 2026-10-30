@@ -24,11 +24,16 @@ export function TextArea({ id, value, onChange, rows = 3, placeholder = '' }) {
   )
 }
 
+// GOV.UK Frontend offers govuk-input--width-2/3/4/5/10/20 and no "full" modifier, so
+// width='full' previously applied no width at all and the input fell back to the browser
+// default — narrow, and conspicuously so inside a table cell. Full width is set directly.
 export function TextInput({ id, value, onChange, placeholder = '', width = 'full' }) {
+  const full = width === 'full'
   return (
     <input
-      className={`govuk-input ${width !== 'full' ? `govuk-input--width-${width}` : ''}`}
+      className={`govuk-input${full ? '' : ` govuk-input--width-${width}`}`}
       id={id} name={id} type="text" placeholder={placeholder}
+      style={full ? { width: '100%' } : undefined}
       value={value ?? ''}
       onChange={e => onChange(e.target.value)}
     />

@@ -29,6 +29,7 @@ const TARGETS = [
   { file: 'rules.yaml',      schema: 'rules.schema.json' },
   { file: 'stages.yaml',     schema: 'stages.schema.json' },
   { file: 'statistics.yaml', schema: 'statistics.schema.json' },
+  { file: 'guides.yaml',     schema: 'guides.schema.json' },
 ]
 
 // CSV targets are validated as the array of records parsed from them.
@@ -326,6 +327,41 @@ function checkReferences(parsed, errors) {
       // and a guess then drives a condition as if it were a finding.
       if (q.establishable === 'needs_data' && !(q.options ?? []).some(o => o.not_established)) {
         errors.push({ file: 'questions.yaml', line: lineFor(qdoc, qsrc, ['questions', i]), message: `${q.id} is marked establishable: needs_data but offers no option marked not_established, so a user without the data must guess` })
+      }
+    })
+  }
+
+  // Guides produce notes, never answers. A guide field sharing an id with a question is
+  // the one way a note could later be mistaken for an answer and reach a verdict, so it is
+  // refused outright rather than left to the code that keeps the two apart.
+  const guides = parsed['guides.yaml']?.data?.guides
+  if (guides && questions && parsed['guides.yaml'].doc) {
+    const gdoc = parsed['guides.yaml'].doc
+    const gsrc = parsed['guides.yaml'].source
+    const questionIds = new Set(questions.map(q => q.id))
+    const seen = new Map()
+
+    guides.forEach((guide, gi) => {
+      ;(guide.fields ?? []).forEach((field, fi) => {
+        const line = lineFor(gdoc, gsrc, ['guides', gi, 'fields', fi])
+        if (questionIds.has(field.id)) {
+          errors.push({ file: 'guides.yaml', line, message: `guide field "${field.id}" shares an id with a question. Guides produce notes, never answers, and an id collision is the one way a note could reach a verdict.` })
+        }
+        if (seen.has(field.id)) {
+          errors.push({ file: 'guides.yaml', line, message: `guide field "${field.id}" is already defined in guide "${seen.get(field.id)}" — notes are held in one flat object, so the later one would overwrite the earlier` })
+        }
+        seen.set(field.id, guide.id)
+      })
+
+      if (guide.table) {
+        const line = lineFor(gdoc, gsrc, ['guides', gi, 'table'])
+        if (questionIds.has(guide.table.id)) {
+          errors.push({ file: 'guides.yaml', line, message: `guide table "${guide.table.id}" shares an id with a question` })
+        }
+        if (seen.has(guide.table.id)) {
+          errors.push({ file: 'guides.yaml', line, message: `guide table "${guide.table.id}" is already defined in guide "${seen.get(guide.table.id)}"` })
+        }
+        seen.set(guide.table.id, guide.id)
       }
     })
   }

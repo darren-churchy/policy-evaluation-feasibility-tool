@@ -396,6 +396,35 @@ approach, and they are not translations of one another: the frequentist concern 
 from a complete-case analysis, the Bayesian one is a prior buying precision the observed
 records cannot support.
 
+### The guides and the notes annex
+
+`spec/guides.yaml` declares three guides — **ideal trial specification**, **causal diagram
+and adjustment set**, **data source inventory** — rendered by one component,
+`src/components/guides/PageGuide.jsx`, at `/guide/:guideId`. Adding a guide is a
+specification change, not a new component.
+
+**Guides produce notes, never answers.** They capture the reasoning a methods reviewer
+reads without any of it reaching a verdict. The previous tool gated this material behind a
+scored assessment, implying it was part of the verdict when it never was.
+
+The separation is enforced four ways:
+
+- Notes live in their **own object** in the answer store (`notes`, `setNote`), never merged
+  into `answers`. `evaluate()` is passed answers and nothing else.
+- The **engine source mentions neither `notes` nor `guides`** — asserted by test.
+- The **save file keeps them in separate keys**, so a load cannot turn a note into an
+  answer. A file saved before notes existed loads without warnings.
+- The **validator refuses a guide field that shares an id with a question**, which is the
+  only route by which a note could later be mistaken for an answer — and refuses a
+  duplicate field id across guides, since notes are one flat object. Both
+  mutation-verified.
+
+Unlike answers, an **unrecognised note is kept rather than dropped** on load: it reaches no
+rule, so there is nothing to validate it against and nothing downstream can act on it.
+
+The report renders notes last, under their own heading, stating that none of it contributed
+to the verdicts.
+
 ### The reviewer pack
 
 `reviewer-pack/` is the specification rendered for a methods reviewer who knows evaluation

@@ -5,11 +5,12 @@
 
 import { buildReport } from './buildReport.js'
 
-export function downloadReport({ result, answers, spec, appVersion }) {
+export function downloadReport({ result, answers, notes, spec, appVersion }) {
   const now = new Date()
   const html = buildReport({
     result,
     answers,
+    notes,
     spec,
     date: now.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }),
     appVersion,

@@ -14,6 +14,7 @@ import PageQuantTree       from './components/pages/tools/PageQuantTree.jsx'
 import PageQualTree        from './components/pages/tools/PageQualTree.jsx'
 import PageDesignFinder    from './components/pages/tools/PageDesignFinder.jsx'
 import PageQuestionFramework from './components/pages/tools/PageQuestionFramework.jsx'
+import PageGuide from './components/guides/PageGuide.jsx'
 import PageLadder         from './components/pages/PageLadder.jsx'
 
 export default function App() {
@@ -77,6 +78,12 @@ export default function App() {
         {/* The redesigned, engine-driven assessment. Runs alongside the existing
             sections until the switchover in phase 5. */}
         <Route path="/ladder"            element={<PageLadder />} />
+
+        {/* Guides produce notes, never answers. One component, driven by spec/guides.yaml,
+            so adding a guide is a specification change rather than a new route. The
+            existing /ideal-trial, /adjustment and /data-sources paths still belong to the
+            numbered sections until the switchover. */}
+        <Route path="/guide/:guideId"    element={<PageGuide />} />
 
         {/* Companion tool pages */}
         <Route path="/quant-tree"          element={<PageQuantTree />} />

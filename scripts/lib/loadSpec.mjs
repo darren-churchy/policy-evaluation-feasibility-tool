@@ -20,6 +20,7 @@ export function loadSpec(specDir = DEFAULT_SPEC_DIR) {
     rules: yaml('rules.yaml'),
     stages: yaml('stages.yaml'),
     statistics: yaml('statistics.yaml'),
+    guides: yaml('guides.yaml'),
     designs: parseCsvRecords(readFileSync(join(specDir, 'designs.csv'), 'utf8'), {
       pipeSeparated: ['estimator_options'],
     }).records,

@@ -17,8 +17,15 @@ const AnswersContext = createContext(null)
 /** The shape written to disk by save, and expected by load. */
 export const SAVE_FORMAT = 'impact-evaluation-feasibility/answers'
 
-export function AnswersProvider({ children, initialAnswers = {} }) {
+export function AnswersProvider({ children, initialAnswers = {}, initialNotes = {} }) {
   const [answers, setAnswers] = useState(initialAnswers)
+
+  // Notes are held in their own object, never merged into answers. The engine is passed
+  // `answers` and nothing else, so a guide field cannot reach a verdict however it is
+  // worded — and the spec validator refuses a guide field that shares an id with a
+  // question, so the two vocabularies cannot collide even if some future code did merge
+  // them.
+  const [notes, setNotes] = useState(initialNotes)
 
   const set = useCallback((id, value) => {
     setAnswers(prev => {
@@ -35,17 +42,35 @@ export function AnswersProvider({ children, initialAnswers = {} }) {
     })
   }, [])
 
-  const clear = useCallback(() => setAnswers({}), [])
+  const setNote = useCallback((id, value) => {
+    setNotes(prev => {
+      const empty = value === undefined || value === null || value === ''
+        || (Array.isArray(value) && value.length === 0)
+      if (empty) {
+        if (!(id in prev)) return prev
+        const next = { ...prev }
+        delete next[id]
+        return next
+      }
+      if (prev[id] === value) return prev
+      return { ...prev, [id]: value }
+    })
+  }, [])
 
-  const replace = useCallback(next => setAnswers(next ?? {}), [])
+  const clear = useCallback(() => { setAnswers({}); setNotes({}) }, [])
+
+  const replace = useCallback((next, nextNotes) => {
+    setAnswers(next ?? {})
+    if (nextNotes !== undefined) setNotes(nextNotes ?? {})
+  }, [])
 
   // Recomputed on every answer change. The engine is pure and the spec is static, so this
   // is the only derived state in the app.
   const result = useMemo(() => evaluate(answers, spec), [answers])
 
   const value = useMemo(
-    () => ({ answers, set, clear, replace, result, spec }),
-    [answers, set, clear, replace, result],
+    () => ({ answers, set, notes, setNote, clear, replace, result, spec }),
+    [answers, set, notes, setNote, clear, replace, result],
   )
 
   return <AnswersContext.Provider value={value}>{children}</AnswersContext.Provider>
@@ -68,12 +93,15 @@ export function useAnswer(id) {
 // A downloaded JSON file, not browser storage. Nothing is written to the device unless the
 // user asks for it, which is what the privacy notice promises.
 
-export function buildSaveFile(answers, specVersion) {
+export function buildSaveFile(answers, specVersion, notes = {}) {
   return {
     format: SAVE_FORMAT,
     specVersion,
     savedAt: new Date().toISOString(),
     answers,
+    // Separate from answers in the file as well as in memory, so a load cannot turn a
+    // note into an answer and the distinction survives a round trip.
+    notes,
   }
 }
 
@@ -118,5 +146,12 @@ export function parseSaveFile(raw, currentSpecVersion, questionIds) {
     )
   }
 
-  return { answers, warnings }
+  // Notes are carried through as written. They reach no rule, so there is nothing to
+  // validate them against — an unrecognised note is kept rather than dropped, because the
+  // user's reasoning is worth more than tidiness and nothing downstream can act on it.
+  const notes = (parsed.notes && typeof parsed.notes === 'object' && !Array.isArray(parsed.notes))
+    ? parsed.notes
+    : {}
+
+  return { answers, notes, warnings }
 }

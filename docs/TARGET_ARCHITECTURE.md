@@ -204,7 +204,7 @@ the user's reasoning, which is what a reviewer actually reads.
 | `PageQuestionFramework` + both trees | **Merged** into one question-typing tool |
 | `questionFrameworkData.js` | **Kept** — it is the taxonomy |
 | `quantTreeData` / `qualTreeData` | Kept as the traversal into the taxonomy |
-| `tteComponents.js` | Kept, as a guide |
+| `tteComponents.js` | **Superseded** by `spec/guides.yaml`; deleted with its section |
 | `exportToolResult.js` | **Deleted** once the tools that use it are gone; the report replaces it |
 | `src/report/` | **Built.** Nothing further needed |
 
@@ -261,7 +261,9 @@ the specification:
   are different events. It raises a tension under each approach, and the two say different
   things.
 
-The guide itself remains to be built, with the inventory table as notes.
+**Built.** `spec/guides.yaml` declares all three guides — ideal trial, causal diagram, data
+source inventory — rendered by one component at `/guide/:guideId`. The notes annex is in
+the answer store and the save file, and the report renders it.
 
 ## 8. Sequencing
 
@@ -272,7 +274,7 @@ answers can be given.
    scores and not migrating `screen_*` values.
 2. **Add the three missing questions** (decision 3). Useful regardless of what else
    happens, and it is the hard dependency.
-3. **Build the notes annex** — save format, and the report rendering it.
+3. ~~Build the notes annex~~ — **done**, along with all three guides.
 4. **Migrate the tools to the shared store** (phase 4.2–4.6), ending with the prefill
    test, which is phase 4's acceptance criterion.
 5. **Add the screening checkpoint** to the ladder.

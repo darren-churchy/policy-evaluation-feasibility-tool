@@ -194,6 +194,57 @@ function ruledOut(result) {
     </table>`
 }
 
+/**
+ * The notes from the guides. Rendered last, under their own heading, and never mixed with
+ * the verdicts — they explain the reasoning behind the work rather than contributing to
+ * any conclusion the tool reached.
+ */
+function notesGiven(notes, spec) {
+  const guides = spec.guides?.guides ?? []
+  if (!guides.length || !notes || !Object.keys(notes).length) return ''
+
+  const sections = guides.map(guide => {
+    const parts = []
+
+    if (guide.table && Array.isArray(notes[guide.table.id]) && notes[guide.table.id].length) {
+      const columns = guide.table.columns
+      const rows = notes[guide.table.id]
+        .filter(row => columns.some(c => String(row?.[c.id] ?? '').trim()))
+      if (rows.length) {
+        parts.push(`
+          <table>
+            <thead><tr>${columns.map(c => `<th>${esc(c.label)}</th>`).join('')}</tr></thead>
+            <tbody>${rows.map(row => `
+              <tr>${columns.map(c => `<td>${esc(row[c.id] ?? '')}</td>`).join('')}</tr>`).join('')}
+            </tbody>
+          </table>`)
+      }
+    }
+
+    for (const field of guide.fields ?? []) {
+      const value = String(notes[field.id] ?? '').trim()
+      if (!value) continue
+      parts.push(`
+        <div class="note">
+          <div class="note__label">${esc(field.label)}</div>
+          <p>${esc(value).replace(/\n/g, '<br>')}</p>
+        </div>`)
+    }
+
+    if (!parts.length) return ''
+    return `<h3>${esc(guide.title)}</h3>${parts.join('')}`
+  }).filter(Boolean)
+
+  if (!sections.length) return ''
+
+  return `
+    <h2>Notes and supporting work</h2>
+    <p class="muted">Recorded alongside the assessment. None of it contributed to the
+    verdicts above — it is the reasoning behind the work, which is what a methods reviewer
+    reads.</p>
+    ${sections.join('')}`
+}
+
 function answersGiven(answers, spec) {
   const byId = new Map(spec.questions.map(q => [q.id, q]))
   const rows = Object.entries(answers)
@@ -221,7 +272,7 @@ function answersGiven(answers, spec) {
  * @param {string} args.date      rendered as given, so the output is reproducible
  * @param {string} args.appVersion
  */
-export function buildReport({ result, answers, spec, date, appVersion = '0.7.1' }) {
+export function buildReport({ result, answers, notes = {}, spec, date, appVersion = '0.7.1' }) {
   const theory = result.theoryBased
   const questionText = new Map(spec.questions.map(q => [q.id, q.text]))
 
@@ -260,6 +311,9 @@ export function buildReport({ result, answers, spec, date, appVersion = '0.7.1' 
   .tag--conditional{background:${STATE_COLOUR.conditional}}
   .tag--unknown{background:${STATE_COLOUR.unknown}}
   .tag--blocked{background:${STATE_COLOUR.blocked}}
+  .note{margin:12px 0}
+  .note__label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:${T.greyText};margin-bottom:2px}
+  .note p{margin:0}
   .footer{margin-top:44px;padding-top:14px;border-top:1px solid ${T.greyLine};font-size:12px;
     color:${T.greyText}}
   @media print{body{margin:0;max-width:none}h2{page-break-after:avoid}.design,.verdict{page-break-inside:avoid}}
@@ -297,6 +351,8 @@ ${ladderSection(result, questionText)}
   theory.candidate ? ' — worth considering as the primary approach' : ''}.</p>
 ${theory.reasons.map(r => `<p class="muted">${esc(r)}</p>`).join('')}
 <p class="muted">${result.theoryBasedDesigns.map(id => esc(result.designs[id].name)).join(' · ')}</p>
+
+${notesGiven(notes, spec)}
 
 ${answersGiven(answers, spec)}
 

@@ -15,6 +15,12 @@ const NAV_ITEMS = [
   { path: '/results',           label: 'Results'                    },
 ]
 
+const GUIDE_NAV_ITEMS = [
+  { path: '/guide/ideal_trial',   label: 'Ideal trial specification' },
+  { path: '/guide/causal_diagram', label: 'Causal diagram' },
+  { path: '/guide/data_sources',  label: 'Data source inventory' },
+]
+
 const TOOL_NAV_ITEMS = [
   { path: '/ladder',             label: 'Ladder assessment (new)'     },
   { path: '/question-framework', label: 'Research Question Framework' },
@@ -86,7 +92,7 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
   }
 
   const currentLabel =
-    [...NAV_ITEMS, ...TOOL_NAV_ITEMS].find(i => i.path === currentPath)?.label ?? ''
+    [...NAV_ITEMS, ...TOOL_NAV_ITEMS, ...GUIDE_NAV_ITEMS].find(i => i.path === currentPath)?.label ?? ''
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -359,6 +365,41 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
                   )
                 })}
               </ul>
+              {/* Guides — structured prompts that produce notes, never answers. Grouped
+                  apart from the tools so the distinction is visible in the navigation. */}
+              <p style={{
+                color: T.greyText, padding: '16px 16px 4px',
+                margin: 0, textTransform: 'uppercase', fontSize: '11px',
+                letterSpacing: '.5px', whiteSpace: 'nowrap',
+                borderTop: `1px solid ${T.greyLine}`,
+              }}>
+                Guides
+              </p>
+              <ul style={{ listStyle: 'none', margin: 0, padding: '0 0 4px' }}>
+                {GUIDE_NAV_ITEMS.map(item => {
+                  const active = item.path === currentPath
+                  return (
+                    <li key={item.path} style={{ margin: 0 }}>
+                      <button
+                        onClick={() => navigate(item.path)}
+                        aria-current={active ? 'page' : undefined}
+                        style={{
+                          background: active ? T.purpleTint : 'none',
+                          border: 'none',
+                          borderLeft: `3px solid ${active ? T.purple : 'transparent'}`,
+                          color: T.ink, font: 'inherit', fontSize: '14px',
+                          fontWeight: active ? 600 : 400,
+                          cursor: 'pointer', width: '100%', textAlign: 'left',
+                          padding: '7px 16px', lineHeight: 1.35,
+                        }}
+                      >
+                        {item.label}
+                      </button>
+                    </li>
+                  )
+                })}
+              </ul>
+
               <InstallPrompt prompt={installPrompt} installed={installed} onInstall={setInstallPrompt} />
             </div>
           </nav>

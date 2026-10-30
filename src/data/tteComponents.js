@@ -12,7 +12,7 @@ export const TTE_COMPONENTS = [
     id: 'tte_treatment',
     title: '2. Treatment Strategies',
     hint: 'What are the treatment strategies being compared? Define each strategy precisely — including what receiving treatment means and what the comparator involves. Vague treatment definitions often mask heterogeneity that undermines causal identification.',
-    placeholder: 'e.g. Strategy A: enrolment in 12-week keyworker programme. Strategy B: standard supervision only',
+    placeholder: 'e.g. Strategy A: enrolment in the 12-week programme. Strategy B: existing provision only',
   },
   {
     id: 'tte_assignment',
@@ -30,7 +30,7 @@ export const TTE_COMPONENTS = [
     id: 'tte_outcome',
     title: '5. Outcome',
     hint: 'What is the primary outcome and how would it be measured in the ideal trial? Be specific about measurement method, timing, and how missing outcomes would be handled. Consider whether your outcome is binary, continuous, or time-to-event.',
-    placeholder: 'e.g. Binary: any reconviction within 12 months of programme exit, measured via Police National Computer records',
+    placeholder: 'e.g. Binary: any recorded instance within 12 months of programme exit, from the administrative record',
   },
   {
     id: 'tte_contrast',
