@@ -15,23 +15,35 @@
 # depend on it Unknown. Where not-yet-established is a real answer it appears explicitly
 # (e.g. `untested`), and rules treat it as a condition to discharge, not as a pass.
 
-spec_version: 1.1.0
+spec_version: 1.2.0
 
 questions:
 
   # ── Shared intake ──────────────────────────────────────────────────────────
 
+  # A scope gate, not a taxonomy. The earlier version asked the user to sort their
+  # question into describe / predict / causal, which asked them to classify before they
+  # had the vocabulary to, and wrongly implied that descriptive questions are qualitative
+  # and causal ones quantitative. Both are false: the question-typing taxonomies each
+  # carry their own categories, and impact evaluation runs through counterfactual and
+  # theory-based methods alike. So this asks only whether the question is in scope, and
+  # sends anyone unsure to the tool that exists to settle it.
   - id: claim_type
     establishable: ex_ante
-    text: What kind of claim do you need to make?
+    text: >-
+      Is your research question a causal one — establishing what effect an intervention or
+      policy caused?
     hint: >-
-      This decides which part of the tool applies. Only causal claims need a counterfactual
-      design; description and prediction have their own, different standards.
+      This tool covers impact evaluation: establishing what effect was caused by an
+      intervention or policy. That can be approached with counterfactual designs or with
+      theory-based ones, and both are covered here. Questions that are not causal — what is
+      happening, who is likely to be affected, how delivery worked — need different methods
+      and different standards.
     intake: true
     options:
-      - { value: describe, label: 'Describe what is happening, or who is affected' }
-      - { value: predict,  label: Predict who is likely to experience an outcome }
-      - { value: causal,   label: Establish whether an intervention caused a change }
+      - { value: causal, label: 'Yes — establishing what effect an intervention or policy caused' }
+      - { value: other,  label: 'No — my question is about something else' }
+      - { value: unsure, label: 'Not sure — help me work out what kind of question this is', not_established: true }
     references: [magenta_book]
 
   - id: intervention_defined
@@ -72,6 +84,43 @@ questions:
       - { value: 'yes',     label: Yes — stable and at scale }
       - { value: partial, label: Partly — scaling or still changing }
       - { value: 'no',      label: No — early or small-scale }
+    references: [magenta_book]
+
+  # Delivery fidelity. Not a gate: an intervention delivered inconsistently can still be
+  # evaluated, but what is being estimated is the effect of a varying bundle rather than of
+  # a single thing, and that has to be said rather than discovered afterwards.
+  - id: delivery_consistency
+    establishable: ex_ante
+    text: Is the intervention delivered consistently across sites and practitioners?
+    hint: >-
+      Where delivery varies, an impact estimate is an average over whatever was actually
+      delivered. That can still be the right quantity — but it is a different claim from
+      the effect of the intervention as specified.
+    intake: true
+    options:
+      - { value: 'yes',   label: Yes — established and documented }
+      - { value: unsure, label: Unsure — not yet established, not_established: true }
+      - { value: 'no',    label: 'No' }
+    references: [magenta_book]
+
+  # Practical constraint. Deliberately kept OUT of every verdict: the ladder ranks designs
+  # by the assumption that makes their comparison valid, and letting a budget or a deadline
+  # reorder that is the compensatory trade-off the redesign exists to remove. It shapes
+  # where to spend effort, which is advice, not feasibility.
+  - id: primary_constraint
+    establishable: ex_ante
+    text: What is your most significant practical constraint?
+    hint: >-
+      This never rules a design in or out — a tight deadline does not make a weaker design
+      more valid. It is used only to say where the effort identified by the open questions
+      is best spent first.
+    intake: true
+    options:
+      - { value: time,   label: Time — a decision is needed quickly }
+      - { value: data,   label: Data — limited access or coverage }
+      - { value: budget, label: Resources — limited evaluation budget }
+      - { value: ethics, label: Ethics — concerns about withholding the intervention }
+      - { value: unsure, label: Not yet established, not_established: true }
     references: [magenta_book]
 
   - id: prospective

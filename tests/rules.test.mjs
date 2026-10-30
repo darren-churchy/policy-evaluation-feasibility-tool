@@ -166,7 +166,8 @@ describe('no question feeds nothing', () => {
   // scored on 23. Any question that reaches no rule is burden without purpose.
   //
   // A question counts as consumed if it reaches a rule test, a gating condition, a
-  // readiness gate, the stage inference, or a routing rule.
+  // readiness gate, the stage inference, a routing rule, an advisory guidance note, or the
+  // statistics module.
 
   it('consumes every question', () => {
     const stages = parse(read('stages.yaml'))
@@ -177,6 +178,7 @@ describe('no question feeds nothing', () => {
     for (const r of stages.readiness) { consumed.add(r.question); varsIn(r.fires_when).forEach(v => consumed.add(v)) }
     for (const r of stages.inference) varsIn(r.when).forEach(v => consumed.add(v))
     for (const r of stages.routing) varsIn(r.when).forEach(v => consumed.add(v))
+    for (const g of stages.guidance ?? []) consumed.add(g.question)
 
     const statistics = parse(read('statistics.yaml'))
     for (const q of statistics.shared_questions) consumed.add(q)

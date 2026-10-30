@@ -1,6 +1,6 @@
 # Reviewer pack
 
-**Specification version 1.1.0**
+**Specification version 1.2.0**
 
 Generated from `spec/` by `npm run pack`. Do not edit — edit the specification and
 regenerate. `npm run pack:check` fails if this file has drifted from the spec.
@@ -31,7 +31,7 @@ Four things are worth knowing before reading:
 | | Count |
 |---|---|
 | Designs | 22 (19 on the ladder, 3 theory-based) |
-| Questions | 63 |
+| Questions | 65 |
 | — needing the data in hand | 6 |
 | Checks | 134 |
 | — blockers | 53 |
@@ -97,6 +97,8 @@ the question yet, whatever the data situation.
 | intervention_specified | `intervention_defined` | **gate** | intervention_defined is “No” | The intervention is not yet specified, so an observed change could not be attributed to it rather than to variation in what was delivered. No impact evaluation design resolves this. | Document what the intervention consists of, who delivers it and at what intensity. A process evaluation can describe and standardise delivery first. |
 | theory_articulated | `theory_of_change` | **gate** | theory_of_change is “No” | With no theory of change there is nothing to say which outcomes should move, over what period, or how a result should be read. The evaluation would have no stated expectation to test. | Develop a logic model with delivery staff and stakeholders. A developmental evaluation can support this while the intervention is still forming. |
 | sufficient_maturity | `maturity` | **warning** | maturity is “No — early or small-scale” | The intervention is early or small-scale, so an evaluation now would largely measure its immaturity rather than its effect. | Consider a process or developmental evaluation while delivery stabilises. Where a specific component is already settled, a Test-stage evaluation of that component may still be worthwhile. |
+| delivery_consistent | `delivery_consistency` | **warning** | delivery_consistency is “No” | Delivery varies across sites or practitioners, so an impact estimate would be an average over what was actually delivered rather than the effect of the intervention as specified. | Evaluation is still possible — say in the protocol that the estimand is the effect of the intervention as delivered, and consider a process evaluation alongside it to describe the variation. Where the variation is itself the question, a Test-stage evaluation of a settled component may be the better design. |
+| delivery_consistency_unchecked | `delivery_consistency` | **warning** | delivery_consistency is “Unsure — not yet established” | Whether delivery is consistent has not been established, so what an impact estimate would be an average over is not yet known. | Check delivery records, or speak to the people delivering the intervention, before settling the estimand. This can be established now — it does not need the outcome data. |
 
 ## Stage inference
 
@@ -617,10 +619,12 @@ so a figure produced here cannot change any verdict. Enforced by test.
 
 | Question | Asked | Options | Read by |
 |---|---|---|---|
-| **What kind of claim do you need to make?**<br>`claim_type` | always | Describe what is happening, or who is affected · Predict who is likely to experience an outcome · Establish whether an intervention caused a change | readiness / routing only |
+| **Is your research question a causal one — establishing what effect an intervention or policy caused?**<br>`claim_type` | always | Yes — establishing what effect an intervention or policy caused · No — my question is about something else · Not sure — help me work out what kind of question this is | readiness / routing only |
 | **Is the intervention clearly defined and documented?**<br>`intervention_defined` | always | Yes — specified and documented · Partly — being developed · No | readiness / routing only |
 | **Does a theory of change or logic model exist?**<br>`theory_of_change` | always | Yes — documented · Partly — in development · No | 2 designs |
 | **Is the intervention operating at sufficient scale and maturity?**<br>`maturity` | always | Yes — stable and at scale · Partly — scaling or still changing · No — early or small-scale | readiness / routing only |
+| **Is the intervention delivered consistently across sites and practitioners?**<br>`delivery_consistency` | always | Yes — established and documented · Unsure — not yet established · No | readiness / routing only |
+| **What is your most significant practical constraint?**<br>`primary_constraint` | always | Time — a decision is needed quickly · Data — limited access or coverage · Resources — limited evaluation budget · Ethics — concerns about withholding the intervention · Not yet established | readiness / routing only |
 | **Can the evaluation be planned before the intervention reaches participants?**<br>`prospective` | always | Yes — the evaluation can be designed in advance · No — the intervention has already been delivered or allocated | 6 designs |
 | **What barriers are there to randomising who receives the intervention?**<br>`randomisation_barriers` | always | None identified · Some, likely addressable by design adaptation · Significant · Randomisation is ruled out | 2 designs |
 | **What is the natural unit of allocation?**<br>`allocation_unit` | always | Individual people · Groups — sites, teams, areas or caseloads · Either is possible | 2 designs |

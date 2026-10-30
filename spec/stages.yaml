@@ -17,7 +17,7 @@
 # Stage labels are published Magenta Book vocabulary and are kept as references. Each
 # carries a gloss so the label does not require prior familiarity to read.
 
-spec_version: 1.0.0
+spec_version: 1.2.0
 
 stages:
   - id: explore
@@ -97,6 +97,36 @@ readiness:
       still be worthwhile.
     citations: [magenta_book]
 
+  - id: delivery_consistent
+    question: delivery_consistency
+    severity: warning
+    fires_when:
+      '==': [{ var: delivery_consistency }, 'no']
+    message: >-
+      Delivery varies across sites or practitioners, so an impact estimate would be an
+      average over what was actually delivered rather than the effect of the intervention
+      as specified.
+    redirect: >-
+      Evaluation is still possible — say in the protocol that the estimand is the effect of
+      the intervention as delivered, and consider a process evaluation alongside it to
+      describe the variation. Where the variation is itself the question, a Test-stage
+      evaluation of a settled component may be the better design.
+    citations: [magenta_book]
+
+  - id: delivery_consistency_unchecked
+    question: delivery_consistency
+    severity: warning
+    fires_when:
+      '==': [{ var: delivery_consistency }, unsure]
+    message: >-
+      Whether delivery is consistent has not been established, so what an impact estimate
+      would be an average over is not yet known.
+    redirect: >-
+      Check delivery records, or speak to the people delivering the intervention, before
+      settling the estimand. This can be established now — it does not need the outcome
+      data.
+    citations: [magenta_book]
+
 # ── Stage inference ──────────────────────────────────────────────────────────
 #
 # Ordered; the first matching rule wins. The two gates are checked before maturity, since
@@ -156,49 +186,106 @@ inference:
 # question answered in one tool is never asked again in another.
 
 routing:
-  - from: research_question_framework
-    to: quant_tree
-    when:
-      '==': [{ var: claim_type }, predict]
-    note: >-
-      Prediction questions are answered by modelling who is likely to experience an outcome.
-      They do not need a counterfactual and do not belong on the ladder.
-    citations: [magenta_book]
-
-  - from: research_question_framework
-    to: qual_tree
-    when:
-      '==': [{ var: claim_type }, describe]
-    note: >-
-      Descriptive and contextual questions are served by the qualitative strand. Sending
-      them to a counterfactual design would answer a question that was not asked.
-    citations: [magenta_book]
-
-  - from: research_question_framework
-    to: design_finder
+  # The scope gate. `claim_type` decides whether the tool applies at all — it is not a
+  # classification of the question, which is what the question-typing tool is for.
+  - from: landing
+    to: assessment
     when:
       '==': [{ var: claim_type }, causal]
     note: >-
-      Causal claims need a counterfactual design. The Design Finder runs the same engine
-      over a minimal question set as a quick screen.
-    citations: [whatworks_sms]
+      Causal questions are what this tool assesses. The assessment opens with a short
+      screen that rules designs in and out before asking anything design-specific.
+    citations: [magenta_book]
 
-  - from: design_finder
+  - from: landing
+    to: question_typing
+    when:
+      '==': [{ var: claim_type }, unsure]
+    note: >-
+      Where it is not yet settled whether the question is causal, the question-typing tool
+      establishes that first. It covers quantitative question types — description,
+      prediction, causal inference — and qualitative ones separately, because the two are
+      not alternatives to each other.
+    citations: [magenta_book]
+
+  - from: landing
+    to: question_typing
+    when:
+      '==': [{ var: claim_type }, other]
+    note: >-
+      A question that is not causal is outside what this tool assesses. The question-typing
+      tool points to the methods that do address it, rather than leaving the user at a dead
+      end.
+    citations: [magenta_book]
+
+  - from: question_typing
+    to: assessment
+    when:
+      '==': [{ var: claim_type }, causal]
+    note: >-
+      Where the question turns out to be causal after all, the assessment applies and every
+      answer already given carries over.
+
+  - from: screening
     to: full_assessment
     note: >-
-      Continuing to the full assessment keeps every answer already given and asks only what
-      the remaining rungs require.
-
-  - from: quant_tree
-    to: design_finder
-    when:
-      '==': [{ var: claim_type }, causal]
-    note: >-
-      Where the tree establishes that the question is causal after all, the ladder applies.
+      Continuing past the screen keeps every answer already given and asks only what the
+      remaining rungs require. The screen is a stopping point, not a separate assessment.
 
   - from: readiness_gate
-    to: qual_tree
+    to: theory_based_strand
     note: >-
-      Where a readiness gate fires, the useful next step is the theory-based and qualitative
-      strand — process, developmental or contribution work — not a counterfactual design.
+      Where a readiness gate fires, the useful next step is process, developmental or
+      contribution work — not a counterfactual design. Impact evaluation is not only
+      counterfactual, so this is a redirect within the field rather than out of it.
     citations: [magenta_book, mayne_2001]
+
+# ── Guidance ─────────────────────────────────────────────────────────────────
+#
+# Advisory only, and structurally unable to be anything else: the engine returns this
+# alongside the verdicts and never reads it when reaching one. A practical constraint
+# shapes where to spend effort; it must never shape what counts as a valid comparison,
+# which is the compensatory trade-off the ladder replaced.
+#
+# A test asserts that every design verdict, the ladder and the recommendation are identical
+# whatever is answered here.
+
+guidance:
+  - question: primary_constraint
+    when: time
+    note: >-
+      Where the deadline binds, the question that usually decides everything is whether
+      outcome data from before the intervention already exists — collecting it is what
+      takes the time, not the analysis. Settle that before narrowing the design.
+
+  - question: primary_constraint
+    when: data
+    note: >-
+      Establish what can actually be obtained and linked before narrowing the design. The
+      higher rungs are more often ruled out by data access and linkage than by anything
+      methodological, and that is worth finding out early rather than after a design has
+      been committed to.
+
+  - question: primary_constraint
+    when: budget
+    note: >-
+      Cost sits in primary data collection and length of follow-up, not in the estimator —
+      a design on the higher rungs is rarely more expensive to analyse. Designs reusing
+      existing administrative data cost least, so establishing what is already collected is
+      where the saving is.
+
+  - question: primary_constraint
+    when: ethics
+    note: >-
+      Where the concern is withholding the intervention, designs in which everyone
+      eventually receives it — phased rollout, waitlist, encouragement rather than
+      assignment — keep randomisation available without denying anyone treatment. The prior
+      question is equipoise: if the intervention is already known to work, randomising is
+      the harder thing to justify, and if it is not, withholding is not withholding a known
+      benefit.
+
+  - question: primary_constraint
+    when: unsure
+    note: >-
+      Worth settling, because it decides where the effort identified by the open questions
+      is best spent first. It never changes which designs are valid.

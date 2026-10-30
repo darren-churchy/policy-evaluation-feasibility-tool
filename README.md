@@ -113,7 +113,7 @@ npm run dev          # http://localhost:5173/
 spec/                     The methodology, in reviewer-editable files
   tiers.yaml                Five robustness tiers; contested placements
   designs.csv              22 designs, one row each (not per estimator)
-  questions.yaml           63 questions — the single source of wording
+  questions.yaml           65 questions — the single source of wording
   rules.yaml               Per design: blockers, conditions, warnings
   stages.yaml              Stage vocabulary, readiness gates, routing
   statistics.yaml          Frequentist and Bayesian question sets
@@ -135,7 +135,7 @@ src/
 
 reviewer-pack/            The specification rendered for a methods reviewer
 scripts/                  Validation, spec bundle, reviewer pack, CSS
-tests/                    296 tests
+tests/                    312 tests
 docs/                     Redesign plan; Bayesian sample-size research
 ```
 
@@ -153,7 +153,7 @@ question that does not exist, and — the subtle one — a rule comparing a ques
 option value it does not offer. That last case would make a blocker silently never fire,
 which surfaces as a design looking feasible when it has simply never been checked.
 
-**Every question is consumed.** All 63 reach a rule, a gate, a route or the statistics
+**Every question is consumed.** All 65 reach a rule, a gate, a route or the statistics
 module, asserted by test. The previous tool collected 80 inputs and scored on 23.
 
 **The tool assesses prospective feasibility.** Some things cannot honestly be established

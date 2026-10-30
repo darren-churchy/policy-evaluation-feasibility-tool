@@ -231,6 +231,18 @@ function checkReferences(parsed, errors) {
       }
     })
 
+    // Guidance is advisory, but a typo'd option value makes a note silently never show —
+    // the same class of failure as a blocker that never fires.
+    ;(stages.guidance ?? []).forEach((entry, i) => {
+      const line = lineFor(sdoc, ssrc, ['guidance', i])
+      const opts = optionsByQuestion.get(entry.question)
+      if (!opts) {
+        errors.push({ file: 'stages.yaml', line, message: `guidance reads "${entry.question}", which is not a question` })
+      } else if (!opts.has(String(entry.when))) {
+        errors.push({ file: 'stages.yaml', line, message: `guidance on ${entry.question} fires when "${entry.when}", which is not one of its options (${[...opts].join(', ')})` })
+      }
+    })
+
     ;(stages.routing ?? []).forEach((route, i) => {
       const line = lineFor(sdoc, ssrc, ['routing', i])
       for (const v of collectVars(route.when)) {

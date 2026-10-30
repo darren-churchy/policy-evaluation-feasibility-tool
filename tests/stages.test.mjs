@@ -166,19 +166,26 @@ describe('stages.yaml — tool routing', () => {
     }
   })
 
-  it('sends causal questions to the ladder and the others away from it', () => {
-    const to = value => stages.routing.find(
-      r => r.when && JSON.stringify(r.when).includes(`"${value}"`),
-    )?.to
-    expect(to('causal')).toBe('design_finder')
-    expect(to('describe')).toBe('qual_tree')
-    expect(to('predict')).toBe('quant_tree')
+  // claim_type is a scope gate, not a classification: it decides whether the tool applies,
+  // and anyone who cannot answer it is sent to the tool that settles the question rather
+  // than asked to guess.
+  it('sends causal questions to the assessment and everything else to question typing', () => {
+    const destinations = value => stages.routing
+      .filter(r => r.when && JSON.stringify(r.when).includes(`"${value}"`))
+      .map(r => r.to)
+
+    expect(destinations('causal')).toContain('assessment')
+    for (const value of ['other', 'unsure']) {
+      expect(destinations(value)).toContain('question_typing')
+      expect(destinations(value), `"${value}" must not reach the assessment`)
+        .not.toContain('assessment')
+    }
   })
 
   it('sends a fired readiness gate to the theory-based strand, not to a counterfactual design', () => {
     const route = stages.routing.find(r => r.from === 'readiness_gate')
     expect(route, 'a fired gate needs somewhere to go').toBeDefined()
-    expect(route.to).toBe('qual_tree')
+    expect(route.to).toBe('theory_based_strand')
   })
 
   it('states a reason for every route', () => {

@@ -1,6 +1,6 @@
 # Target architecture
 
-**Status: proposed. No code has changed.** This is the shape the app takes once phases 4
+**Status: §2 and §7 are settled and implemented in `spec/`. The rest is proposed.** This is the shape the app takes once phases 4
 and 5 complete, and the decisions it needs. Read alongside
 [`REDESIGN_PLAN.md`](REDESIGN_PLAN.md) (what the redesign is doing) and
 [`ID_MAPPING.md`](ID_MAPPING.md) (the question-vocabulary audit it depends on).
@@ -28,40 +28,51 @@ assessment flow.** It belongs on the landing page, in a guide, or in the notes a
 
 ---
 
-## 2. The router is `claim_type`, not "how early are you?"
+## 2. The router is a scope gate, not a classification
 
-A routing question at the front is right. The one to use already exists.
+**Corrected.** The first version of this document, and the `routing` block in
+`spec/stages.yaml` it was based on, routed `claim_type: describe` to the qualitative
+strand and `predict` to the quantitative tree. That was wrong twice over:
 
-`spec/stages.yaml` has carried a `routing` block since phase 2 that **nothing in the UI
-reads**:
+- **It confused a quantitative descriptive question with qualitative research.** The two
+  taxonomies in `questionFrameworkData.js` each carry their own categories —
+  `quantData` has Description, Prediction and Causal Inference; `qualData` has six of its
+  own, including *Evaluative — Impact*. "What is the prevalence?" is a quantitative
+  descriptive question, not a qualitative one, and qualitative impact work exists.
+- **It implied impact evaluation is only counterfactual.** The design register carries a
+  theory-based strand precisely because it is not.
 
-```
-research_question_framework → quant_tree       when claim_type = predict
-research_question_framework → qual_tree        when claim_type = describe
-research_question_framework → design_finder    when claim_type = causal
-design_finder → full_assessment    "keeps every answer already given and asks only
-                                    what the remaining rungs require"
-readiness_gate → qual_tree
-```
+Those three categories are how quantitative research questions are typed. They are not a
+map of qualitative research, impact evaluation and prediction onto three tools.
 
-The Design Finder route's own note reads: *"runs the same engine over a minimal question
-set as a quick screen."* The architecture below is largely that block, built.
+### What it asks instead
 
-**Why `claim_type` rather than a self-reported stage:**
+`claim_type` now asks only whether the tool applies:
 
-1. **Self-reported stage does not map onto what the tool needs.** Someone with a fully
-   specified intervention and no data access is late in policy terms and early in
-   evaluation terms. They would route themselves wrongly, and the tool cannot detect it.
-2. **It would recreate two flows** — a short path and a long path that can disagree. That
-   is the defect the redesign exists to remove.
-3. **`claim_type` is the question that actually discriminates.** "Describe" and "predict"
-   do not need a counterfactual, so they should never reach the ladder at all. Routing on
-   it is what lets the trees stop competing for landing-page space: they become
-   destinations for non-causal questions rather than parallel tools.
+> Is your research question a causal one — establishing what effect an intervention or
+> policy caused?
+>
+> This tool covers impact evaluation: establishing what effect was caused by an
+> intervention or policy. That can be approached with counterfactual designs or with
+> theory-based ones, and both are covered here.
 
-`claim_type` is already an intake question, already consumed, already validated.
+| Answer | Route |
+|---|---|
+| **Yes** — establishing what effect an intervention or policy caused | the assessment |
+| **No** — my question is about something else | question-typing tool, which points to the methods that do address it |
+| **Not sure** | question-typing tool, then back to the assessment if it turns out to be causal |
 
----
+`unsure` carries `not_established: true`, consistent with the rest of the specification:
+not having settled what kind of question you have is a real answer, and the tool's response
+is to help settle it rather than to make the user guess.
+
+**This is a scope gate, not a taxonomy.** Classifying the question is what the
+question-typing tool is for, and asking the user to do it at the front door asks them to
+classify before they have the vocabulary to. The tools become the destination for anyone
+who cannot answer the gate — not three parallel entrances.
+
+Tests assert that a non-causal answer never reaches the assessment, that `unsure` routes to
+question typing, and that no route keys on `describe` or `predict` any more.
 
 ## 3. The Design Finder becomes the ladder's screening checkpoint
 
@@ -199,20 +210,57 @@ the user's reasoning, which is what a reviewer actually reads.
 
 ---
 
-## 7. Open decisions
+## 7. Decisions
 
-| # | Decision | Why it matters |
+| # | Decision | Status |
 |---|---|---|
-| 1 | **Confirm `claim_type` as the router** rather than a self-reported stage | Everything in §2–4 follows from it |
-| 2 | **`q_constraint`** — time / data / budget / ethics. Add to the spec, or drop? | The only question asking *why* feasibility is limited rather than *whether*. For a tool whose purpose is "where should effort go", the binding constraint seems worth keeping. **Recommend: add** |
-| 3 | **Add `p3_consistent`, `p6_linkage`, `p6_missing`** to the spec (`ID_MAPPING.md` §6) | **Blocks retiring the sections** — these have no home otherwise |
-| 4 | Where does the screening checkpoint fall — after 14 questions, or when the agenda stops containing intake/structural questions? | A fixed list is predictable; a derived one cannot drift. **Recommend: derived, from `establishable` and blocker coverage** |
-| 5 | Does the screening report differ from the full report, or is it the same document with less filled in? | **Recommend: the same document.** It already handles the "nothing feasible yet" case |
-| 6 | App version on switchover | The plan flagged phase 5 as where 0.8.0 vs 1.0.0 becomes answerable. The ladder becoming the main tool is **0.8.0 at minimum** |
+| 1 | The router | **Settled — scope gate** (§2). `claim_type` reframed, routing rewritten, old mapping removed |
+| 2 | `q_constraint` | **Settled — add.** Now `primary_constraint`, and structurally unable to change a verdict (below) |
+| 3 | The three missing questions | **Partly settled.** `delivery_consistency` added; `p6_linkage` and `p6_missing` open (below) |
+| 4 | Screening checkpoint | **Settled — derived**, from `establishable` and blocker coverage, so it cannot drift |
+| 5 | Screening report | **Settled — the full report**, which already handles "nothing feasible yet". Revisit later |
+| 6 | App version | **Settled — 0.8.0**, applied at switchover, not before |
 
-Decisions 1 and 3 gate the rest.
+### `primary_constraint` — advice, never feasibility
 
----
+Time, data, budget or ethics. The original Design Finder used it to reorder the shortlist.
+That is exactly the compensatory trade-off the ladder replaced: a deadline does not make a
+weaker design more valid, and because cost and speed both favour the lower rungs, a
+constraint that reordered anything would reorder it downwards.
+
+So it is returned as advisory guidance keyed to the answer, in a `guidance` block the
+engine reads only after every verdict is settled. Tests assert that the designs, the
+ladder, the recommendation and the question agenda are **byte-identical** whatever is
+answered, and that no design rule mentions it at all — the same isolation the context packs
+and the ready-reckoner already carry.
+
+### `delivery_consistency` — added
+
+Asked after `maturity`, as a readiness **warning** rather than a gate, with two notes: one
+for inconsistent delivery, one for not having checked. Inconsistent delivery does not make
+evaluation impossible — it changes what the estimand means, from the effect of the
+intervention as specified to its effect as delivered. That has to be stated in the protocol
+rather than discovered afterwards, which is a warning's job, not a gate's.
+
+### Still open: the data-sources guide, `p6_linkage` and `p6_missing`
+
+**The guide: yes.** A place to map out data sources — names, owners, access routes,
+coverage, dates — is genuinely notes. It produces nothing the engine reads, and it is the
+kind of thing a reviewer wants to see. It belongs with the Ideal Trial and DAG guides.
+
+**But the two questions should not move into it**, for different reasons:
+
+- **`p6_linkage`** — whether the exposure and the outcome can be linked at individual
+  level — is a **hard structural constraint, not a note**. If they cannot be linked, every
+  individual-level design is impossible and only aggregate approaches remain. That is a
+  blocker, and a blocker has to be a ladder question. **Recommend: add to the question
+  bank**, with rules.
+- **`p6_missing`** — expected missing data in the primary outcome — sits next to
+  `expected_attrition`, which already lives in the statistics module. Missingness in a
+  measure is not the same as loss to follow-up, so it should not be merged into it, but it
+  belongs in the same place. **Recommend: add to the statistics module.**
+
+Both need a rules pass and a spec-version bump, so they are flagged rather than done.
 
 ## 8. Sequencing
 

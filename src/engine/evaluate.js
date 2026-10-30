@@ -216,6 +216,24 @@ function activeRoutes(answers, stagesSpec) {
 }
 
 /**
+ * Advisory guidance keyed to an answer — where to spend effort, given a stated practical
+ * constraint.
+ *
+ * Returned alongside the verdicts and never consulted in reaching one. A deadline or a
+ * budget must not make a weaker design more valid, which is the compensatory trade-off the
+ * ladder replaced; keeping this in its own function, called after everything else is
+ * decided, is what makes that structural rather than a matter of care.
+ */
+function activeGuidance(answers, stagesSpec) {
+  return (stagesSpec.guidance ?? [])
+    .filter(entry => {
+      const value = answers?.[entry.question]
+      return value !== undefined && value !== null && value !== '' && String(value) === String(entry.when)
+    })
+    .map(entry => ({ question: entry.question, note: entry.note, citations: entry.citations ?? [] }))
+}
+
+/**
  * @param {object} answers  flat map of question id -> answer value
  * @param {object} spec     { tiers, designs, questions, rules, stages }
  */
@@ -367,5 +385,6 @@ export function evaluate(answers = {}, spec) {
     ),
     agenda: buildAgenda(answers, questions, assessed, readiness),
     routes: activeRoutes(answers, stagesSpec),
+    guidance: activeGuidance(answers, stagesSpec),
   }
 }

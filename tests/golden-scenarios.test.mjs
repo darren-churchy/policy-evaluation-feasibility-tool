@@ -280,7 +280,7 @@ describe('Scenario 6 — intervention not defined', () => {
   it('routes to process or developmental work rather than to a counterfactual design', () => {
     const gate = r.readiness.gates.find(g => g.id === 'intervention_specified')
     expect(gate.redirect).toMatch(/process evaluation/i)
-    expect(r.routes.some(route => route.from === 'readiness_gate' && route.to === 'qual_tree')).toBe(true)
+    expect(r.routes.some(route => route.from === 'readiness_gate' && route.to === 'theory_based_strand')).toBe(true)
   })
 })
 

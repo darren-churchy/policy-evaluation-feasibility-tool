@@ -1,6 +1,6 @@
 {
   "tiers": {
-    "spec_version": "1.1.0",
+    "spec_version": "1.2.0",
     "tiers": [
       {
         "id": 1,
@@ -466,21 +466,22 @@
     {
       "id": "claim_type",
       "establishable": "ex_ante",
-      "text": "What kind of claim do you need to make?",
-      "hint": "This decides which part of the tool applies. Only causal claims need a counterfactual design; description and prediction have their own, different standards.",
+      "text": "Is your research question a causal one — establishing what effect an intervention or policy caused?",
+      "hint": "This tool covers impact evaluation: establishing what effect was caused by an intervention or policy. That can be approached with counterfactual designs or with theory-based ones, and both are covered here. Questions that are not causal — what is happening, who is likely to be affected, how delivery worked — need different methods and different standards.",
       "intake": true,
       "options": [
         {
-          "value": "describe",
-          "label": "Describe what is happening, or who is affected"
-        },
-        {
-          "value": "predict",
-          "label": "Predict who is likely to experience an outcome"
-        },
-        {
           "value": "causal",
-          "label": "Establish whether an intervention caused a change"
+          "label": "Yes — establishing what effect an intervention or policy caused"
+        },
+        {
+          "value": "other",
+          "label": "No — my question is about something else"
+        },
+        {
+          "value": "unsure",
+          "label": "Not sure — help me work out what kind of question this is",
+          "not_established": true
         }
       ],
       "references": [
@@ -555,6 +556,64 @@
         {
           "value": "no",
           "label": "No — early or small-scale"
+        }
+      ],
+      "references": [
+        "magenta_book"
+      ]
+    },
+    {
+      "id": "delivery_consistency",
+      "establishable": "ex_ante",
+      "text": "Is the intervention delivered consistently across sites and practitioners?",
+      "hint": "Where delivery varies, an impact estimate is an average over whatever was actually delivered. That can still be the right quantity — but it is a different claim from the effect of the intervention as specified.",
+      "intake": true,
+      "options": [
+        {
+          "value": "yes",
+          "label": "Yes — established and documented"
+        },
+        {
+          "value": "unsure",
+          "label": "Unsure — not yet established",
+          "not_established": true
+        },
+        {
+          "value": "no",
+          "label": "No"
+        }
+      ],
+      "references": [
+        "magenta_book"
+      ]
+    },
+    {
+      "id": "primary_constraint",
+      "establishable": "ex_ante",
+      "text": "What is your most significant practical constraint?",
+      "hint": "This never rules a design in or out — a tight deadline does not make a weaker design more valid. It is used only to say where the effort identified by the open questions is best spent first.",
+      "intake": true,
+      "options": [
+        {
+          "value": "time",
+          "label": "Time — a decision is needed quickly"
+        },
+        {
+          "value": "data",
+          "label": "Data — limited access or coverage"
+        },
+        {
+          "value": "budget",
+          "label": "Resources — limited evaluation budget"
+        },
+        {
+          "value": "ethics",
+          "label": "Ethics — concerns about withholding the intervention"
+        },
+        {
+          "value": "unsure",
+          "label": "Not yet established",
+          "not_established": true
         }
       ],
       "references": [
@@ -4739,7 +4798,7 @@
     }
   },
   "stages": {
-    "spec_version": "1.0.0",
+    "spec_version": "1.2.0",
     "stages": [
       {
         "id": "explore",
@@ -4827,6 +4886,42 @@
         },
         "message": "The intervention is early or small-scale, so an evaluation now would largely measure its immaturity rather than its effect.",
         "redirect": "Consider a process or developmental evaluation while delivery stabilises. Where a specific component is already settled, a Test-stage evaluation of that component may still be worthwhile.",
+        "citations": [
+          "magenta_book"
+        ]
+      },
+      {
+        "id": "delivery_consistent",
+        "question": "delivery_consistency",
+        "severity": "warning",
+        "fires_when": {
+          "==": [
+            {
+              "var": "delivery_consistency"
+            },
+            "no"
+          ]
+        },
+        "message": "Delivery varies across sites or practitioners, so an impact estimate would be an average over what was actually delivered rather than the effect of the intervention as specified.",
+        "redirect": "Evaluation is still possible — say in the protocol that the estimand is the effect of the intervention as delivered, and consider a process evaluation alongside it to describe the variation. Where the variation is itself the question, a Test-stage evaluation of a settled component may be the better design.",
+        "citations": [
+          "magenta_book"
+        ]
+      },
+      {
+        "id": "delivery_consistency_unchecked",
+        "question": "delivery_consistency",
+        "severity": "warning",
+        "fires_when": {
+          "==": [
+            {
+              "var": "delivery_consistency"
+            },
+            "unsure"
+          ]
+        },
+        "message": "Whether delivery is consistent has not been established, so what an impact estimate would be an average over is not yet known.",
+        "redirect": "Check delivery records, or speak to the people delivering the intervention, before settling the estimand. This can be established now — it does not need the outcome data.",
         "citations": [
           "magenta_book"
         ]
@@ -4962,40 +5057,8 @@
     ],
     "routing": [
       {
-        "from": "research_question_framework",
-        "to": "quant_tree",
-        "when": {
-          "==": [
-            {
-              "var": "claim_type"
-            },
-            "predict"
-          ]
-        },
-        "note": "Prediction questions are answered by modelling who is likely to experience an outcome. They do not need a counterfactual and do not belong on the ladder.",
-        "citations": [
-          "magenta_book"
-        ]
-      },
-      {
-        "from": "research_question_framework",
-        "to": "qual_tree",
-        "when": {
-          "==": [
-            {
-              "var": "claim_type"
-            },
-            "describe"
-          ]
-        },
-        "note": "Descriptive and contextual questions are served by the qualitative strand. Sending them to a counterfactual design would answer a question that was not asked.",
-        "citations": [
-          "magenta_book"
-        ]
-      },
-      {
-        "from": "research_question_framework",
-        "to": "design_finder",
+        "from": "landing",
+        "to": "assessment",
         "when": {
           "==": [
             {
@@ -5004,37 +5067,96 @@
             "causal"
           ]
         },
-        "note": "Causal claims need a counterfactual design. The Design Finder runs the same engine over a minimal question set as a quick screen.",
+        "note": "Causal questions are what this tool assesses. The assessment opens with a short screen that rules designs in and out before asking anything design-specific.",
         "citations": [
-          "whatworks_sms"
+          "magenta_book"
         ]
       },
       {
-        "from": "design_finder",
+        "from": "landing",
+        "to": "question_typing",
+        "when": {
+          "==": [
+            {
+              "var": "claim_type"
+            },
+            "unsure"
+          ]
+        },
+        "note": "Where it is not yet settled whether the question is causal, the question-typing tool establishes that first. It covers quantitative question types — description, prediction, causal inference — and qualitative ones separately, because the two are not alternatives to each other.",
+        "citations": [
+          "magenta_book"
+        ]
+      },
+      {
+        "from": "landing",
+        "to": "question_typing",
+        "when": {
+          "==": [
+            {
+              "var": "claim_type"
+            },
+            "other"
+          ]
+        },
+        "note": "A question that is not causal is outside what this tool assesses. The question-typing tool points to the methods that do address it, rather than leaving the user at a dead end.",
+        "citations": [
+          "magenta_book"
+        ]
+      },
+      {
+        "from": "question_typing",
+        "to": "assessment",
+        "when": {
+          "==": [
+            {
+              "var": "claim_type"
+            },
+            "causal"
+          ]
+        },
+        "note": "Where the question turns out to be causal after all, the assessment applies and every answer already given carries over."
+      },
+      {
+        "from": "screening",
         "to": "full_assessment",
-        "note": "Continuing to the full assessment keeps every answer already given and asks only what the remaining rungs require."
-      },
-      {
-        "from": "quant_tree",
-        "to": "design_finder",
-        "when": {
-          "==": [
-            {
-              "var": "claim_type"
-            },
-            "causal"
-          ]
-        },
-        "note": "Where the tree establishes that the question is causal after all, the ladder applies."
+        "note": "Continuing past the screen keeps every answer already given and asks only what the remaining rungs require. The screen is a stopping point, not a separate assessment."
       },
       {
         "from": "readiness_gate",
-        "to": "qual_tree",
-        "note": "Where a readiness gate fires, the useful next step is the theory-based and qualitative strand — process, developmental or contribution work — not a counterfactual design.",
+        "to": "theory_based_strand",
+        "note": "Where a readiness gate fires, the useful next step is process, developmental or contribution work — not a counterfactual design. Impact evaluation is not only counterfactual, so this is a redirect within the field rather than out of it.",
         "citations": [
           "magenta_book",
           "mayne_2001"
         ]
+      }
+    ],
+    "guidance": [
+      {
+        "question": "primary_constraint",
+        "when": "time",
+        "note": "Where the deadline binds, the question that usually decides everything is whether outcome data from before the intervention already exists — collecting it is what takes the time, not the analysis. Settle that before narrowing the design."
+      },
+      {
+        "question": "primary_constraint",
+        "when": "data",
+        "note": "Establish what can actually be obtained and linked before narrowing the design. The higher rungs are more often ruled out by data access and linkage than by anything methodological, and that is worth finding out early rather than after a design has been committed to."
+      },
+      {
+        "question": "primary_constraint",
+        "when": "budget",
+        "note": "Cost sits in primary data collection and length of follow-up, not in the estimator — a design on the higher rungs is rarely more expensive to analyse. Designs reusing existing administrative data cost least, so establishing what is already collected is where the saving is."
+      },
+      {
+        "question": "primary_constraint",
+        "when": "ethics",
+        "note": "Where the concern is withholding the intervention, designs in which everyone eventually receives it — phased rollout, waitlist, encouragement rather than assignment — keep randomisation available without denying anyone treatment. The prior question is equipoise: if the intervention is already known to work, randomising is the harder thing to justify, and if it is not, withholding is not withholding a known benefit."
+      },
+      {
+        "question": "primary_constraint",
+        "when": "unsure",
+        "note": "Worth settling, because it decides where the effort identified by the open questions is best spent first. It never changes which designs are valid."
       }
     ]
   },

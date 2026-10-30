@@ -174,7 +174,7 @@ in phase 2. See `docs/REDESIGN_PLAN.md`.
 | `spec/tiers.yaml` | The five robustness tiers, the theory-based strand, contested placements | Seeded |
 | `spec/references.bib` | Every citation, with a confidence note | Seeded |
 | `spec/designs.csv` | One row per design (not per estimator) — 22 designs | Seeded |
-| `spec/questions.yaml` | Question bank shared by all tools — 63 questions | Seeded |
+| `spec/questions.yaml` | Question bank shared by all tools — 65 questions | Seeded |
 | `spec/rules.yaml` | Per design: blockers, conditions, warnings as JSON Logic — 130 checks | Seeded |
 | `spec/stages.yaml` | Stage vocabulary, readiness gates, routing | Seeded |
 | `spec/statistics.yaml` | NHST and Bayesian question sets — 10 questions and 6 tensions each | Seeded |
@@ -194,7 +194,7 @@ in phase 2. See `docs/REDESIGN_PLAN.md`.
 The option-value check is the subtle one: a typo'd value makes a blocker silently never
 fire, which surfaces as a design looking Feasible when it has simply never been checked.
 
-**Every question is consumed.** All 63 reach a rule test, a gating condition, a readiness
+**Every question is consumed.** All 65 reach a rule test, a gating condition, a readiness
 gate, the stage inference, a route or the statistics module — asserted by test. The previous tool collected 80
 inputs and scored on 23, so this is checked rather than assumed.
 
@@ -346,6 +346,30 @@ everything it renders. Both guards are mutation-verified.
 
 It carries the spec version as well as the app version, so a report can be traced to the
 rules that produced it.
+
+### Scope gate and advisory guidance
+
+`claim_type` is a **scope gate, not a classification**: it asks only whether the question
+is causal, with `unsure` routing to the question-typing tool rather than making the user
+guess. An earlier version routed `describe` to the qualitative strand and `predict` to the
+quantitative tree, which confused a quantitative descriptive question with qualitative
+research and implied impact evaluation is only counterfactual. Both are false — the two
+taxonomies in `questionFrameworkData.js` carry their own categories, and the design
+register has a theory-based strand. Tests assert no route keys on `describe` or `predict`.
+
+`spec/stages.yaml` also holds a **`guidance`** block: advisory notes keyed to an answer,
+currently for `primary_constraint` (time / data / budget / ethics). A practical constraint
+shapes where to spend effort and must never shape what counts as a valid comparison —
+letting a deadline reorder the ladder is the compensatory trade-off the redesign removed,
+and since cost and speed both favour the lower rungs it would reorder downwards.
+`activeGuidance()` runs after every verdict is settled, and `tests/guidance.test.mjs`
+asserts the designs, ladder, recommendation and agenda are byte-identical whatever is
+answered, and that no rule mentions it. The validator fails on guidance keyed to an option
+the question does not offer — mutation-verified.
+
+`delivery_consistency` is asked after `maturity` as a readiness **warning**, not a gate:
+inconsistent delivery changes what the estimand means — the effect as delivered rather than
+as specified — which has to be stated, not treated as disqualifying.
 
 ### The reviewer pack
 
