@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
-import DecisionTree, { TlBadge } from '../../ui/DecisionTree.jsx'
+import DecisionTree from '../../ui/DecisionTree.jsx'
+import StageTags from '../../ui/StageTags.jsx'
 import { tree, namedNodes, results } from '../../../data/qualTreeData.js'
 import { downloadToolResult } from '../../../utils/exportToolResult.js'
 import { hexToRgba } from '../../../utils/colorUtils.js'
@@ -36,7 +37,7 @@ function renderQualResult(key, reset, path) {
             <span style={{ display: 'inline-block', fontSize: '0.75rem', background: ab, color: r.color, padding: '0.2rem 0.6rem', border: `1px solid ${abo}` }}>{r.signal}</span>
             <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap', marginTop: '0.5rem', alignItems: 'center' }}>
               <span style={{ fontSize: '0.68rem', color: T.greyText }}>T&amp;L stage:</span>
-              {r.tlStages.map(s => <TlBadge key={s} stage={s} />)}
+              <StageTags positional={r.tlStages} />
             </div>
           </div>
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignSelf: 'flex-start' }}>

@@ -6741,5 +6741,430 @@
         ]
       }
     ]
+  },
+  "migration": {
+    "spec_version": "1.0.0",
+    "renamed": [
+      {
+        "from": "p3_defined",
+        "to": "intervention_defined"
+      },
+      {
+        "from": "q_defined",
+        "to": "intervention_defined"
+      },
+      {
+        "from": "p3_toc",
+        "to": "theory_of_change"
+      },
+      {
+        "from": "q_toc",
+        "to": "theory_of_change"
+      },
+      {
+        "from": "p3_scale",
+        "to": "maturity"
+      },
+      {
+        "from": "q_scale",
+        "to": "maturity"
+      },
+      {
+        "from": "p3_equipoise",
+        "to": "equipoise"
+      },
+      {
+        "from": "p1_prospective",
+        "to": "prospective",
+        "values": {
+          "yes": "yes",
+          "maybe": "maybe",
+          "no": "no"
+        },
+        "note": "`maybe` is retained rather than forced to a binary — it is the common case of a rollout already part way through. It does not fire the randomised blockers; it leaves them conditional, asking which component could still be allocated prospectively."
+      },
+      {
+        "from": "q_prospective",
+        "to": "prospective"
+      },
+      {
+        "from": "q_randomisation",
+        "to": "randomisation_barriers",
+        "values": {
+          "none": "none",
+          "partial": "some",
+          "high": "high"
+        }
+      },
+      {
+        "from": "q_comparison",
+        "to": "comparison_group"
+      },
+      {
+        "from": "q_stagger",
+        "to": "staggered_rollout"
+      },
+      {
+        "from": "q_threshold",
+        "to": "assignment_threshold"
+      },
+      {
+        "from": "q_instrument",
+        "to": "instrument_available"
+      },
+      {
+        "from": "q_covariates",
+        "to": "covariate_richness",
+        "values": {
+          "yes": "rich",
+          "partial": "partial",
+          "no": "sparse"
+        }
+      },
+      {
+        "from": "q_predata",
+        "to": "pre_periods",
+        "values": {
+          "many": "many",
+          "none": "none"
+        }
+      },
+      {
+        "from": "p7_predata",
+        "to": "pre_periods",
+        "values": {
+          "yes": "many",
+          "no": "none"
+        },
+        "note": "A yes/no answer cannot distinguish \"several periods\" from \"two\"; many is the honest reading of yes."
+      },
+      {
+        "from": "p7_pre_timepoints",
+        "to": "pre_periods",
+        "note": "A count, banded by the target. Where both are present the count is the better evidence."
+      },
+      {
+        "from": "p5_confounder_confidence",
+        "to": "confounders_measured"
+      },
+      {
+        "from": "p6_linkage",
+        "to": "record_linkage",
+        "values": {
+          "yes": "individual",
+          "no": "no"
+        },
+        "note": "The old question asked only about individual-level linkage, so it cannot express the group-level case the new one distinguishes. No answer maps to `group`."
+      },
+      {
+        "from": "p3_consistent",
+        "to": "delivery_consistency",
+        "values": {
+          "yes": "yes",
+          "partial": "unsure",
+          "no": "no"
+        }
+      },
+      {
+        "from": "p7_analysis",
+        "to": "analysis_approach",
+        "values": {
+          "freq": "nhst",
+          "bayes": "bayesian"
+        }
+      },
+      {
+        "from": "p7_attrition",
+        "to": "expected_attrition"
+      },
+      {
+        "from": "p6_missing",
+        "to": "outcome_missingness"
+      },
+      {
+        "from": "p7_bayes_prior",
+        "to": "bayes_prior_source",
+        "values": {
+          "strong": "evaluations",
+          "weak": "weak",
+          "none": "unstated"
+        }
+      },
+      {
+        "from": "p7_power_done",
+        "to": "nhst_alpha_power",
+        "values": {
+          "yes": "agreed",
+          "no": "not_set"
+        }
+      },
+      {
+        "from": "p7_freq_alpha",
+        "to": "nhst_alpha_power",
+        "note": "Merged with p7_power_done — the target asks whether both were agreed, not what alpha is."
+      },
+      {
+        "from": "p7_mde",
+        "to": "nhst_mde",
+        "note": "A number, banded by the target. A figure present means it was at least set."
+      },
+      {
+        "from": "p7_mde_unit",
+        "to": "nhst_mde",
+        "note": "Merged with p7_mde; the target is categorical and carries no unit."
+      }
+    ],
+    "split": [
+      {
+        "from": "screen_did",
+        "into": [
+          "comparison_group",
+          "pre_periods",
+          "parallel_trends_evidence"
+        ],
+        "asked": "a plausible comparison group **with** pre-intervention outcome data"
+      },
+      {
+        "from": "screen_rd",
+        "into": [
+          "assignment_threshold",
+          "threshold_enforced",
+          "density_near_cutoff"
+        ],
+        "asked": "a continuous assignment variable **with** a known eligibility threshold"
+      },
+      {
+        "from": "screen_iv",
+        "into": [
+          "instrument_available",
+          "instrument_strength",
+          "exclusion_restriction"
+        ],
+        "asked": "an instrument that shifts take-up **and** has no direct route to the outcome"
+      },
+      {
+        "from": "screen_its",
+        "into": [
+          "policy_date_known",
+          "time_points",
+          "autocorrelation_plan"
+        ],
+        "asked": "a clear intervention date **and** sufficient series either side"
+      },
+      {
+        "from": "screen_match",
+        "into": [
+          "covariate_richness",
+          "overlap"
+        ],
+        "asked": "rich covariate data, conflating what is measured with whether the groups resemble each other"
+      },
+      {
+        "from": "screen_gmethod",
+        "into": [
+          "time_varying_confounding",
+          "repeated_measures"
+        ],
+        "asked": "time-varying confounding, conflating the structure with the data needed to model it"
+      }
+    ],
+    "to_notes": [
+      {
+        "from": "p1_title",
+        "to": "project_title"
+      },
+      {
+        "from": "p1_overview",
+        "to": "project_overview"
+      },
+      {
+        "from": "p1_rq",
+        "to": "research_question"
+      },
+      {
+        "from": "p1_policy_decision",
+        "to": "policy_decision"
+      },
+      {
+        "from": "p1_deadline",
+        "to": "decision_deadline"
+      },
+      {
+        "from": "p1_toc",
+        "to": "question_toc_link",
+        "note": "Not the same question as theory_of_change. That asks whether a theory of change exists; this asks whether the research question addresses part of it — a coherence check, which changes no verdict."
+      },
+      {
+        "from": "p1_toc_detail",
+        "to": "question_toc_link"
+      },
+      {
+        "from": "p1_prospective_detail",
+        "to": "project_overview",
+        "note": "Where the retained `maybe` needs elaborating, it belongs with the description of the work."
+      },
+      {
+        "from": "tte_eligibility",
+        "to": "trial_eligibility"
+      },
+      {
+        "from": "tte_treatment",
+        "to": "trial_strategies"
+      },
+      {
+        "from": "tte_assignment",
+        "to": "trial_assignment"
+      },
+      {
+        "from": "tte_followup",
+        "to": "trial_followup"
+      },
+      {
+        "from": "tte_outcome",
+        "to": "trial_outcome"
+      },
+      {
+        "from": "tte_contrast",
+        "to": "trial_contrast"
+      },
+      {
+        "from": "tte_analysis",
+        "to": "trial_analysis"
+      },
+      {
+        "from": "p5_dag",
+        "to": "dag_narrative"
+      },
+      {
+        "from": "p5_dag_key",
+        "to": "dag_variables"
+      },
+      {
+        "from": "p5_confounders",
+        "to": "dag_confounders"
+      },
+      {
+        "from": "p5_mediators",
+        "to": "dag_mediators"
+      },
+      {
+        "from": "p5_colliders",
+        "to": "dag_colliders"
+      },
+      {
+        "from": "p5_competing",
+        "to": "dag_competing"
+      },
+      {
+        "from": "p5_unmeasured",
+        "to": "dag_unmeasured"
+      },
+      {
+        "from": "p6_gaps",
+        "to": "data_gaps"
+      },
+      {
+        "from": "p7_power_detail",
+        "to": "trial_analysis",
+        "note": "The power assumptions belong with the analysis plan rather than with a verdict."
+      },
+      {
+        "from": "p7_bayes_prior_source",
+        "to": "dag_narrative",
+        "note": "Where the prior came from is reasoning, not an answer. bayes_prior_source and bayes_elicitation_protocol ask the structured version."
+      }
+    ],
+    "dropped": [
+      {
+        "from": "p3_exchangeability",
+        "reason": "Fed `assumptionScore`, a mean applied as a multiplier to every design's causal score. That is the compensatory logic the ladder replaced: the identifying assumption is a property of the tier, not something the user rates. Exchangeability now comes from the tier itself — randomisation at Tier 1, the assignment rule at Tier 2."
+      },
+      {
+        "from": "p3_exchangeability_rationale",
+        "reason": "Free text justifying the exchangeability score, which no longer exists. Kept here rather than moved to notes because it answers a question the tool stopped asking. Should a causal-assumptions section be added later — as explanation rather than as scoring — this is the material it would draw on."
+      },
+      {
+        "from": "p3_positivity",
+        "reason": "Same multiplier. Positivity is now `overlap`, and marked needs_data because it cannot honestly be established before the data exist — which is precisely why scoring it in advance was wrong."
+      },
+      {
+        "from": "p3_positivity_rationale",
+        "reason": "Free text justifying the positivity score, which no longer exists. Kept here rather than moved to notes because it answers a question the tool stopped asking. Should a causal-assumptions section be added later — as explanation rather than as scoring — this is the material it would draw on."
+      },
+      {
+        "from": "p3_consistency",
+        "reason": "Same multiplier. Consistency is now carried by intervention_defined — whether the treatment is well enough specified to have a single meaning — and by delivery_consistency, which asks whether it was delivered the same way."
+      },
+      {
+        "from": "p3_consistency_rationale",
+        "reason": "Free text justifying the consistency score, which no longer exists. Kept here rather than moved to notes because it answers a question the tool stopped asking. Should a causal-assumptions section be added later — as explanation rather than as scoring — this is the material it would draw on."
+      },
+      {
+        "from": "p7_n",
+        "reason": "The specification deliberately has no numeric sample size. N lives in the ready-reckoner's local state, which never writes to the answer store, so an illustrative figure cannot reach a verdict. Migrating this in would reopen that path. The statistics module asks what plays the role of N for each design instead."
+      },
+      {
+        "from": "q_sample",
+        "reason": "Superseded by the statistics module, which asks the design-appropriate quantity."
+      },
+      {
+        "from": "q_constraint",
+        "reason": "Retained in substance as `primary_constraint`, but not as a mapping: the old version reordered the shortlist, and the new one is advisory guidance that cannot change a verdict. Carrying the value across would carry the old meaning with it."
+      }
+    ],
+    "collisions": [
+      {
+        "target": "intervention_defined",
+        "from": [
+          "p3_defined",
+          "q_defined"
+        ]
+      },
+      {
+        "target": "theory_of_change",
+        "from": [
+          "p3_toc",
+          "q_toc"
+        ]
+      },
+      {
+        "target": "maturity",
+        "from": [
+          "p3_scale",
+          "q_scale"
+        ]
+      },
+      {
+        "target": "prospective",
+        "from": [
+          "p1_prospective",
+          "q_prospective"
+        ]
+      },
+      {
+        "target": "pre_periods",
+        "from": [
+          "q_predata",
+          "p7_predata",
+          "p7_pre_timepoints"
+        ]
+      }
+    ],
+    "table": {
+      "from": "dataRows",
+      "to": "data_sources",
+      "columns": {
+        "name": "name",
+        "period": "period",
+        "geo": "coverage",
+        "linkable": "identifiers",
+        "hasExposure": "holds_exposure",
+        "hasOutcome": "holds_outcome"
+      },
+      "dropped_columns": {
+        "type": "What kind of source it is was never used, and is usually evident from the name.",
+        "quality": "Per-source quality notes are carried by the guide's free-text field, which can describe concerns that span sources rather than one row each."
+      }
+    }
   }
 }

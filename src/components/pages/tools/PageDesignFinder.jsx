@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useLegacyInputs } from '../../../state/useLegacyInputs.js'
 import { useNavigate } from 'react-router-dom'
 import { QUESTIONS, FAMILIES, BAYES_BULLETS } from '../../../data/designFinderData.js'
 import { downloadToolResult } from '../../../utils/exportToolResult.js'
@@ -101,15 +102,21 @@ const PRIORITY_COLORS = {
 export default function PageDesignFinder() {
   const navigate = useNavigate()
   const [phase, setPhase] = useState('intro')
-  const [answers, setAnswers] = useState({})
+  // The quiz's answers are the shared ones, routed through spec/migration.yaml. Answering
+  // here answers the assessment, which is the whole point of the migration: the Finder and
+  // the assessment were asking the same questions under different names.
+  const { inputs: answers, set: setAnswer } = useLegacyInputs()
   const [history, setHistory] = useState([])
   const [currentQ, setCurrentQ] = useState(0)
   const [selected, setSelected] = useState(null)
 
   function startQuiz() {
-    const first = getNextQuestion(0, {})
-    setCurrentQ(first ?? 0)
-    setSelected(null)
+    const first = getNextQuestion(0, answers) ?? 0
+    setCurrentQ(first)
+    // Seeded from the shared answers: a question answered in the assessment is already
+    // answered here. Starting blank would ask it again and invite a different answer,
+    // which is the defect this migration exists to remove.
+    setSelected(answers[QUESTIONS[first].id] ?? null)
     setPhase('quiz')
   }
 
@@ -121,7 +128,7 @@ export default function PageDesignFinder() {
     if (selected == null) return
     const q = QUESTIONS[currentQ]
     const newAnswers = { ...answers, [q.id]: selected }
-    setAnswers(newAnswers)
+    setAnswer(q.id, selected)
     setHistory([...history, currentQ])
     const next = getNextQuestion(currentQ + 1, newAnswers)
     if (next !== null) {
@@ -140,8 +147,10 @@ export default function PageDesignFinder() {
     setSelected(answers[QUESTIONS[prev].id] ?? null)
   }
 
+  // Walks the questions again from the start. It deliberately does NOT clear the answers:
+  // they are shared now, so clearing them here would wipe the assessment too. Previous
+  // selections are prefilled as the user walks back through, which is what sharing means.
   function restart() {
-    setAnswers({})
     setHistory([])
     setCurrentQ(0)
     setSelected(null)

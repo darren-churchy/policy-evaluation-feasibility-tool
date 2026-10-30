@@ -200,8 +200,8 @@ inputs and scored on 23, so this is checked rather than assumed.
 
 ### Stages and readiness
 
-`spec/stages.yaml` holds the **single** stage rule. The Causal Readiness page, the Design
-Finder and both trees all call the engine's inference, which reads only that file.
+`spec/stages.yaml` holds the **single** stage rule, and every tool now reads it — see
+`StageTags` below for how the trees were brought onto it, which they were not before.
 
 Two hard gates (intervention specification, theory of change) and one warning (maturity).
 A gate means impact evaluation cannot answer the question yet whatever the data situation,
@@ -463,6 +463,33 @@ does not block the randomised designs and does not pass silently — it leaves a
 **conditional**, asking which component or cohort could still be allocated, and noting
 that randomising a component narrows the estimand to that component. A test asserts every
 design blocked by `prospective: no` carries the partial case.
+
+### The legacy bridge
+
+Phase 4's acceptance criterion is that an answer given once is prefilled everywhere. Every
+component that needed migrating — the seven sections, the Design Finder, both trees — is
+scheduled for retirement or rewrite at the switchover, so rather than rewriting their
+internals they are re-pointed at the shared store through `spec/migration.yaml`.
+
+`src/state/legacyBridge.js` routes each old id by its disposition: `renamed` to the shared
+answers with values translated both ways, `to_notes` to the notes annex, `split` and
+`dropped` to local state so the page still renders them while nothing downstream reads
+them. `useLegacyInputs()` wraps it, and both `useAppState` and the Design Finder use it, so
+the routing exists once. **No page was rewritten** — `inputs[id]` and `set(id, value)`
+behave exactly as before. The bridge is deleted with the components it serves.
+
+`tests/prefill.test.mjs` is the acceptance test, asserting in both directions that the four
+colliding ids collapse to one stored answer, that every translated value is one the target
+question offers and survives the round trip, and that split and dropped ids never reach the
+engine.
+
+**Stage tags now come from the engine in all four tools.** CLAUDE.md previously claimed
+this; it was not true of the two decision trees, which rendered per-node tags from their
+own data — the earlier fix had corrected those values without removing the second source
+of truth. `src/components/ui/StageTags.jsx` resolves it without deleting either, because
+they say different things: the engine infers a stage from what the user has said about the
+intervention, while a tree node's tag is a guess from where you have walked to. The engine
+wins where it has an answer and says so; otherwise the positional tag is shown as a hint.
 
 ### The reviewer pack
 

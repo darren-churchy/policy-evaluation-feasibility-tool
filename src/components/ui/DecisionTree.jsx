@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { TlBadge } from './GovukComponents.jsx'
+import StageTags from './StageTags.jsx'
 import { T } from '../../styles/tokens.js'
 
 export { TlBadge }
@@ -89,7 +90,7 @@ export default function DecisionTree({ tree, namedNodes = {}, renderResult, acce
       {currentTlStages.length > 0 && (
         <div style={{ marginBottom: '1.25rem', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
           <span style={{ color: T.greyText }}>T&amp;L stage suggested:</span>
-          {currentTlStages.map(s => <TlBadge key={s} stage={s} />)}
+          <StageTags positional={currentTlStages} />
         </div>
       )}
 

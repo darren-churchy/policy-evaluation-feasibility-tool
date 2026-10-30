@@ -4,7 +4,7 @@
 // questions in front of everyone. Lives at /ladder alongside the existing assessment so
 // the current tool stays usable while this is reviewed.
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAnswers, buildSaveFile, parseSaveFile } from '../../state/AnswersContext.jsx'
 import { stageLabel, stageGloss } from '../../engine/stage.js'
@@ -177,16 +177,32 @@ export default function PageLadder() {
   // screen at that moment would make the list jump under the user after every click, so
   // what is displayed accumulates: a question stays visible, showing its answer, until
   // the user starts again.
+  //
+  // It also has to show questions answered somewhere else. Now that every tool writes to
+  // one store, arriving here having answered in the Design Finder used to show nothing at
+  // all — the questions were answered, so they were never on the agenda, so they were
+  // never added. The answers counted; the user simply could not see that they had.
   const [shown, setShown] = useState([])
+  const askedHere = useMemo(() => {
+    const statistics = new Set([
+      ...(spec.statistics?.shared_questions ?? []),
+      ...Object.values(spec.statistics?.approaches ?? {}).flatMap(a => a.questions ?? []),
+    ])
+    return spec.questions.filter(q => !statistics.has(q.id)).map(q => q.id)
+  }, [spec])
+
   useEffect(() => {
     setShown(prev => {
       const next = [...prev]
+      for (const id of askedHere) {
+        if (answers[id] !== undefined && !next.includes(id)) next.push(id)
+      }
       for (const item of result.agenda.slice(0, BATCH)) {
         if (!next.includes(item.id)) next.push(item.id)
       }
       return next.length === prev.length ? prev : next
     })
-  }, [result.agenda])
+  }, [result.agenda, answers, askedHere])
 
   // Starting again clears the answers, so the displayed set must reset with them.
   function startAgain() {

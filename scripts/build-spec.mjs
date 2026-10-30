@@ -28,6 +28,7 @@ export function buildSpecBundle(specDir) {
       stages: spec.stages,
       statistics: spec.statistics,
       guides: spec.guides,
+      migration: spec.migration,
     },
     null,
     2,

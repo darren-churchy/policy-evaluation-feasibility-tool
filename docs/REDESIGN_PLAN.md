@@ -312,7 +312,7 @@ their source; genuine disagreements are shown rather than resolved silently.
 | 1 Foundations | **Done** — Vitest, CI, JSON Schemas, validator |
 | 2 Specification and engine | **Done** — six spec files, `evaluate()`, golden scenarios, reviewer pack |
 | 3 Statistics module | **Done** — both branches at equal depth; research pass in `docs/BAYESIAN_SAMPLE_SIZE.md` |
-| 4 Shared intake and tool consistency | **Done in substance** — spec bundle, one answer store, one stage rule, eleven contradictory tags corrected. The four companion tools still carry their own question flows and have not been migrated to the shared store. |
+| 4 Shared intake and tool consistency | **Done.** Every tool reads and writes one store, routed through `spec/migration.yaml`; stage tags come from the engine in all four. `tests/prefill.test.mjs` is the acceptance test. |
 | 5 Flow, layout and results | **Partly done** — the ladder flow, summary panel, ladder results view, save/load, the statistics module and the ready-reckoner all exist at `/ladder`. The existing seven sections remain; the switchover has not happened. |
 | 6 De-branding and context packs | **Done** — institutional identity and justice-specific wording removed, two packs shipped, stylesheets vendored locally |
 | 7 Docs and release | **Docs done.** Release requires a methods reviewer to sign off the reviewer pack, and the `redesign` → `dev` merge. |

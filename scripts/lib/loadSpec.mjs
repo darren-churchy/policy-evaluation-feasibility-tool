@@ -21,6 +21,7 @@ export function loadSpec(specDir = DEFAULT_SPEC_DIR) {
     stages: yaml('stages.yaml'),
     statistics: yaml('statistics.yaml'),
     guides: yaml('guides.yaml'),
+    migration: yaml('migration.yaml'),
     designs: parseCsvRecords(readFileSync(join(specDir, 'designs.csv'), 'utf8'), {
       pipeSeparated: ['estimator_options'],
     }).records,

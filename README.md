@@ -131,14 +131,14 @@ src/
   spec/spec.generated.json Compiled spec the browser imports
   report/                  The shareable HTML report
   components/guides/       The guides — one component, driven by the spec
-  state/                   The single answer store
+  state/                   The single answer store, and the bridge from the old ids
   components/              Pages and shared UI
     statistics/              The statistics module and the ready-reckoner
   data/, scoring/          The current tool, until the switchover
 
 reviewer-pack/            The specification rendered for a methods reviewer
 scripts/                  Validation, spec bundle, reviewer pack, CSS
-tests/                    361 tests
+tests/                    382 tests
 docs/                     Redesign plan; Bayesian sample-size research
 ```
 

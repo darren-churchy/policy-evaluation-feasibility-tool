@@ -2,6 +2,9 @@ import { useState, useCallback, useMemo } from 'react'
 import { assembleResults } from '../scoring/scoring.js'
 import { NEXT_STEPS } from '../data/nextSteps.js'
 import { GATE_ENABLED } from '../scoring/config.js'
+import { useAnswers } from '../state/AnswersContext.jsx'
+import { useLegacyInputs } from '../state/useLegacyInputs.js'
+import { toLegacyRows, fromLegacyRows } from '../state/legacyBridge.js'
 
 const DEFAULT_DATA_ROW = () => ({
   name: '', type: '', period: '', geo: '',
@@ -22,31 +25,41 @@ function getCompletedSections(inputs) {
   return completed
 }
 
+/**
+ * The seven sections' state, now backed by the shared answer store.
+ *
+ * The surface is unchanged — `inputs`, `set`, `dataRows` and the derived values all behave
+ * as before — but the storage underneath is the one every tool uses, routed through
+ * spec/migration.yaml. That is what makes an answer given in the Design Finder appear in
+ * the assessment: they are the same answer now, not two that happen to agree.
+ *
+ * Values whose old id was dropped or split keep working here, in local state, because the
+ * page still renders them. They never reach the engine, which is why they were dropped.
+ */
 export function useAppState() {
-  const [inputs, setInputs] = useState({})
-  const [dataRows, setDataRows] = useState([DEFAULT_DATA_ROW()])
+  const { notes, setNote } = useAnswers()
+  const { inputs, set, setMany, bridge } = useLegacyInputs()
 
-  const set = useCallback((id, value) => {
-    setInputs(prev => ({ ...prev, [id]: value }))
-  }, [])
+  const dataRows = useMemo(
+    () => toLegacyRows(bridge, notes, DEFAULT_DATA_ROW),
+    [bridge, notes],
+  )
 
-  const setMany = useCallback((updates) => {
-    setInputs(prev => ({ ...prev, ...updates }))
-  }, [])
+  const writeRows = useCallback(rows => {
+    setNote(bridge.table?.to ?? 'data_sources', fromLegacyRows(bridge, rows))
+  }, [bridge, setNote])
 
   const addDataRow = useCallback(() => {
-    setDataRows(prev => [...prev, DEFAULT_DATA_ROW()])
-  }, [])
+    writeRows([...dataRows, DEFAULT_DATA_ROW()])
+  }, [dataRows, writeRows])
 
   const removeDataRow = useCallback(() => {
-    setDataRows(prev => prev.length > 1 ? prev.slice(0, -1) : prev)
-  }, [])
+    if (dataRows.length > 1) writeRows(dataRows.slice(0, -1))
+  }, [dataRows, writeRows])
 
   const updateDataRow = useCallback((index, field, value) => {
-    setDataRows(prev => prev.map((row, i) =>
-      i === index ? { ...row, [field]: value } : row
-    ))
-  }, [])
+    writeRows(dataRows.map((row, i) => (i === index ? { ...row, [field]: value } : row)))
+  }, [dataRows, writeRows])
 
   // Gate — now checks definition AND ToC as separate conditions
   const gatePassed = useMemo(() => {
