@@ -153,6 +153,7 @@ describe('state resolution', () => {
       randomisation_barriers: 'none',
       allocation_unit: 'individual',
       equipoise: 'yes',
+      record_linkage: 'individual',
     }, spec)
     expect(r.designs.rct_individual.state).toBe('feasible')
   })
@@ -249,6 +250,7 @@ describe('the ladder', () => {
   it('recommends the highest feasible rung, not the one with the most designs', () => {
     const r = evaluate({
       claim_type: 'causal', intervention_defined: 'yes', theory_of_change: 'yes', maturity: 'yes',
+      record_linkage: 'individual',
       prospective: 'yes', randomisation_barriers: 'none', allocation_unit: 'individual',
       equipoise: 'yes',
       // Plenty available lower down too.

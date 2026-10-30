@@ -201,7 +201,7 @@ describe('no question feeds nothing', () => {
       ...Object.values(statistics.approaches).flatMap(a => a.questions),
     ])
     expect(inStatistics.has('analysis_approach')).toBe(true)
-    expect(inStatistics.size).toBe(25)
+    expect(inStatistics.size).toBe(26)
   })
 
   it('keeps the intake questions marked as intake', () => {

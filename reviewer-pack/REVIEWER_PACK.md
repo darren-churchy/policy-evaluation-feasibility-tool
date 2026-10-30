@@ -31,11 +31,11 @@ Four things are worth knowing before reading:
 | | Count |
 |---|---|
 | Designs | 22 (19 on the ladder, 3 theory-based) |
-| Questions | 65 |
+| Questions | 67 |
 | — needing the data in hand | 6 |
-| Checks | 134 |
-| — blockers | 53 |
-| — conditions | 62 |
+| Checks | 179 |
+| — blockers | 79 |
+| — conditions | 81 |
 | — warnings | 19 |
 | References | 35 |
 
@@ -129,8 +129,11 @@ Randomises an offer or nudge rather than the treatment itself, so it suits setti
 
 | Type | Fires when | Message | What would discharge it | Threshold | Sources |
 |---|---|---|---|---|---|
+| Blocker | record_linkage is “Only at group or area level — sites, regions, cohorts” | Only group-level linkage is available, and this design compares individuals — it needs treatment, covariates and outcomes on the same records. | — | — | hernan_robins_2020 |
+| Blocker | record_linkage is “No — they cannot be brought together” | Treatment status and outcomes cannot be brought together for the same units, so there is no contrast to estimate. A single outcome series supports an interrupted time series and nothing stronger. | — | — | hernan_robins_2020 |
 | Blocker | prospective is “No — the intervention has already been delivered or allocated” | The encouragement cannot be randomised once the intervention has been delivered. | — | — | angrist_pischke_2009 |
 | Blocker | encouragement_lever is “No” | No credible way to encourage take-up without assigning the intervention itself, which is what this design requires. | — | — | angrist_pischke_2009 |
+| Condition | record_linkage is “Not yet established” | Whether treatment status and outcomes can be brought together for the same units has not been established. It constrains which designs are available more sharply than most methodological considerations do. | Confirm what identifiers exist across the sources holding treatment and outcome, and whether linking them can be approved under the relevant governance. This can be settled now — it does not need the data themselves. | — | hernan_robins_2020 magenta_book |
 | Condition | encouragement_lever is “Possibly — needs exploration” | A possible encouragement has been identified but not established. | Check that it moves take-up appreciably. A weak encouragement yields an estimate for too few people to be useful. | — | angrist_pischke_2009 lee_etal_2022 |
 | Condition | exclusion_restriction is one of “Doubtful — plausible alternative routes exist” or “Not yet considered” | The encouragement must affect the outcome only by changing take-up. If it carries information or incentive that acts directly, the complier estimate is biased. | Set out why the encouragement has no direct route to the outcome. This cannot be tested, so it has to be argued. | — | angrist_pischke_2009 |
 | Warning | encouragement_lever is not “No” | This estimates the effect for those whose take-up the encouragement changed, not for everyone. Those people may differ from the population the decision is about. | — | — | angrist_pischke_2009 |
@@ -145,9 +148,11 @@ Feasibility is driven by the number of clusters and the ICC, not by total partic
 
 | Type | Fires when | Message | What would discharge it | Threshold | Sources |
 |---|---|---|---|---|---|
+| Blocker | record_linkage is “No — they cannot be brought together” | Treatment status and outcomes cannot be brought together for the same units, so there is no contrast to estimate. A single outcome series supports an interrupted time series and nothing stronger. | — | — | hernan_robins_2020 |
 | Blocker | prospective is “No — the intervention has already been delivered or allocated” | Allocation cannot be randomised once the intervention has already been delivered. | — | — | rob2 |
 | Blocker | randomisation_barriers is “Randomisation is ruled out” | Randomisation has been ruled out, so no randomised design is available. | — | — | rob2 |
 | Blocker | allocation_unit is “Individual people” | The intervention is delivered to individuals, so there are no natural clusters to allocate. | — | — | rob2 |
+| Condition | record_linkage is “Not yet established” | Whether treatment status and outcomes can be brought together for the same units has not been established. It constrains which designs are available more sharply than most methodological considerations do. | Confirm what identifiers exist across the sources holding treatment and outcome, and whether linking them can be approved under the relevant governance. This can be settled now — it does not need the data themselves. | — | hernan_robins_2020 magenta_book |
 | Condition | cluster_count is “Fewer than 15” | Fewer than about 15 clusters. Precision in a cluster design is governed by the number of clusters, so a large number of individuals within them does not compensate. | Establish whether more clusters can be recruited, or whether individual allocation is possible after all. | 15 clusters (range 10–20) — convention · contested | rob2 |
 | Condition | randomisation_barriers is “Significant” | Significant barriers to randomisation were identified. | Check whether randomising the order of a phased rollout is acceptable instead. | — | rob2 |
 | Warning | cluster_count is one of “Roughly 15 to 40” or “Fewer than 15” | A cluster design needs an intracluster correlation estimate to size properly. With this few clusters the result is sensitive to the value assumed, so take a range to your statistician rather than a single figure. | — | — | rob2 |
@@ -162,9 +167,12 @@ Requires a reversible outcome and an adequate washout period
 
 | Type | Fires when | Message | What would discharge it | Threshold | Sources |
 |---|---|---|---|---|---|
+| Blocker | record_linkage is “Only at group or area level — sites, regions, cohorts” | Only group-level linkage is available, and this design compares individuals — it needs treatment, covariates and outcomes on the same records. | — | — | hernan_robins_2020 |
+| Blocker | record_linkage is “No — they cannot be brought together” | Treatment status and outcomes cannot be brought together for the same units, so there is no contrast to estimate. A single outcome series supports an interrupted time series and nothing stronger. | — | — | hernan_robins_2020 |
 | Blocker | prospective is “No — the intervention has already been delivered or allocated” | Allocation cannot be randomised once the intervention has already been delivered. | — | — | rob2 |
 | Blocker | outcome_reversible is “No — effects persist or accumulate” | The outcome does not return to baseline, so a participant cannot serve as their own control in a later period. | — | — | rob2 |
 | Blocker | washout_feasible is “No” | Without a washout period the first condition contaminates the second. | — | — | rob2 |
+| Condition | record_linkage is “Not yet established” | Whether treatment status and outcomes can be brought together for the same units has not been established. It constrains which designs are available more sharply than most methodological considerations do. | Confirm what identifiers exist across the sources holding treatment and outcome, and whether linking them can be approved under the relevant governance. This can be settled now — it does not need the data themselves. | — | hernan_robins_2020 magenta_book |
 | Condition | outcome_reversible is “Unclear” | Whether the effect persists has not been established. | Check the evidence on how long the effect lasts; this determines both whether a crossover is possible and how long the washout must be. | — | rob2 |
 | Condition | washout_feasible is “Unclear” | The feasibility of a washout period has not been established. | Establish the minimum gap needed, then whether delivery can accommodate it. | — | rob2 |
 
@@ -176,9 +184,12 @@ Estimators: Intention-to-treat, Per-protocol, CACE
 
 | Type | Fires when | Message | What would discharge it | Threshold | Sources |
 |---|---|---|---|---|---|
+| Blocker | record_linkage is “Only at group or area level — sites, regions, cohorts” | Only group-level linkage is available, and this design compares individuals — it needs treatment, covariates and outcomes on the same records. | — | — | hernan_robins_2020 |
+| Blocker | record_linkage is “No — they cannot be brought together” | Treatment status and outcomes cannot be brought together for the same units, so there is no contrast to estimate. A single outcome series supports an interrupted time series and nothing stronger. | — | — | hernan_robins_2020 |
 | Blocker | prospective is “No — the intervention has already been delivered or allocated” | Allocation cannot be randomised once the intervention has already been delivered. | — | — | rob2 |
 | Blocker | randomisation_barriers is “Randomisation is ruled out” | Randomisation has been ruled out, so no randomised design is available. | — | — | rob2 |
 | Blocker | allocation_unit is “Groups — sites, teams, areas or caseloads” | The intervention is delivered to whole groups, so individuals within them cannot be allocated separately. | — | — | rob2 |
+| Condition | record_linkage is “Not yet established” | Whether treatment status and outcomes can be brought together for the same units has not been established. It constrains which designs are available more sharply than most methodological considerations do. | Confirm what identifiers exist across the sources holding treatment and outcome, and whether linking them can be approved under the relevant governance. This can be settled now — it does not need the data themselves. | — | hernan_robins_2020 magenta_book |
 | Condition | randomisation_barriers is “Significant” | Significant barriers to randomisation were identified. | Check whether a stepped-wedge, waitlist or encouragement design addresses the specific objection — these are often accepted where straightforward randomisation is not. | — | rob2 magenta_book |
 | Condition | equipoise is “No — the effect is considered established” | The effect is considered already established, which makes withholding the intervention hard to justify. | Document the remaining uncertainty, or move to a design that withholds nothing. | — | magenta_book |
 | Condition | equipoise is “Contested among stakeholders” | Stakeholders disagree about whether the effect is already established. | Resolve this before an ethics application, since it is the usual ground for refusal. | — | magenta_book |
@@ -193,8 +204,10 @@ Requires a phased rollout that already exists and whose order can be randomised
 
 | Type | Fires when | Message | What would discharge it | Threshold | Sources |
 |---|---|---|---|---|---|
+| Blocker | record_linkage is “No — they cannot be brought together” | Treatment status and outcomes cannot be brought together for the same units, so there is no contrast to estimate. A single outcome series supports an interrupted time series and nothing stronger. | — | — | hernan_robins_2020 |
 | Blocker | prospective is “No — the intervention has already been delivered or allocated” | The rollout order cannot be randomised once delivery has happened. | — | — | rob2 |
 | Blocker | rollout_order_controllable is “No — the order is fixed or externally determined” | The rollout order is fixed or externally determined, so there is nothing left to randomise. | — | — | magenta_book |
+| Condition | record_linkage is “Not yet established” | Whether treatment status and outcomes can be brought together for the same units has not been established. It constrains which designs are available more sharply than most methodological considerations do. | Confirm what identifiers exist across the sources holding treatment and outcome, and whether linking them can be approved under the relevant governance. This can be settled now — it does not need the data themselves. | — | hernan_robins_2020 magenta_book |
 | Condition | rollout_order_controllable is “Partly — some influence over sequencing” | Only partial influence over the sequencing of the rollout. | Establish which part of the order is genuinely open. Randomising even a subset of the sequence can be enough. | — | magenta_book |
 | Condition | cluster_count is “Fewer than 15” | Too few clusters to allocate across a useful number of steps. | Establish whether more sites can join, or whether fewer, larger steps would work. | — | rob2 |
 | Warning | rollout_order_controllable is not “No — the order is fixed or externally determined” | In a stepped-wedge design every unit is treated later in the study than it is untreated, so the treatment effect is entangled with any underlying time trend. The analysis must adjust for time. | — | — | rob2 |
@@ -209,8 +222,11 @@ Everyone is eventually treated; the effect is identified only before crossover
 
 | Type | Fires when | Message | What would discharge it | Threshold | Sources |
 |---|---|---|---|---|---|
+| Blocker | record_linkage is “Only at group or area level — sites, regions, cohorts” | Only group-level linkage is available, and this design compares individuals — it needs treatment, covariates and outcomes on the same records. | — | — | hernan_robins_2020 |
+| Blocker | record_linkage is “No — they cannot be brought together” | Treatment status and outcomes cannot be brought together for the same units, so there is no contrast to estimate. A single outcome series supports an interrupted time series and nothing stronger. | — | — | hernan_robins_2020 |
 | Blocker | prospective is “No — the intervention has already been delivered or allocated” | Allocation cannot be randomised once the intervention has already been delivered. | — | — | rob2 |
 | Blocker | delay_acceptable is “No — delay is not acceptable” | A waitlist design requires part of the group to receive the intervention later. | — | — | magenta_book |
+| Condition | record_linkage is “Not yet established” | Whether treatment status and outcomes can be brought together for the same units has not been established. It constrains which designs are available more sharply than most methodological considerations do. | Confirm what identifiers exist across the sources holding treatment and outcome, and whether linking them can be approved under the relevant governance. This can be settled now — it does not need the data themselves. | — | hernan_robins_2020 magenta_book |
 | Condition | delay_acceptable is “Unclear — needs discussion” | Whether a delay is acceptable has not been settled. | Agree the maximum tolerable wait with delivery colleagues. That wait is also the window in which the effect must be measured. | — | magenta_book |
 | Warning | delay_acceptable is “Yes — a delay is tolerable” | The comparison exists only until the waitlist group is treated, so the design measures a short-run effect. Outcomes that take longer to emerge cannot be captured this way. | — | — | magenta_book |
 
@@ -224,8 +240,11 @@ The exclusion restriction is argued on substantive grounds and cannot be tested
 
 | Type | Fires when | Message | What would discharge it | Threshold | Sources |
 |---|---|---|---|---|---|
+| Blocker | record_linkage is “Only at group or area level — sites, regions, cohorts” | Only group-level linkage is available, and this design compares individuals — it needs treatment, covariates and outcomes on the same records. | — | — | hernan_robins_2020 |
+| Blocker | record_linkage is “No — they cannot be brought together” | Treatment status and outcomes cannot be brought together for the same units, so there is no contrast to estimate. A single outcome series supports an interrupted time series and nothing stronger. | — | — | hernan_robins_2020 |
 | Blocker | instrument_available is “No” | No factor identified that shifts take-up without affecting the outcome by any other route. | — | — | angrist_pischke_2009 |
 | Blocker | exclusion_restriction is “Doubtful — plausible alternative routes exist” | Plausible alternative routes from the instrument to the outcome were identified. The exclusion restriction is the whole basis of the design, so this blocks it rather than qualifying it. | — | — | angrist_pischke_2009 |
+| Condition | record_linkage is “Not yet established” | Whether treatment status and outcomes can be brought together for the same units has not been established. It constrains which designs are available more sharply than most methodological considerations do. | Confirm what identifiers exist across the sources holding treatment and outcome, and whether linking them can be approved under the relevant governance. This can be settled now — it does not need the data themselves. | — | hernan_robins_2020 magenta_book |
 | Condition | instrument_available is “Possibly — needs investigation” | A candidate instrument has been identified but not established. | Check that it predicts take-up, and set out why it cannot affect the outcome directly. | — | angrist_pischke_2009 |
 | Condition | exclusion_restriction is “Not yet considered” | The exclusion restriction has not yet been considered. | Write down every route by which the instrument could reach the outcome, and argue each one away. This cannot be tested statistically. | — | angrist_pischke_2009 |
 | Condition | instrument_strength is “Weakly” | A weak instrument gives estimates that are biased towards the unadjusted association and confidence intervals that understate uncertainty. | Report first-stage strength. The conventional F above 10 is a rule of thumb that recent work shows is not sufficient for valid inference, so treat it as a floor rather than a target. | 10 first-stage F (range 10–104) — convention · contested | lee_etal_2022 |
@@ -241,8 +260,11 @@ Absorbs the former iv_frd entry: fuzzy RD and fuzzy-RD-as-IV are one design unde
 
 | Type | Fires when | Message | What would discharge it | Threshold | Sources |
 |---|---|---|---|---|---|
+| Blocker | record_linkage is “No — they cannot be brought together” | Treatment status and outcomes cannot be brought together for the same units, so there is no contrast to estimate. A single outcome series supports an interrupted time series and nothing stronger. | — | — | hernan_robins_2020 |
 | Blocker | assignment_threshold is “No” | A discontinuity design requires assignment by a score, date or threshold. | — | — | imbens_lemieux_2008 |
 | Blocker | threshold_manipulation is “Sorting is likely or demonstrated” | Sorting around the cutoff removes the basis for the comparison. | — | — | mccrary_2008 |
+| Condition | record_linkage is “Only at group or area level — sites, regions, cohorts” | Only group-level linkage is available. A discontinuity design can still work where the eligibility rule applies to areas, sites or cohorts rather than to people. | Establish whether the rule operates on a unit you can observe, and state the estimand at that level — the effect at the cutoff for those units, not for individuals within them. | — | hernan_robins_2020 cattaneo_etal_2020 |
+| Condition | record_linkage is “Not yet established” | Whether treatment status and outcomes can be brought together for the same units has not been established. It constrains which designs are available more sharply than most methodological considerations do. | Confirm what identifiers exist across the sources holding treatment and outcome, and whether linking them can be approved under the relevant governance. This can be settled now — it does not need the data themselves. | — | hernan_robins_2020 magenta_book |
 | Condition | threshold_manipulation is “Not yet tested” | Whether people can position themselves around the cutoff has not been tested. | Run a density test for bunching at the cutoff. | — | mccrary_2008 |
 | Condition | instrument_strength is one of “Weakly” or “Not yet established” | A fuzzy design relies on a clear jump in the probability of treatment at the cutoff. A small jump identifies the effect for very few people. | Estimate the size of the jump in take-up at the cutoff before committing. | — | lee_etal_2022 imbens_lemieux_2008 |
 | Condition | density_near_cutoff is “Few” | Few observations near the cutoff, and a fuzzy design needs more than a sharp one. | Count observations within a plausible bandwidth and power on that figure. | — | cattaneo_etal_2020 |
@@ -259,9 +281,12 @@ Requires a continuous running variable and a cutoff that is actually enforced
 
 | Type | Fires when | Message | What would discharge it | Threshold | Sources |
 |---|---|---|---|---|---|
+| Blocker | record_linkage is “No — they cannot be brought together” | Treatment status and outcomes cannot be brought together for the same units, so there is no contrast to estimate. A single outcome series supports an interrupted time series and nothing stronger. | — | — | hernan_robins_2020 |
 | Blocker | assignment_threshold is “No” | A discontinuity design requires assignment by a score, date or threshold. | — | — | imbens_lemieux_2008 |
 | Blocker | threshold_enforced is “Mostly — the cutoff shifts the probability of treatment” | The cutoff shifts the probability of treatment rather than determining it, which is a fuzzy design rather than a sharp one. | — | — | imbens_lemieux_2008 |
 | Blocker | threshold_manipulation is “Sorting is likely or demonstrated” | Sorting around the cutoff means those either side differ in ways beyond treatment, which removes the basis for the comparison. | — | — | mccrary_2008 |
+| Condition | record_linkage is “Only at group or area level — sites, regions, cohorts” | Only group-level linkage is available. A discontinuity design can still work where the eligibility rule applies to areas, sites or cohorts rather than to people. | Establish whether the rule operates on a unit you can observe, and state the estimand at that level — the effect at the cutoff for those units, not for individuals within them. | — | hernan_robins_2020 cattaneo_etal_2020 |
+| Condition | record_linkage is “Not yet established” | Whether treatment status and outcomes can be brought together for the same units has not been established. It constrains which designs are available more sharply than most methodological considerations do. | Confirm what identifiers exist across the sources holding treatment and outcome, and whether linking them can be approved under the relevant governance. This can be settled now — it does not need the data themselves. | — | hernan_robins_2020 magenta_book |
 | Condition | threshold_manipulation is “Not yet tested” | Whether people can position themselves around the cutoff has not been tested. | Run a density test for bunching at the cutoff, and check whether those it affects could know the rule and act on it. | — | mccrary_2008 |
 | Condition | threshold_enforced is “Not yet established” | How strictly the cutoff is applied in practice has not been established. | Examine administrative records to see how often the rule was overridden. This decides between a sharp and a fuzzy design. | — | imbens_lemieux_2008 |
 | Condition | density_near_cutoff is “Few” | Few observations fall near the cutoff, and only those identify the effect. A large total sample does not help. | Count observations within a plausible bandwidth rather than in the dataset as a whole, and take that figure to a power calculation. | — | cattaneo_etal_2020 |
@@ -279,10 +304,12 @@ One treatment date. Parallel trends can only be examined where more than one pre
 
 | Type | Fires when | Message | What would discharge it | Threshold | Sources |
 |---|---|---|---|---|---|
+| Blocker | record_linkage is “No — they cannot be brought together” | Treatment status and outcomes cannot be brought together for the same units, so there is no contrast to estimate. A single outcome series supports an interrupted time series and nothing stronger. | — | — | hernan_robins_2020 |
 | Blocker | pre_periods is “None” | A difference-in-differences comparison requires outcome data from before the intervention. | — | — | angrist_pischke_2009 |
 | Blocker | comparison_group is “No” | No comparison group that did not receive the intervention. | — | — | whatworks_sms |
 | Blocker | parallel_trends_evidence is “No — the trends clearly diverge” | The groups were already moving apart before the intervention, so the difference afterwards cannot be attributed to it. | — | — | angrist_pischke_2009 |
 | Blocker | staggered_rollout is one of “Yes — adoption was staggered” or “Planned but not yet begun” | Adoption is or will be staggered, so this is not a two-period comparison. The staggered-adoption design applies instead. | — | — | goodman_bacon_2021 |
+| Condition | record_linkage is “Not yet established” | Whether treatment status and outcomes can be brought together for the same units has not been established. It constrains which designs are available more sharply than most methodological considerations do. | Confirm what identifiers exist across the sources holding treatment and outcome, and whether linking them can be approved under the relevant governance. This can be settled now — it does not need the data themselves. | — | hernan_robins_2020 magenta_book |
 | Condition | pre_periods is “One period only” | With one pre-period the parallel-trends assumption cannot be examined at all. It would be assumed rather than supported. | Find at least two further pre-periods so the trends can be compared. | — | angrist_pischke_2009 |
 | Condition | parallel_trends_evidence is “Not yet examined” | Whether the groups moved together before the intervention has not been examined. | Plot both series across every available pre-period. This is the main thing a reviewer will look for. | — | angrist_pischke_2009 |
 | Condition | comparison_group is “Possibly — needs investigation” | A possible comparison group has been identified but its comparability is not established. | Check that it faced comparable conditions and was not affected by the intervention itself. | — | whatworks_sms |
@@ -297,10 +324,12 @@ Kept separate from the 2x2 case because variation in treatment timing is a diffe
 
 | Type | Fires when | Message | What would discharge it | Threshold | Sources |
 |---|---|---|---|---|---|
+| Blocker | record_linkage is “No — they cannot be brought together” | Treatment status and outcomes cannot be brought together for the same units, so there is no contrast to estimate. A single outcome series supports an interrupted time series and nothing stronger. | — | — | hernan_robins_2020 |
 | Blocker | pre_periods is “None” | A difference-in-differences comparison requires outcome data from before the intervention. | — | — | angrist_pischke_2009 |
 | Blocker | comparison_group is “No” | No comparison group that did not receive the intervention. | — | — | whatworks_sms |
 | Blocker | staggered_rollout is “No — a single common start date” | All units started at the same time, so there is no variation in timing. The two-period design applies instead. | — | — | goodman_bacon_2021 |
 | Blocker | parallel_trends_evidence is “No — the trends clearly diverge” | The groups were already moving apart before the intervention. | — | — | angrist_pischke_2009 |
+| Condition | record_linkage is “Not yet established” | Whether treatment status and outcomes can be brought together for the same units has not been established. It constrains which designs are available more sharply than most methodological considerations do. | Confirm what identifiers exist across the sources holding treatment and outcome, and whether linking them can be approved under the relevant governance. This can be settled now — it does not need the data themselves. | — | hernan_robins_2020 magenta_book |
 | Condition | parallel_trends_evidence is “Not yet examined” | Whether the groups moved together before the intervention has not been examined. | Compare trends for each adoption cohort separately, not just in aggregate — a single cohort can mask divergence in another. | — | angrist_pischke_2009 callaway_santanna_2021 |
 | Condition | staggered_rollout is “Planned but not yet begun” | The staggered rollout is planned but has not begun. | If the order is still open, randomising it gives a stepped-wedge design at Tier 1 for no additional data cost. | — | goodman_bacon_2021 |
 | Warning | staggered_rollout is one of “Yes — adoption was staggered” or “Planned but not yet begun” | Under staggered adoption the conventional two-way fixed effects estimator averages comparisons that include already-treated units acting as controls, and can place negative weights on some of them. Use an estimator built for staggered timing — Callaway-Sant'Anna, Sun-Abraham or Borusyak-Jaravel-Spiess. This is an estimator choice; it does not change the tier. | — | — | goodman_bacon_2021 callaway_santanna_2021 sun_abraham_2021 |
@@ -315,9 +344,11 @@ The control series is what lifts this above a single series. Placed at Tier 3 by
 
 | Type | Fires when | Message | What would discharge it | Threshold | Sources |
 |---|---|---|---|---|---|
+| Blocker | record_linkage is “No — they cannot be brought together” | Treatment status and outcomes cannot be brought together for the same units, so there is no contrast to estimate. A single outcome series supports an interrupted time series and nothing stronger. | — | — | hernan_robins_2020 |
 | Blocker | control_series is “No” | No equivalent series for an unaffected group. Without one this is a single interrupted time series at Tier 5. | — | — | bernal_etal_2017 |
 | Blocker | pre_periods is “None” | A pre-intervention trend must be estimable on both series. | — | — | bernal_etal_2017 |
 | Blocker | policy_date_known is “No” | The interruption point must be known to separate before from after. | — | — | bernal_etal_2017 |
+| Condition | record_linkage is “Not yet established” | Whether treatment status and outcomes can be brought together for the same units has not been established. It constrains which designs are available more sharply than most methodological considerations do. | Confirm what identifiers exist across the sources holding treatment and outcome, and whether linking them can be approved under the relevant governance. This can be settled now — it does not need the data themselves. | — | hernan_robins_2020 magenta_book |
 | Condition | control_series is “Possibly — needs investigation” | A possible control series has been identified but not established. | Check it was genuinely unaffected by the intervention and is subject to the same external influences. | — | bernal_etal_2017 |
 | Condition | time_points is “Fewer than four each side” | Too few time points to estimate a trend on each side of the interruption with any confidence. | Aim for roughly eight points per segment. This is a working convention rather than a derived minimum. | 8 time points per segment (range 6–12) — convention · contested | wagner_etal_2002 bernal_etal_2017 |
 | Condition | cointerventions is “Yes — other changes coincided” | Other changes coincided with the intervention. A control series helps only where it was exposed to those same changes. | Establish whether the control series was affected by the same coinciding changes. | — | bernal_etal_2017 |
@@ -352,8 +383,10 @@ For one or a few treated units. Needs a donor pool and a long pre-period; the au
 
 | Type | Fires when | Message | What would discharge it | Threshold | Sources |
 |---|---|---|---|---|---|
+| Blocker | record_linkage is “No — they cannot be brought together” | Treatment status and outcomes cannot be brought together for the same units, so there is no contrast to estimate. A single outcome series supports an interrupted time series and nothing stronger. | — | — | hernan_robins_2020 |
 | Blocker | pre_periods is one of “None” or “One period only” | A synthetic control is built by matching the treated unit's pre-intervention path, which requires a run of periods rather than one. | — | — | abadie_2021 |
 | Blocker | donor_pool is “No comparable units” | No untreated units available to weight into a comparison. | — | — | abadie_2021 |
+| Condition | record_linkage is “Not yet established” | Whether treatment status and outcomes can be brought together for the same units has not been established. It constrains which designs are available more sharply than most methodological considerations do. | Confirm what identifiers exist across the sources holding treatment and outcome, and whether linking them can be approved under the relevant governance. This can be settled now — it does not need the data themselves. | — | hernan_robins_2020 magenta_book |
 | Condition | pre_periods is “Two or three periods” | A short pre-period gives the weighting little to match on, so good pre-period fit may be achieved by chance rather than by genuine similarity. | Extend the pre-period if the data allow. Where it cannot be extended, the augmented estimator corrects some of the resulting bias. | — | abadie_2021 |
 | Condition | donor_pool is “A few, of uncertain comparability” | Few candidate donor units, of uncertain comparability. | Check that donors were not themselves affected by the intervention, and that none experienced its own shock during the period. | — | abadie_2021 |
 | Warning | donor_pool is not “No comparable units” | Conventional confidence intervals do not apply. Inference is by placebo tests across the donor pool, which is why pool size affects what can be concluded as well as how well the method fits. | — | — | abadie_2021 |
@@ -368,8 +401,11 @@ Models the outcome rather than treatment assignment, so model specification rath
 
 | Type | Fires when | Message | What would discharge it | Threshold | Sources |
 |---|---|---|---|---|---|
+| Blocker | record_linkage is “Only at group or area level — sites, regions, cohorts” | Only group-level linkage is available, and this design compares individuals — it needs treatment, covariates and outcomes on the same records. | — | — | hernan_robins_2020 |
+| Blocker | record_linkage is “No — they cannot be brought together” | Treatment status and outcomes cannot be brought together for the same units, so there is no contrast to estimate. A single outcome series supports an interrupted time series and nothing stronger. | — | — | hernan_robins_2020 |
 | Blocker | covariate_richness is “Little” | Standardisation models the outcome given the covariates, so it needs those covariates to be measured. | — | — | hernan_robins_2020 |
 | Blocker | overlap is “Poor — the groups barely overlap” | With no overlap the outcome model would extrapolate into regions where no comparable units exist, which the method cannot signal. | — | — | hernan_robins_2020 |
+| Condition | record_linkage is “Not yet established” | Whether treatment status and outcomes can be brought together for the same units has not been established. It constrains which designs are available more sharply than most methodological considerations do. | Confirm what identifiers exist across the sources holding treatment and outcome, and whether linking them can be approved under the relevant governance. This can be settled now — it does not need the data themselves. | — | hernan_robins_2020 magenta_book |
 | Condition | confounders_measured is “Some known drivers are not measured” | Known drivers of selection are not in the data. | Plan a sensitivity analysis for unmeasured confounding. | — | vanderweele_ding_2017 |
 | Condition | confounders_measured is “Not yet established” | The drivers of who received the intervention have not been established. | List them, then check which are measured. | — | hernan_robins_2020 |
 | Condition | overlap is “Not yet examined” | Overlap has not been examined, and extrapolation beyond it is silent here. | Check overlap even though this method does not require it as directly as matching, because the model will extrapolate without warning. | — | hernan_robins_2020 |
@@ -385,9 +421,12 @@ For confounders that are themselves affected by prior treatment, where conventio
 
 | Type | Fires when | Message | What would discharge it | Threshold | Sources |
 |---|---|---|---|---|---|
+| Blocker | record_linkage is “Only at group or area level — sites, regions, cohorts” | Only group-level linkage is available, and this design compares individuals — it needs treatment, covariates and outcomes on the same records. | — | — | hernan_robins_2020 |
+| Blocker | record_linkage is “No — they cannot be brought together” | Treatment status and outcomes cannot be brought together for the same units, so there is no contrast to estimate. A single outcome series supports an interrupted time series and nothing stronger. | — | — | hernan_robins_2020 |
 | Blocker | time_varying_confounding is “No — treatment is a one-off” | Treatment is a one-off, so conventional adjustment is appropriate and simpler. The g-methods exist for feedback between treatment and confounders. | — | — | robins_etal_2000 |
 | Blocker | repeated_measures is “No” | Modelling the feedback between treatment and confounders requires repeated measures of both. | — | — | robins_etal_2000 |
 | Blocker | covariate_richness is “Little” | The time-varying confounders must themselves be measured. | — | — | hernan_robins_2020 |
+| Condition | record_linkage is “Not yet established” | Whether treatment status and outcomes can be brought together for the same units has not been established. It constrains which designs are available more sharply than most methodological considerations do. | Confirm what identifiers exist across the sources holding treatment and outcome, and whether linking them can be approved under the relevant governance. This can be settled now — it does not need the data themselves. | — | hernan_robins_2020 magenta_book |
 | Condition | time_varying_confounding is “Unclear” | Whether treatment affects later confounders has not been established. | Draw the causal structure over time. If no arrow runs from treatment to a later confounder, a simpler design will serve. | — | hernan_robins_2020 |
 | Condition | confounders_measured is “Some known drivers are not measured” | Known drivers of selection are not in the data. The g-methods address confounding by measured time-varying factors; they do nothing about unmeasured ones. | Plan a sensitivity analysis for unmeasured confounding. | — | vanderweele_ding_2017 robins_etal_2000 |
 | Warning | time_varying_confounding is “Yes — treatment and confounders evolve together” | Where treatment affects later confounders, adjusting for them conventionally blocks part of the effect, while omitting them leaves confounding. Both directions are wrong, which is why a g-method is needed rather than preferred. | — | — | robins_etal_2000 hernan_robins_2020 |
@@ -404,8 +443,11 @@ Blocks on covariate richness. Balance diagnostics are the characteristic check
 
 | Type | Fires when | Message | What would discharge it | Threshold | Sources |
 |---|---|---|---|---|---|
+| Blocker | record_linkage is “Only at group or area level — sites, regions, cohorts” | Only group-level linkage is available, and this design compares individuals — it needs treatment, covariates and outcomes on the same records. | — | — | hernan_robins_2020 |
+| Blocker | record_linkage is “No — they cannot be brought together” | Treatment status and outcomes cannot be brought together for the same units, so there is no contrast to estimate. A single outcome series supports an interrupted time series and nothing stronger. | — | — | hernan_robins_2020 |
 | Blocker | covariate_richness is “Little” | Matching can only adjust for what is measured. With little covariate data there is nothing to match on. | — | — | stuart_2010 |
 | Blocker | overlap is “Poor — the groups barely overlap” | Where treated and untreated units barely resemble each other there are no comparable pairs to form. | — | — | austin_2011 li_etal_2018 |
+| Condition | record_linkage is “Not yet established” | Whether treatment status and outcomes can be brought together for the same units has not been established. It constrains which designs are available more sharply than most methodological considerations do. | Confirm what identifiers exist across the sources holding treatment and outcome, and whether linking them can be approved under the relevant governance. This can be settled now — it does not need the data themselves. | — | hernan_robins_2020 magenta_book |
 | Condition | overlap is “Limited — overlap only in part of the range” | Overlap exists only across part of the range, so any estimate applies to that part and not to the whole population. | Define the region of common support and state that the result applies there. Weighting handles limited overlap better than matching does. | — | li_etal_2018 |
 | Condition | overlap is “Not yet examined” | Whether the groups overlap has not been examined. | Compare covariate distributions between treated and untreated units before committing. | — | austin_2011 |
 | Condition | confounders_measured is “Some known drivers are not measured” | Known drivers of selection are not in the data. Matching cannot adjust for them and balance diagnostics will not reveal them. | Plan a sensitivity analysis quantifying how strong an unmeasured confounder would need to be to overturn the finding. | — | vanderweele_ding_2017 |
@@ -424,8 +466,11 @@ Kept separate from matching because it blocks on positivity rather than covariat
 
 | Type | Fires when | Message | What would discharge it | Threshold | Sources |
 |---|---|---|---|---|---|
+| Blocker | record_linkage is “Only at group or area level — sites, regions, cohorts” | Only group-level linkage is available, and this design compares individuals — it needs treatment, covariates and outcomes on the same records. | — | — | hernan_robins_2020 |
+| Blocker | record_linkage is “No — they cannot be brought together” | Treatment status and outcomes cannot be brought together for the same units, so there is no contrast to estimate. A single outcome series supports an interrupted time series and nothing stronger. | — | — | hernan_robins_2020 |
 | Blocker | covariate_richness is “Little” | Weighting can only adjust for what is measured. | — | — | austin_2011 |
 | Blocker | overlap is “Poor — the groups barely overlap” | Where some units had almost no chance of receiving the intervention, their weights become extreme and the estimate is driven by a handful of observations. This is a positivity violation. | — | — | li_etal_2018 hernan_robins_2020 |
+| Condition | record_linkage is “Not yet established” | Whether treatment status and outcomes can be brought together for the same units has not been established. It constrains which designs are available more sharply than most methodological considerations do. | Confirm what identifiers exist across the sources holding treatment and outcome, and whether linking them can be approved under the relevant governance. This can be settled now — it does not need the data themselves. | — | hernan_robins_2020 magenta_book |
 | Condition | overlap is “Limited — overlap only in part of the range” | Limited overlap produces large weights that dominate the estimate. | Use overlap weights or trimming, which target the population where the comparison is actually supported, and report how many observations the weights concentrate on. | — | li_etal_2018 |
 | Condition | overlap is “Not yet examined” | Whether the groups overlap has not been examined. | Examine the distribution of estimated propensity scores in both groups before committing; this is what determines whether weighting is viable at all. | — | austin_2011 li_etal_2018 |
 | Condition | confounders_measured is “Some known drivers are not measured” | Known drivers of selection are not in the data. | Plan a sensitivity analysis for unmeasured confounding. | — | vanderweele_ding_2017 |
@@ -502,7 +547,7 @@ set. Sample size does a different job under each, so the Bayesian questions are 
 translations of the frequentist ones. The module produces questions to take to a
 statistician; it never returns a pass or fail on sample size.
 
-Frequentist: 10 questions, 6 tensions. Bayesian: 10 questions, 6 tensions.
+Frequentist: 10 questions, 7 tensions. Bayesian: 10 questions, 7 tensions.
 Equal depth is asserted by test.
 
 ### Asked of everyone
@@ -511,6 +556,7 @@ Equal depth is asserted by test.
 - **What kind of outcome are you measuring?** `outcome_type`
 - **Are outcomes grouped within sites, practitioners or caseloads?** `outcome_clustered`
 - **How much loss to follow-up do you expect?** `expected_attrition`
+- **How much missing data do you expect in the primary outcome?** `outcome_missingness`
 - **Is the number of units fixed by context, or can you choose it?** `sample_fixed`
 
 ### Frequentist (null hypothesis significance testing)
@@ -535,6 +581,7 @@ Equal depth is asserted by test.
 | Raised when | Message | Take to a statistician | Sources |
 |---|---|---|---|
 | nhst_mde is “Not yet considered” or nhst_mde_source is “Not established” | The smallest effect worth detecting has not been established, or has no stated basis. Where it is chosen to make an available sample look adequate, the calculation justifies itself. | Ask what effect would actually change the decision, and whether the study can detect one that small. If it cannot, that is worth knowing before fieldwork rather than after. | rob2 magenta_book |
+| outcome_missingness is one of “High — over 20%” or “Not yet established” | A substantial share of outcomes is expected to be missing, or the share has not been established. A complete-case analysis assumes those missing are unrelated to the outcome, which is rarely true and cannot be tested from the records that are present. | Ask what the analysis will do with missing outcomes — complete cases, multiple imputation, or a model for the missingness — and what the estimate becomes if those missing did worse than those observed. | rob2 robins_i_v2 |
 | nhst_baseline_source is “Assumed, with no source” | The baseline rate and variability are assumed rather than sourced. Every figure in the sizing calculation rests on them. | Ask what happens to the required sample if the baseline is a third higher or lower than assumed. If the answer changes the design, the estimate needs a source. | rob2 |
 | nhst_multiplicity is “Several outcomes with no plan” | Several outcomes will be tested with no stated adjustment or hierarchy. The chance of at least one spurious positive rises with each one. | Ask which single outcome the decision rests on, and whether the others are secondary or exploratory. Record that before the data arrive. | rob2 |
 | nhst_icc is one of “Assumed without a source” or “Not yet obtained” | The design is clustered but the intracluster correlation is assumed or absent. The required number of clusters is sensitive to this value. | Ask for the required sample across a range of plausible correlations rather than at one value, and whether the design still works at the pessimistic end. | rob2 |
@@ -565,6 +612,7 @@ Equal depth is asserted by test.
 | bayes_prior_source is “Not yet established” or bayes_elicitation_protocol is “Informal discussion, no protocol” | The prior has no stated source, or rests on informal discussion rather than a documented elicitation. At small sample sizes the prior supplies much of the posterior, so an unexaminable prior makes the finding unexaminable. | Ask whether previous evaluations could supply the prior instead, and if expert judgement is the only option, whether a structured elicitation such as SHELF is practicable — individual judgements taken before group discussion, with the basis recorded. | gosling_2018_shelf nichd_strong_prior_2019 |
 | bayes_decision_threshold is one of “Not yet considered” or “Proposed, not yet agreed” and bayes_rope is “Not yet considered” | Neither a decision threshold nor a region of practical equivalence has been agreed. Without one the posterior cannot be turned into a decision, and the analysis reduces to reporting an interval. | Ask those making the decision what size of effect would change it, and what size they would treat as too small to matter. Those two answers are what the analysis reports against. | kruschke_2018 opre_bayesian_social_policy |
 | bayes_prior_source is one of “From previous evaluations of similar interventions” or “From structured expert elicitation” and bayes_prior_share is one of “Not yet considered” or “Expected to be small, not yet checked” | An informative prior is in use but its contribution to the posterior has not been quantified. Where the prior supplies most of the answer, the finding largely restates what was assumed — and a Bayesian analysis chosen to rescue an underpowered study will do exactly that without saying so. | Ask for the prior's effective sample size alongside the actual one, and for the posterior under a deliberately sceptical prior. If the conclusion changes, the study is reporting its assumptions. | nichd_strong_prior_2019 wilson_etal_2021_pilot |
+| outcome_missingness is one of “High — over 20%” or “Not yet established” | A substantial share of outcomes is expected to be missing, or the share has not been established. A prior sharpens the posterior whether or not the missingness is handled, so an informative prior can make an estimate look more precise than the observed records support. | Ask for the missingness mechanism to be stated and modelled alongside the outcome, and for the posterior under an assumption that those missing differ from those observed. Precision bought from the prior is not evidence about the people whose outcomes were never seen. | rob2 fda_bayesian_2026 |
 | bayes_sensitivity is “No” | No prior sensitivity analysis is planned. This is the standard reviewer challenge and a stated regulatory expectation. | Ask which alternative priors will be run — at minimum a sceptical one and a weakly informative one — and agree them before the data are seen. | fda_bayesian_2026 |
 | bayes_audience_calibration is “Yes, with no simulation planned” | The audience expects frequentist error-rate guarantees but no simulation is planned to provide them. A posterior probability does not answer a question about long-run error rates. | Ask whether the operating characteristics can be simulated — the false positive and false negative rates the design would show across repeated hypothetical studies — or whether the audience can be brought to a probabilistic answer. | fda_bayesian_2026 bayesian_ssd_review_2025 |
 | bayes_adaptive_stopping is “Yes, without simulation” | The design stops early on accumulating data without simulated operating characteristics. Adaptive stopping is a real advantage of the approach, and its behaviour has to be established rather than assumed. | Ask for simulations across a range of true effects, including no effect, showing how often the rule stops early and what it concludes when it does. | bayesian_adaptive_social_policy bayesian_ssd_review_2025 |
@@ -625,6 +673,7 @@ so a figure produced here cannot change any verdict. Enforced by test.
 | **Is the intervention operating at sufficient scale and maturity?**<br>`maturity` | always | Yes — stable and at scale · Partly — scaling or still changing · No — early or small-scale | readiness / routing only |
 | **Is the intervention delivered consistently across sites and practitioners?**<br>`delivery_consistency` | always | Yes — established and documented · Unsure — not yet established · No | readiness / routing only |
 | **What is your most significant practical constraint?**<br>`primary_constraint` | always | Time — a decision is needed quickly · Data — limited access or coverage · Resources — limited evaluation budget · Ethics — concerns about withholding the intervention · Not yet established | readiness / routing only |
+| **Can treatment status and outcomes be brought together for the same units?**<br>`record_linkage` | always | Yes — at the level of individual records · Only at group or area level — sites, regions, cohorts · No — they cannot be brought together · Not yet established | 17 designs |
 | **Can the evaluation be planned before the intervention reaches participants?**<br>`prospective` | always | Yes — the evaluation can be designed in advance · No — the intervention has already been delivered or allocated | 6 designs |
 | **What barriers are there to randomising who receives the intervention?**<br>`randomisation_barriers` | always | None identified · Some, likely addressable by design adaptation · Significant · Randomisation is ruled out | 2 designs |
 | **What is the natural unit of allocation?**<br>`allocation_unit` | always | Individual people · Groups — sites, teams, areas or caseloads · Either is possible | 2 designs |
@@ -663,6 +712,7 @@ so a figure produced here cannot change any verdict. Enforced by test.
 | **What kind of outcome are you measuring?**<br>`outcome_type` | always | Continuous — a score, cost or duration · Binary — whether something happened · Count — how many times something happened · Time to event — how long until something happened | readiness / routing only |
 | **Are outcomes grouped within sites, practitioners or caseloads?**<br>`outcome_clustered` | always | Yes · Possibly — not yet established · No | readiness / routing only |
 | **How much loss to follow-up do you expect?**<br>`expected_attrition` | always | Low — under 10% · Moderate — 10% to 25% · High — over 25% · Not yet established | readiness / routing only |
+| **How much missing data do you expect in the primary outcome?**<br>`outcome_missingness` | always | Low — under 5% · Moderate — 5% to 20% · High — over 20% · Not yet established | readiness / routing only |
 | **Is the number of units fixed by context, or can you choose it?**<br>`sample_fixed` | always | It can be chosen — recruitment or rollout is still open · It is fixed — the caseload or cohort is what it is | readiness / routing only |
 | **What is the smallest effect that would be worth detecting?**<br>`nhst_mde` | analysis_approach is one of “Frequentist — significance testing and confidence intervals” or “Both — a frequentist primary analysis with Bayesian support, or the reverse” | Agreed and documented · Discussed, not settled · Not yet considered | readiness / routing only |
 | **Who set that figure, and on what basis?**<br>`nhst_mde_source` | analysis_approach is one of “Frequentist — significance testing and confidence intervals” or “Both — a frequentist primary analysis with Bayesian support, or the reverse” | From the decision — the effect that changes what we would do · From prior evidence on similar interventions · From a convention — a standardised effect size benchmark · Not established | readiness / routing only |

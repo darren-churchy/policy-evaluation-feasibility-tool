@@ -123,6 +123,26 @@ questions:
       - { value: unsure, label: Not yet established, not_established: true }
     references: [magenta_book]
 
+  # Record linkage. Not a note about data quality — a structural constraint that rules
+  # designs out more sharply than most methodological considerations do, because an effect
+  # is a contrast between outcomes with and without treatment, and estimating one requires
+  # observing both on the same units.
+  - id: record_linkage
+    establishable: ex_ante
+    text: Can treatment status and outcomes be brought together for the same units?
+    hint: >-
+      Whether the records holding who received the intervention and the records holding the
+      outcome can be joined — by an identifier, or by belonging to the same area or cohort.
+      Governance counts as much as technical feasibility: a linkage that cannot be approved
+      is not available.
+    intake: true
+    options:
+      - { value: individual, label: 'Yes — at the level of individual records' }
+      - { value: group,      label: 'Only at group or area level — sites, regions, cohorts' }
+      - { value: 'no',       label: 'No — they cannot be brought together' }
+      - { value: unsure,     label: Not yet established, not_established: true }
+    references: [hernan_robins_2020, magenta_book]
+
   - id: prospective
     establishable: ex_ante
     text: Can the evaluation be planned before the intervention reaches participants?
@@ -643,6 +663,24 @@ questions:
       - { value: high,     label: 'High — over 25%' }
       - { value: unknown,  label: Not yet established, not_established: true }
     references: [rob2]
+
+  # Distinct from expected_attrition. Attrition is a unit leaving the study; missingness is
+  # a record that exists with the outcome field empty. Both reduce what can be analysed,
+  # they arise for different reasons, and they are handled differently — so they are asked
+  # separately rather than merged into one "data loss" question.
+  - id: outcome_missingness
+    establishable: ex_ante
+    text: How much missing data do you expect in the primary outcome?
+    hint: >-
+      Missingness in the measure itself, as distinct from loss to follow-up. Where the
+      outcome comes from administrative data, the source's known completeness is the place
+      to start.
+    options:
+      - { value: low,      label: 'Low — under 5%' }
+      - { value: moderate, label: 'Moderate — 5% to 20%' }
+      - { value: high,     label: 'High — over 20%' }
+      - { value: unknown,  label: Not yet established, not_established: true }
+    references: [rob2, robins_i_v2]
 
   - id: sample_fixed
     establishable: ex_ante

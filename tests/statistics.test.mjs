@@ -242,6 +242,7 @@ describe('the engine statistics output', () => {
   it('narrows the design quantities to the designs still in play', () => {
     const narrow = evaluate({
       claim_type: 'causal', intervention_defined: 'yes', theory_of_change: 'yes', maturity: 'yes',
+      record_linkage: 'individual',
       analysis_approach: 'nhst',
       prospective: 'yes', randomisation_barriers: 'none', allocation_unit: 'individual',
       equipoise: 'yes',

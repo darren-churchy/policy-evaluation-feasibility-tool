@@ -14,7 +14,7 @@
 # Numeric thresholds appear only where the literature gives one, carry their range, and are
 # marked `convention` where that is what they are.
 
-spec_version: 1.1.0
+spec_version: 1.2.0
 
 designs:
 
@@ -22,6 +22,19 @@ designs:
 
   rct_individual:
     blockers:
+      - id: individual_records_required
+        test: { '==': [{ var: record_linkage }, group] }
+        message: >-
+          Only group-level linkage is available, and this design compares individuals — it
+          needs treatment, covariates and outcomes on the same records.
+        citations: [hernan_robins_2020]
+      - id: no_record_linkage
+        test: { '==': [{ var: record_linkage }, 'no'] }
+        message: >-
+          Treatment status and outcomes cannot be brought together for the same units, so
+          there is no contrast to estimate. A single outcome series supports an interrupted
+          time series and nothing stronger.
+        citations: [hernan_robins_2020]
       - id: not_prospective
         test: { '==': [{ var: prospective }, 'no'] }
         message: Allocation cannot be randomised once the intervention has already been delivered.
@@ -37,6 +50,17 @@ designs:
           allocated separately.
         citations: [rob2]
     conditions:
+      - id: record_linkage_unchecked
+        test: { '==': [{ var: record_linkage }, unsure] }
+        message: >-
+          Whether treatment status and outcomes can be brought together for the same units
+          has not been established. It constrains which designs are available more sharply
+          than most methodological considerations do.
+        unlock: >-
+          Confirm what identifiers exist across the sources holding treatment and outcome,
+          and whether linking them can be approved under the relevant governance. This can
+          be settled now — it does not need the data themselves.
+        citations: [hernan_robins_2020, magenta_book]
       - id: significant_barriers
         test: { '==': [{ var: randomisation_barriers }, high] }
         message: Significant barriers to randomisation were identified.
@@ -60,6 +84,13 @@ designs:
 
   rct_cluster:
     blockers:
+      - id: no_record_linkage
+        test: { '==': [{ var: record_linkage }, 'no'] }
+        message: >-
+          Treatment status and outcomes cannot be brought together for the same units, so
+          there is no contrast to estimate. A single outcome series supports an interrupted
+          time series and nothing stronger.
+        citations: [hernan_robins_2020]
       - id: not_prospective
         test: { '==': [{ var: prospective }, 'no'] }
         message: Allocation cannot be randomised once the intervention has already been delivered.
@@ -75,6 +106,17 @@ designs:
           allocate.
         citations: [rob2]
     conditions:
+      - id: record_linkage_unchecked
+        test: { '==': [{ var: record_linkage }, unsure] }
+        message: >-
+          Whether treatment status and outcomes can be brought together for the same units
+          has not been established. It constrains which designs are available more sharply
+          than most methodological considerations do.
+        unlock: >-
+          Confirm what identifiers exist across the sources holding treatment and outcome,
+          and whether linking them can be approved under the relevant governance. This can
+          be settled now — it does not need the data themselves.
+        citations: [hernan_robins_2020, magenta_book]
       - id: too_few_clusters
         test: { '==': [{ var: cluster_count }, few] }
         message: >-
@@ -102,6 +144,13 @@ designs:
 
   rct_stepped_wedge:
     blockers:
+      - id: no_record_linkage
+        test: { '==': [{ var: record_linkage }, 'no'] }
+        message: >-
+          Treatment status and outcomes cannot be brought together for the same units, so
+          there is no contrast to estimate. A single outcome series supports an interrupted
+          time series and nothing stronger.
+        citations: [hernan_robins_2020]
       - id: not_prospective
         test: { '==': [{ var: prospective }, 'no'] }
         message: The rollout order cannot be randomised once delivery has happened.
@@ -113,6 +162,17 @@ designs:
           randomise.
         citations: [magenta_book]
     conditions:
+      - id: record_linkage_unchecked
+        test: { '==': [{ var: record_linkage }, unsure] }
+        message: >-
+          Whether treatment status and outcomes can be brought together for the same units
+          has not been established. It constrains which designs are available more sharply
+          than most methodological considerations do.
+        unlock: >-
+          Confirm what identifiers exist across the sources holding treatment and outcome,
+          and whether linking them can be approved under the relevant governance. This can
+          be settled now — it does not need the data themselves.
+        citations: [hernan_robins_2020, magenta_book]
       - id: partial_control
         test: { '==': [{ var: rollout_order_controllable }, partly] }
         message: Only partial influence over the sequencing of the rollout.
@@ -136,6 +196,19 @@ designs:
 
   rct_crossover:
     blockers:
+      - id: individual_records_required
+        test: { '==': [{ var: record_linkage }, group] }
+        message: >-
+          Only group-level linkage is available, and this design compares individuals — it
+          needs treatment, covariates and outcomes on the same records.
+        citations: [hernan_robins_2020]
+      - id: no_record_linkage
+        test: { '==': [{ var: record_linkage }, 'no'] }
+        message: >-
+          Treatment status and outcomes cannot be brought together for the same units, so
+          there is no contrast to estimate. A single outcome series supports an interrupted
+          time series and nothing stronger.
+        citations: [hernan_robins_2020]
       - id: not_prospective
         test: { '==': [{ var: prospective }, 'no'] }
         message: Allocation cannot be randomised once the intervention has already been delivered.
@@ -151,6 +224,17 @@ designs:
         message: Without a washout period the first condition contaminates the second.
         citations: [rob2]
     conditions:
+      - id: record_linkage_unchecked
+        test: { '==': [{ var: record_linkage }, unsure] }
+        message: >-
+          Whether treatment status and outcomes can be brought together for the same units
+          has not been established. It constrains which designs are available more sharply
+          than most methodological considerations do.
+        unlock: >-
+          Confirm what identifiers exist across the sources holding treatment and outcome,
+          and whether linking them can be approved under the relevant governance. This can
+          be settled now — it does not need the data themselves.
+        citations: [hernan_robins_2020, magenta_book]
       - id: reversibility_unclear
         test: { '==': [{ var: outcome_reversible }, unclear] }
         message: Whether the effect persists has not been established.
@@ -166,6 +250,19 @@ designs:
 
   rct_waitlist:
     blockers:
+      - id: individual_records_required
+        test: { '==': [{ var: record_linkage }, group] }
+        message: >-
+          Only group-level linkage is available, and this design compares individuals — it
+          needs treatment, covariates and outcomes on the same records.
+        citations: [hernan_robins_2020]
+      - id: no_record_linkage
+        test: { '==': [{ var: record_linkage }, 'no'] }
+        message: >-
+          Treatment status and outcomes cannot be brought together for the same units, so
+          there is no contrast to estimate. A single outcome series supports an interrupted
+          time series and nothing stronger.
+        citations: [hernan_robins_2020]
       - id: not_prospective
         test: { '==': [{ var: prospective }, 'no'] }
         message: Allocation cannot be randomised once the intervention has already been delivered.
@@ -175,6 +272,17 @@ designs:
         message: A waitlist design requires part of the group to receive the intervention later.
         citations: [magenta_book]
     conditions:
+      - id: record_linkage_unchecked
+        test: { '==': [{ var: record_linkage }, unsure] }
+        message: >-
+          Whether treatment status and outcomes can be brought together for the same units
+          has not been established. It constrains which designs are available more sharply
+          than most methodological considerations do.
+        unlock: >-
+          Confirm what identifiers exist across the sources holding treatment and outcome,
+          and whether linking them can be approved under the relevant governance. This can
+          be settled now — it does not need the data themselves.
+        citations: [hernan_robins_2020, magenta_book]
       - id: delay_unclear
         test: { '==': [{ var: delay_acceptable }, unclear] }
         message: Whether a delay is acceptable has not been settled.
@@ -193,6 +301,19 @@ designs:
 
   encouragement:
     blockers:
+      - id: individual_records_required
+        test: { '==': [{ var: record_linkage }, group] }
+        message: >-
+          Only group-level linkage is available, and this design compares individuals — it
+          needs treatment, covariates and outcomes on the same records.
+        citations: [hernan_robins_2020]
+      - id: no_record_linkage
+        test: { '==': [{ var: record_linkage }, 'no'] }
+        message: >-
+          Treatment status and outcomes cannot be brought together for the same units, so
+          there is no contrast to estimate. A single outcome series supports an interrupted
+          time series and nothing stronger.
+        citations: [hernan_robins_2020]
       - id: not_prospective
         test: { '==': [{ var: prospective }, 'no'] }
         message: The encouragement cannot be randomised once the intervention has been delivered.
@@ -204,6 +325,17 @@ designs:
           which is what this design requires.
         citations: [angrist_pischke_2009]
     conditions:
+      - id: record_linkage_unchecked
+        test: { '==': [{ var: record_linkage }, unsure] }
+        message: >-
+          Whether treatment status and outcomes can be brought together for the same units
+          has not been established. It constrains which designs are available more sharply
+          than most methodological considerations do.
+        unlock: >-
+          Confirm what identifiers exist across the sources holding treatment and outcome,
+          and whether linking them can be approved under the relevant governance. This can
+          be settled now — it does not need the data themselves.
+        citations: [hernan_robins_2020, magenta_book]
       - id: lever_unproven
         test: { '==': [{ var: encouragement_lever }, unclear] }
         message: A possible encouragement has been identified but not established.
@@ -232,6 +364,13 @@ designs:
 
   rd_sharp:
     blockers:
+      - id: no_record_linkage
+        test: { '==': [{ var: record_linkage }, 'no'] }
+        message: >-
+          Treatment status and outcomes cannot be brought together for the same units, so
+          there is no contrast to estimate. A single outcome series supports an interrupted
+          time series and nothing stronger.
+        citations: [hernan_robins_2020]
       - id: no_threshold
         test: { '==': [{ var: assignment_threshold }, 'no'] }
         message: A discontinuity design requires assignment by a score, date or threshold.
@@ -249,6 +388,27 @@ designs:
           which removes the basis for the comparison.
         citations: [mccrary_2008]
     conditions:
+      - id: group_level_assignment_rule
+        test: { '==': [{ var: record_linkage }, group] }
+        message: >-
+          Only group-level linkage is available. A discontinuity design can still work where
+          the eligibility rule applies to areas, sites or cohorts rather than to people.
+        unlock: >-
+          Establish whether the rule operates on a unit you can observe, and state the
+          estimand at that level — the effect at the cutoff for those units, not for
+          individuals within them.
+        citations: [hernan_robins_2020, cattaneo_etal_2020]
+      - id: record_linkage_unchecked
+        test: { '==': [{ var: record_linkage }, unsure] }
+        message: >-
+          Whether treatment status and outcomes can be brought together for the same units
+          has not been established. It constrains which designs are available more sharply
+          than most methodological considerations do.
+        unlock: >-
+          Confirm what identifiers exist across the sources holding treatment and outcome,
+          and whether linking them can be approved under the relevant governance. This can
+          be settled now — it does not need the data themselves.
+        citations: [hernan_robins_2020, magenta_book]
       - id: manipulation_untested
         test: { '==': [{ var: threshold_manipulation }, untested] }
         message: Whether people can position themselves around the cutoff has not been tested.
@@ -298,6 +458,13 @@ designs:
 
   rd_fuzzy:
     blockers:
+      - id: no_record_linkage
+        test: { '==': [{ var: record_linkage }, 'no'] }
+        message: >-
+          Treatment status and outcomes cannot be brought together for the same units, so
+          there is no contrast to estimate. A single outcome series supports an interrupted
+          time series and nothing stronger.
+        citations: [hernan_robins_2020]
       - id: no_threshold
         test: { '==': [{ var: assignment_threshold }, 'no'] }
         message: A discontinuity design requires assignment by a score, date or threshold.
@@ -307,6 +474,27 @@ designs:
         message: Sorting around the cutoff removes the basis for the comparison.
         citations: [mccrary_2008]
     conditions:
+      - id: group_level_assignment_rule
+        test: { '==': [{ var: record_linkage }, group] }
+        message: >-
+          Only group-level linkage is available. A discontinuity design can still work where
+          the eligibility rule applies to areas, sites or cohorts rather than to people.
+        unlock: >-
+          Establish whether the rule operates on a unit you can observe, and state the
+          estimand at that level — the effect at the cutoff for those units, not for
+          individuals within them.
+        citations: [hernan_robins_2020, cattaneo_etal_2020]
+      - id: record_linkage_unchecked
+        test: { '==': [{ var: record_linkage }, unsure] }
+        message: >-
+          Whether treatment status and outcomes can be brought together for the same units
+          has not been established. It constrains which designs are available more sharply
+          than most methodological considerations do.
+        unlock: >-
+          Confirm what identifiers exist across the sources holding treatment and outcome,
+          and whether linking them can be approved under the relevant governance. This can
+          be settled now — it does not need the data themselves.
+        citations: [hernan_robins_2020, magenta_book]
       - id: manipulation_untested
         test: { '==': [{ var: threshold_manipulation }, untested] }
         message: Whether people can position themselves around the cutoff has not been tested.
@@ -343,6 +531,19 @@ designs:
 
   iv_2sls:
     blockers:
+      - id: individual_records_required
+        test: { '==': [{ var: record_linkage }, group] }
+        message: >-
+          Only group-level linkage is available, and this design compares individuals — it
+          needs treatment, covariates and outcomes on the same records.
+        citations: [hernan_robins_2020]
+      - id: no_record_linkage
+        test: { '==': [{ var: record_linkage }, 'no'] }
+        message: >-
+          Treatment status and outcomes cannot be brought together for the same units, so
+          there is no contrast to estimate. A single outcome series supports an interrupted
+          time series and nothing stronger.
+        citations: [hernan_robins_2020]
       - id: no_instrument
         test: { '==': [{ var: instrument_available }, 'no'] }
         message: >-
@@ -357,6 +558,17 @@ designs:
           than qualifying it.
         citations: [angrist_pischke_2009]
     conditions:
+      - id: record_linkage_unchecked
+        test: { '==': [{ var: record_linkage }, unsure] }
+        message: >-
+          Whether treatment status and outcomes can be brought together for the same units
+          has not been established. It constrains which designs are available more sharply
+          than most methodological considerations do.
+        unlock: >-
+          Confirm what identifiers exist across the sources holding treatment and outcome,
+          and whether linking them can be approved under the relevant governance. This can
+          be settled now — it does not need the data themselves.
+        citations: [hernan_robins_2020, magenta_book]
       - id: instrument_unproven
         test: { '==': [{ var: instrument_available }, possible] }
         message: A candidate instrument has been identified but not established.
@@ -390,6 +602,13 @@ designs:
 
   did_2x2:
     blockers:
+      - id: no_record_linkage
+        test: { '==': [{ var: record_linkage }, 'no'] }
+        message: >-
+          Treatment status and outcomes cannot be brought together for the same units, so
+          there is no contrast to estimate. A single outcome series supports an interrupted
+          time series and nothing stronger.
+        citations: [hernan_robins_2020]
       - id: no_pre_data
         test: { '==': [{ var: pre_periods }, none] }
         message: A difference-in-differences comparison requires outcome data from before the intervention.
@@ -411,6 +630,17 @@ designs:
           staggered-adoption design applies instead.
         citations: [goodman_bacon_2021]
     conditions:
+      - id: record_linkage_unchecked
+        test: { '==': [{ var: record_linkage }, unsure] }
+        message: >-
+          Whether treatment status and outcomes can be brought together for the same units
+          has not been established. It constrains which designs are available more sharply
+          than most methodological considerations do.
+        unlock: >-
+          Confirm what identifiers exist across the sources holding treatment and outcome,
+          and whether linking them can be approved under the relevant governance. This can
+          be settled now — it does not need the data themselves.
+        citations: [hernan_robins_2020, magenta_book]
       - id: single_pre_period
         test: { '==': [{ var: pre_periods }, one] }
         message: >-
@@ -433,6 +663,13 @@ designs:
 
   did_staggered:
     blockers:
+      - id: no_record_linkage
+        test: { '==': [{ var: record_linkage }, 'no'] }
+        message: >-
+          Treatment status and outcomes cannot be brought together for the same units, so
+          there is no contrast to estimate. A single outcome series supports an interrupted
+          time series and nothing stronger.
+        citations: [hernan_robins_2020]
       - id: no_pre_data
         test: { '==': [{ var: pre_periods }, none] }
         message: A difference-in-differences comparison requires outcome data from before the intervention.
@@ -452,6 +689,17 @@ designs:
         message: The groups were already moving apart before the intervention.
         citations: [angrist_pischke_2009]
     conditions:
+      - id: record_linkage_unchecked
+        test: { '==': [{ var: record_linkage }, unsure] }
+        message: >-
+          Whether treatment status and outcomes can be brought together for the same units
+          has not been established. It constrains which designs are available more sharply
+          than most methodological considerations do.
+        unlock: >-
+          Confirm what identifiers exist across the sources holding treatment and outcome,
+          and whether linking them can be approved under the relevant governance. This can
+          be settled now — it does not need the data themselves.
+        citations: [hernan_robins_2020, magenta_book]
       - id: trends_untested
         test: { '==': [{ var: parallel_trends_evidence }, untested] }
         message: Whether the groups moved together before the intervention has not been examined.
@@ -479,6 +727,13 @@ designs:
 
   synth:
     blockers:
+      - id: no_record_linkage
+        test: { '==': [{ var: record_linkage }, 'no'] }
+        message: >-
+          Treatment status and outcomes cannot be brought together for the same units, so
+          there is no contrast to estimate. A single outcome series supports an interrupted
+          time series and nothing stronger.
+        citations: [hernan_robins_2020]
       - id: no_pre_data
         test: { in: [{ var: pre_periods }, [none, one]] }
         message: >-
@@ -490,6 +745,17 @@ designs:
         message: No untreated units available to weight into a comparison.
         citations: [abadie_2021]
     conditions:
+      - id: record_linkage_unchecked
+        test: { '==': [{ var: record_linkage }, unsure] }
+        message: >-
+          Whether treatment status and outcomes can be brought together for the same units
+          has not been established. It constrains which designs are available more sharply
+          than most methodological considerations do.
+        unlock: >-
+          Confirm what identifiers exist across the sources holding treatment and outcome,
+          and whether linking them can be approved under the relevant governance. This can
+          be settled now — it does not need the data themselves.
+        citations: [hernan_robins_2020, magenta_book]
       - id: short_pre_period
         test: { '==': [{ var: pre_periods }, few] }
         message: >-
@@ -517,6 +783,13 @@ designs:
 
   its_controlled:
     blockers:
+      - id: no_record_linkage
+        test: { '==': [{ var: record_linkage }, 'no'] }
+        message: >-
+          Treatment status and outcomes cannot be brought together for the same units, so
+          there is no contrast to estimate. A single outcome series supports an interrupted
+          time series and nothing stronger.
+        citations: [hernan_robins_2020]
       - id: no_control_series
         test: { '==': [{ var: control_series }, 'no'] }
         message: >-
@@ -532,6 +805,17 @@ designs:
         message: The interruption point must be known to separate before from after.
         citations: [bernal_etal_2017]
     conditions:
+      - id: record_linkage_unchecked
+        test: { '==': [{ var: record_linkage }, unsure] }
+        message: >-
+          Whether treatment status and outcomes can be brought together for the same units
+          has not been established. It constrains which designs are available more sharply
+          than most methodological considerations do.
+        unlock: >-
+          Confirm what identifiers exist across the sources holding treatment and outcome,
+          and whether linking them can be approved under the relevant governance. This can
+          be settled now — it does not need the data themselves.
+        citations: [hernan_robins_2020, magenta_book]
       - id: control_unproven
         test: { '==': [{ var: control_series }, unclear] }
         message: A possible control series has been identified but not established.
@@ -623,6 +907,19 @@ designs:
 
   matching:
     blockers:
+      - id: individual_records_required
+        test: { '==': [{ var: record_linkage }, group] }
+        message: >-
+          Only group-level linkage is available, and this design compares individuals — it
+          needs treatment, covariates and outcomes on the same records.
+        citations: [hernan_robins_2020]
+      - id: no_record_linkage
+        test: { '==': [{ var: record_linkage }, 'no'] }
+        message: >-
+          Treatment status and outcomes cannot be brought together for the same units, so
+          there is no contrast to estimate. A single outcome series supports an interrupted
+          time series and nothing stronger.
+        citations: [hernan_robins_2020]
       - id: sparse_covariates
         test: { '==': [{ var: covariate_richness }, sparse] }
         message: >-
@@ -636,6 +933,17 @@ designs:
           comparable pairs to form.
         citations: [austin_2011, li_etal_2018]
     conditions:
+      - id: record_linkage_unchecked
+        test: { '==': [{ var: record_linkage }, unsure] }
+        message: >-
+          Whether treatment status and outcomes can be brought together for the same units
+          has not been established. It constrains which designs are available more sharply
+          than most methodological considerations do.
+        unlock: >-
+          Confirm what identifiers exist across the sources holding treatment and outcome,
+          and whether linking them can be approved under the relevant governance. This can
+          be settled now — it does not need the data themselves.
+        citations: [hernan_robins_2020, magenta_book]
       - id: limited_overlap
         test: { '==': [{ var: overlap }, limited] }
         message: >-
@@ -688,6 +996,19 @@ designs:
 
   weighting:
     blockers:
+      - id: individual_records_required
+        test: { '==': [{ var: record_linkage }, group] }
+        message: >-
+          Only group-level linkage is available, and this design compares individuals — it
+          needs treatment, covariates and outcomes on the same records.
+        citations: [hernan_robins_2020]
+      - id: no_record_linkage
+        test: { '==': [{ var: record_linkage }, 'no'] }
+        message: >-
+          Treatment status and outcomes cannot be brought together for the same units, so
+          there is no contrast to estimate. A single outcome series supports an interrupted
+          time series and nothing stronger.
+        citations: [hernan_robins_2020]
       - id: sparse_covariates
         test: { '==': [{ var: covariate_richness }, sparse] }
         message: Weighting can only adjust for what is measured.
@@ -700,6 +1021,17 @@ designs:
           positivity violation.
         citations: [li_etal_2018, hernan_robins_2020]
     conditions:
+      - id: record_linkage_unchecked
+        test: { '==': [{ var: record_linkage }, unsure] }
+        message: >-
+          Whether treatment status and outcomes can be brought together for the same units
+          has not been established. It constrains which designs are available more sharply
+          than most methodological considerations do.
+        unlock: >-
+          Confirm what identifiers exist across the sources holding treatment and outcome,
+          and whether linking them can be approved under the relevant governance. This can
+          be settled now — it does not need the data themselves.
+        citations: [hernan_robins_2020, magenta_book]
       - id: limited_overlap
         test: { '==': [{ var: overlap }, limited] }
         message: Limited overlap produces large weights that dominate the estimate.
@@ -734,6 +1066,19 @@ designs:
 
   gcomp:
     blockers:
+      - id: individual_records_required
+        test: { '==': [{ var: record_linkage }, group] }
+        message: >-
+          Only group-level linkage is available, and this design compares individuals — it
+          needs treatment, covariates and outcomes on the same records.
+        citations: [hernan_robins_2020]
+      - id: no_record_linkage
+        test: { '==': [{ var: record_linkage }, 'no'] }
+        message: >-
+          Treatment status and outcomes cannot be brought together for the same units, so
+          there is no contrast to estimate. A single outcome series supports an interrupted
+          time series and nothing stronger.
+        citations: [hernan_robins_2020]
       - id: sparse_covariates
         test: { '==': [{ var: covariate_richness }, sparse] }
         message: >-
@@ -747,6 +1092,17 @@ designs:
           comparable units exist, which the method cannot signal.
         citations: [hernan_robins_2020]
     conditions:
+      - id: record_linkage_unchecked
+        test: { '==': [{ var: record_linkage }, unsure] }
+        message: >-
+          Whether treatment status and outcomes can be brought together for the same units
+          has not been established. It constrains which designs are available more sharply
+          than most methodological considerations do.
+        unlock: >-
+          Confirm what identifiers exist across the sources holding treatment and outcome,
+          and whether linking them can be approved under the relevant governance. This can
+          be settled now — it does not need the data themselves.
+        citations: [hernan_robins_2020, magenta_book]
       - id: unmeasured_confounding
         test: { '==': [{ var: confounders_measured }, some_unmeasured] }
         message: Known drivers of selection are not in the data.
@@ -775,6 +1131,19 @@ designs:
 
   gmethods:
     blockers:
+      - id: individual_records_required
+        test: { '==': [{ var: record_linkage }, group] }
+        message: >-
+          Only group-level linkage is available, and this design compares individuals — it
+          needs treatment, covariates and outcomes on the same records.
+        citations: [hernan_robins_2020]
+      - id: no_record_linkage
+        test: { '==': [{ var: record_linkage }, 'no'] }
+        message: >-
+          Treatment status and outcomes cannot be brought together for the same units, so
+          there is no contrast to estimate. A single outcome series supports an interrupted
+          time series and nothing stronger.
+        citations: [hernan_robins_2020]
       - id: not_time_varying
         test: { '==': [{ var: time_varying_confounding }, 'no'] }
         message: >-
@@ -792,6 +1161,17 @@ designs:
         message: The time-varying confounders must themselves be measured.
         citations: [hernan_robins_2020]
     conditions:
+      - id: record_linkage_unchecked
+        test: { '==': [{ var: record_linkage }, unsure] }
+        message: >-
+          Whether treatment status and outcomes can be brought together for the same units
+          has not been established. It constrains which designs are available more sharply
+          than most methodological considerations do.
+        unlock: >-
+          Confirm what identifiers exist across the sources holding treatment and outcome,
+          and whether linking them can be approved under the relevant governance. This can
+          be settled now — it does not need the data themselves.
+        citations: [hernan_robins_2020, magenta_book]
       - id: feedback_unclear
         test: { '==': [{ var: time_varying_confounding }, unclear] }
         message: Whether treatment affects later confounders has not been established.

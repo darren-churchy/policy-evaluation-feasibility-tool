@@ -13,6 +13,10 @@ const READY = {
   intervention_defined: 'yes',
   theory_of_change: 'yes',
   maturity: 'yes',
+  // Linkage is supplied too, so these scenarios exercise design logic rather than data
+  // access. Without it every counterfactual design is Unknown, which is correct but tests
+  // something else — tests/engine.test.mjs covers that case directly.
+  record_linkage: 'individual',
 }
 
 let spec
@@ -259,6 +263,7 @@ describe('Scenario 6 — intervention not defined', () => {
       randomisation_barriers: 'none',
       allocation_unit: 'individual',
       equipoise: 'yes',
+      record_linkage: 'individual',
     })
   })
 

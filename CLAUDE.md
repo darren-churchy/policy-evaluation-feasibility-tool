@@ -174,8 +174,8 @@ in phase 2. See `docs/REDESIGN_PLAN.md`.
 | `spec/tiers.yaml` | The five robustness tiers, the theory-based strand, contested placements | Seeded |
 | `spec/references.bib` | Every citation, with a confidence note | Seeded |
 | `spec/designs.csv` | One row per design (not per estimator) — 22 designs | Seeded |
-| `spec/questions.yaml` | Question bank shared by all tools — 65 questions | Seeded |
-| `spec/rules.yaml` | Per design: blockers, conditions, warnings as JSON Logic — 130 checks | Seeded |
+| `spec/questions.yaml` | Question bank shared by all tools — 67 questions | Seeded |
+| `spec/rules.yaml` | Per design: blockers, conditions, warnings as JSON Logic — 179 checks | Seeded |
 | `spec/stages.yaml` | Stage vocabulary, readiness gates, routing | Seeded |
 | `spec/statistics.yaml` | NHST and Bayesian question sets — 10 questions and 6 tensions each | Seeded |
 | `spec/packs/*.yaml` | Context packs: examples, benchmarks, vocabulary | Phase 6 |
@@ -194,7 +194,7 @@ in phase 2. See `docs/REDESIGN_PLAN.md`.
 The option-value check is the subtle one: a typo'd value makes a blocker silently never
 fire, which surfaces as a design looking Feasible when it has simply never been checked.
 
-**Every question is consumed.** All 65 reach a rule test, a gating condition, a readiness
+**Every question is consumed.** All 67 reach a rule test, a gating condition, a readiness
 gate, the stage inference, a route or the statistics module — asserted by test. The previous tool collected 80
 inputs and scored on 23, so this is checked rather than assumed.
 
@@ -305,7 +305,7 @@ positivity), how many observations sit near a cutoff, how strong a first stage i
 Every question carries `establishable: ex_ante | needs_data`. Six are `needs_data`:
 `overlap`, `density_near_cutoff`, `instrument_strength`, `parallel_trends_evidence`,
 `threshold_enforced`, `threshold_manipulation`. Options meaning "I have not established
-this yet" carry `not_established: true` — 26 of them, across both categories.
+this yet" carry `not_established: true` — 32 of them, across both categories.
 
 Three invariants hold this in place. The first two fail the build, the third is a test:
 
@@ -370,6 +370,31 @@ the question does not offer — mutation-verified.
 `delivery_consistency` is asked after `maturity` as a readiness **warning**, not a gate:
 inconsistent delivery changes what the estimand means — the effect as delivered rather than
 as specified — which has to be stated, not treated as disqualifying.
+
+### Record linkage
+
+`record_linkage` asks whether treatment status and outcomes can be brought together for
+the same units. It is a structural constraint, not a data-quality note: an effect is a
+contrast between outcomes with and without treatment, so estimating one requires observing
+both on the same units. It rules designs out more sharply than most methodological
+considerations do, which is why it is a ladder question with rules rather than a note in a
+data-sources guide.
+
+The partition, pinned by `tests/linkage.test.mjs`:
+
+| Answer | Effect |
+|---|---|
+| **individual** | Nothing ruled out on linkage grounds |
+| **group** — areas, sites, cohorts | Blocks the nine designs that compare individuals by construction. `rd_sharp` and `rd_fuzzy` are **conditional**, not blocked — an eligibility rule can apply to areas, with the estimand moving to that level |
+| **no** | Blocks seventeen. Only `its` and `rdit` survive: a single outcome series and a known date need nothing joined |
+| **unsure** | Blocks nothing; seventeen conditions, each with what to go and confirm |
+
+`outcome_missingness` is asked alongside `expected_attrition` in the statistics module and
+deliberately not merged with it — a unit leaving the study and a record with an empty
+outcome field are different events, handled differently. It raises a tension under each
+approach, and they are not translations of one another: the frequentist concern is bias
+from a complete-case analysis, the Bayesian one is a prior buying precision the observed
+records cannot support.
 
 ### The reviewer pack
 

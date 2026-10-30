@@ -11,7 +11,7 @@
 #
 # See docs/BAYESIAN_SAMPLE_SIZE.md for the research behind the Bayesian branch.
 
-spec_version: 1.0.0
+spec_version: 1.2.0
 
 # Asked of everyone, before the approach splits.
 shared_questions:
@@ -19,6 +19,7 @@ shared_questions:
   - outcome_type
   - outcome_clustered
   - expected_attrition
+  - outcome_missingness
   - sample_fixed
 
 approaches:
@@ -57,6 +58,20 @@ approaches:
           detect one that small. If it cannot, that is worth knowing before fieldwork
           rather than after.
         citations: [rob2, magenta_book]
+
+      - id: missing_outcomes_unhandled
+        when:
+          in: [{ var: outcome_missingness }, [high, unknown]]
+        message: >-
+          A substantial share of outcomes is expected to be missing, or the share has not
+          been established. A complete-case analysis assumes those missing are unrelated to
+          the outcome, which is rarely true and cannot be tested from the records that are
+          present.
+        prompt: >-
+          Ask what the analysis will do with missing outcomes — complete cases, multiple
+          imputation, or a model for the missingness — and what the estimate becomes if
+          those missing did worse than those observed.
+        citations: [rob2, robins_i_v2]
 
       - id: baseline_assumed
         when:
@@ -182,6 +197,21 @@ approaches:
           posterior under a deliberately sceptical prior. If the conclusion changes, the
           study is reporting its assumptions.
         citations: [nichd_strong_prior_2019, wilson_etal_2021_pilot]
+
+      - id: missingness_not_modelled
+        when:
+          in: [{ var: outcome_missingness }, [high, unknown]]
+        message: >-
+          A substantial share of outcomes is expected to be missing, or the share has not
+          been established. A prior sharpens the posterior whether or not the missingness is
+          handled, so an informative prior can make an estimate look more precise than the
+          observed records support.
+        prompt: >-
+          Ask for the missingness mechanism to be stated and modelled alongside the outcome,
+          and for the posterior under an assumption that those missing differ from those
+          observed. Precision bought from the prior is not evidence about the people whose
+          outcomes were never seen.
+        citations: [rob2, fda_bayesian_2026]
 
       - id: sensitivity_absent
         when:

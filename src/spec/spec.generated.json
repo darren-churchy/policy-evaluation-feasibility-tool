@@ -621,6 +621,36 @@
       ]
     },
     {
+      "id": "record_linkage",
+      "establishable": "ex_ante",
+      "text": "Can treatment status and outcomes be brought together for the same units?",
+      "hint": "Whether the records holding who received the intervention and the records holding the outcome can be joined — by an identifier, or by belonging to the same area or cohort. Governance counts as much as technical feasibility: a linkage that cannot be approved is not available.",
+      "intake": true,
+      "options": [
+        {
+          "value": "individual",
+          "label": "Yes — at the level of individual records"
+        },
+        {
+          "value": "group",
+          "label": "Only at group or area level — sites, regions, cohorts"
+        },
+        {
+          "value": "no",
+          "label": "No — they cannot be brought together"
+        },
+        {
+          "value": "unsure",
+          "label": "Not yet established",
+          "not_established": true
+        }
+      ],
+      "references": [
+        "hernan_robins_2020",
+        "magenta_book"
+      ]
+    },
+    {
       "id": "prospective",
       "establishable": "ex_ante",
       "text": "Can the evaluation be planned before the intervention reaches participants?",
@@ -1701,6 +1731,35 @@
       ]
     },
     {
+      "id": "outcome_missingness",
+      "establishable": "ex_ante",
+      "text": "How much missing data do you expect in the primary outcome?",
+      "hint": "Missingness in the measure itself, as distinct from loss to follow-up. Where the outcome comes from administrative data, the source's known completeness is the place to start.",
+      "options": [
+        {
+          "value": "low",
+          "label": "Low — under 5%"
+        },
+        {
+          "value": "moderate",
+          "label": "Moderate — 5% to 20%"
+        },
+        {
+          "value": "high",
+          "label": "High — over 20%"
+        },
+        {
+          "value": "unknown",
+          "label": "Not yet established",
+          "not_established": true
+        }
+      ],
+      "references": [
+        "rob2",
+        "robins_i_v2"
+      ]
+    },
+    {
       "id": "sample_fixed",
       "establishable": "ex_ante",
       "text": "Is the number of units fixed by context, or can you choose it?",
@@ -2472,10 +2531,40 @@
     }
   ],
   "rules": {
-    "spec_version": "1.1.0",
+    "spec_version": "1.2.0",
     "designs": {
       "rct_individual": {
         "blockers": [
+          {
+            "id": "individual_records_required",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "group"
+              ]
+            },
+            "message": "Only group-level linkage is available, and this design compares individuals — it needs treatment, covariates and outcomes on the same records.",
+            "citations": [
+              "hernan_robins_2020"
+            ]
+          },
+          {
+            "id": "no_record_linkage",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "no"
+              ]
+            },
+            "message": "Treatment status and outcomes cannot be brought together for the same units, so there is no contrast to estimate. A single outcome series supports an interrupted time series and nothing stronger.",
+            "citations": [
+              "hernan_robins_2020"
+            ]
+          },
           {
             "id": "not_prospective",
             "test": {
@@ -2523,6 +2612,23 @@
           }
         ],
         "conditions": [
+          {
+            "id": "record_linkage_unchecked",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "unsure"
+              ]
+            },
+            "message": "Whether treatment status and outcomes can be brought together for the same units has not been established. It constrains which designs are available more sharply than most methodological considerations do.",
+            "unlock": "Confirm what identifiers exist across the sources holding treatment and outcome, and whether linking them can be approved under the relevant governance. This can be settled now — it does not need the data themselves.",
+            "citations": [
+              "hernan_robins_2020",
+              "magenta_book"
+            ]
+          },
           {
             "id": "significant_barriers",
             "test": {
@@ -2577,6 +2683,21 @@
       "rct_cluster": {
         "blockers": [
           {
+            "id": "no_record_linkage",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "no"
+              ]
+            },
+            "message": "Treatment status and outcomes cannot be brought together for the same units, so there is no contrast to estimate. A single outcome series supports an interrupted time series and nothing stronger.",
+            "citations": [
+              "hernan_robins_2020"
+            ]
+          },
+          {
             "id": "not_prospective",
             "test": {
               "==": [
@@ -2623,6 +2744,23 @@
           }
         ],
         "conditions": [
+          {
+            "id": "record_linkage_unchecked",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "unsure"
+              ]
+            },
+            "message": "Whether treatment status and outcomes can be brought together for the same units has not been established. It constrains which designs are available more sharply than most methodological considerations do.",
+            "unlock": "Confirm what identifiers exist across the sources holding treatment and outcome, and whether linking them can be approved under the relevant governance. This can be settled now — it does not need the data themselves.",
+            "citations": [
+              "hernan_robins_2020",
+              "magenta_book"
+            ]
+          },
           {
             "id": "too_few_clusters",
             "test": {
@@ -2690,6 +2828,21 @@
       "rct_stepped_wedge": {
         "blockers": [
           {
+            "id": "no_record_linkage",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "no"
+              ]
+            },
+            "message": "Treatment status and outcomes cannot be brought together for the same units, so there is no contrast to estimate. A single outcome series supports an interrupted time series and nothing stronger.",
+            "citations": [
+              "hernan_robins_2020"
+            ]
+          },
+          {
             "id": "not_prospective",
             "test": {
               "==": [
@@ -2721,6 +2874,23 @@
           }
         ],
         "conditions": [
+          {
+            "id": "record_linkage_unchecked",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "unsure"
+              ]
+            },
+            "message": "Whether treatment status and outcomes can be brought together for the same units has not been established. It constrains which designs are available more sharply than most methodological considerations do.",
+            "unlock": "Confirm what identifiers exist across the sources holding treatment and outcome, and whether linking them can be approved under the relevant governance. This can be settled now — it does not need the data themselves.",
+            "citations": [
+              "hernan_robins_2020",
+              "magenta_book"
+            ]
+          },
           {
             "id": "partial_control",
             "test": {
@@ -2775,6 +2945,36 @@
       "rct_crossover": {
         "blockers": [
           {
+            "id": "individual_records_required",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "group"
+              ]
+            },
+            "message": "Only group-level linkage is available, and this design compares individuals — it needs treatment, covariates and outcomes on the same records.",
+            "citations": [
+              "hernan_robins_2020"
+            ]
+          },
+          {
+            "id": "no_record_linkage",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "no"
+              ]
+            },
+            "message": "Treatment status and outcomes cannot be brought together for the same units, so there is no contrast to estimate. A single outcome series supports an interrupted time series and nothing stronger.",
+            "citations": [
+              "hernan_robins_2020"
+            ]
+          },
+          {
             "id": "not_prospective",
             "test": {
               "==": [
@@ -2822,6 +3022,23 @@
         ],
         "conditions": [
           {
+            "id": "record_linkage_unchecked",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "unsure"
+              ]
+            },
+            "message": "Whether treatment status and outcomes can be brought together for the same units has not been established. It constrains which designs are available more sharply than most methodological considerations do.",
+            "unlock": "Confirm what identifiers exist across the sources holding treatment and outcome, and whether linking them can be approved under the relevant governance. This can be settled now — it does not need the data themselves.",
+            "citations": [
+              "hernan_robins_2020",
+              "magenta_book"
+            ]
+          },
+          {
             "id": "reversibility_unclear",
             "test": {
               "==": [
@@ -2858,6 +3075,36 @@
       "rct_waitlist": {
         "blockers": [
           {
+            "id": "individual_records_required",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "group"
+              ]
+            },
+            "message": "Only group-level linkage is available, and this design compares individuals — it needs treatment, covariates and outcomes on the same records.",
+            "citations": [
+              "hernan_robins_2020"
+            ]
+          },
+          {
+            "id": "no_record_linkage",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "no"
+              ]
+            },
+            "message": "Treatment status and outcomes cannot be brought together for the same units, so there is no contrast to estimate. A single outcome series supports an interrupted time series and nothing stronger.",
+            "citations": [
+              "hernan_robins_2020"
+            ]
+          },
+          {
             "id": "not_prospective",
             "test": {
               "==": [
@@ -2889,6 +3136,23 @@
           }
         ],
         "conditions": [
+          {
+            "id": "record_linkage_unchecked",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "unsure"
+              ]
+            },
+            "message": "Whether treatment status and outcomes can be brought together for the same units has not been established. It constrains which designs are available more sharply than most methodological considerations do.",
+            "unlock": "Confirm what identifiers exist across the sources holding treatment and outcome, and whether linking them can be approved under the relevant governance. This can be settled now — it does not need the data themselves.",
+            "citations": [
+              "hernan_robins_2020",
+              "magenta_book"
+            ]
+          },
           {
             "id": "delay_unclear",
             "test": {
@@ -2927,6 +3191,36 @@
       "encouragement": {
         "blockers": [
           {
+            "id": "individual_records_required",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "group"
+              ]
+            },
+            "message": "Only group-level linkage is available, and this design compares individuals — it needs treatment, covariates and outcomes on the same records.",
+            "citations": [
+              "hernan_robins_2020"
+            ]
+          },
+          {
+            "id": "no_record_linkage",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "no"
+              ]
+            },
+            "message": "Treatment status and outcomes cannot be brought together for the same units, so there is no contrast to estimate. A single outcome series supports an interrupted time series and nothing stronger.",
+            "citations": [
+              "hernan_robins_2020"
+            ]
+          },
+          {
             "id": "not_prospective",
             "test": {
               "==": [
@@ -2958,6 +3252,23 @@
           }
         ],
         "conditions": [
+          {
+            "id": "record_linkage_unchecked",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "unsure"
+              ]
+            },
+            "message": "Whether treatment status and outcomes can be brought together for the same units has not been established. It constrains which designs are available more sharply than most methodological considerations do.",
+            "unlock": "Confirm what identifiers exist across the sources holding treatment and outcome, and whether linking them can be approved under the relevant governance. This can be settled now — it does not need the data themselves.",
+            "citations": [
+              "hernan_robins_2020",
+              "magenta_book"
+            ]
+          },
           {
             "id": "lever_unproven",
             "test": {
@@ -3016,6 +3327,21 @@
       "rd_sharp": {
         "blockers": [
           {
+            "id": "no_record_linkage",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "no"
+              ]
+            },
+            "message": "Treatment status and outcomes cannot be brought together for the same units, so there is no contrast to estimate. A single outcome series supports an interrupted time series and nothing stronger.",
+            "citations": [
+              "hernan_robins_2020"
+            ]
+          },
+          {
             "id": "no_threshold",
             "test": {
               "==": [
@@ -3062,6 +3388,40 @@
           }
         ],
         "conditions": [
+          {
+            "id": "group_level_assignment_rule",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "group"
+              ]
+            },
+            "message": "Only group-level linkage is available. A discontinuity design can still work where the eligibility rule applies to areas, sites or cohorts rather than to people.",
+            "unlock": "Establish whether the rule operates on a unit you can observe, and state the estimand at that level — the effect at the cutoff for those units, not for individuals within them.",
+            "citations": [
+              "hernan_robins_2020",
+              "cattaneo_etal_2020"
+            ]
+          },
+          {
+            "id": "record_linkage_unchecked",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "unsure"
+              ]
+            },
+            "message": "Whether treatment status and outcomes can be brought together for the same units has not been established. It constrains which designs are available more sharply than most methodological considerations do.",
+            "unlock": "Confirm what identifiers exist across the sources holding treatment and outcome, and whether linking them can be approved under the relevant governance. This can be settled now — it does not need the data themselves.",
+            "citations": [
+              "hernan_robins_2020",
+              "magenta_book"
+            ]
+          },
           {
             "id": "manipulation_untested",
             "test": {
@@ -3163,6 +3523,21 @@
       "rd_fuzzy": {
         "blockers": [
           {
+            "id": "no_record_linkage",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "no"
+              ]
+            },
+            "message": "Treatment status and outcomes cannot be brought together for the same units, so there is no contrast to estimate. A single outcome series supports an interrupted time series and nothing stronger.",
+            "citations": [
+              "hernan_robins_2020"
+            ]
+          },
+          {
             "id": "no_threshold",
             "test": {
               "==": [
@@ -3194,6 +3569,40 @@
           }
         ],
         "conditions": [
+          {
+            "id": "group_level_assignment_rule",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "group"
+              ]
+            },
+            "message": "Only group-level linkage is available. A discontinuity design can still work where the eligibility rule applies to areas, sites or cohorts rather than to people.",
+            "unlock": "Establish whether the rule operates on a unit you can observe, and state the estimand at that level — the effect at the cutoff for those units, not for individuals within them.",
+            "citations": [
+              "hernan_robins_2020",
+              "cattaneo_etal_2020"
+            ]
+          },
+          {
+            "id": "record_linkage_unchecked",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "unsure"
+              ]
+            },
+            "message": "Whether treatment status and outcomes can be brought together for the same units has not been established. It constrains which designs are available more sharply than most methodological considerations do.",
+            "unlock": "Confirm what identifiers exist across the sources holding treatment and outcome, and whether linking them can be approved under the relevant governance. This can be settled now — it does not need the data themselves.",
+            "citations": [
+              "hernan_robins_2020",
+              "magenta_book"
+            ]
+          },
           {
             "id": "manipulation_untested",
             "test": {
@@ -3284,6 +3693,36 @@
       "iv_2sls": {
         "blockers": [
           {
+            "id": "individual_records_required",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "group"
+              ]
+            },
+            "message": "Only group-level linkage is available, and this design compares individuals — it needs treatment, covariates and outcomes on the same records.",
+            "citations": [
+              "hernan_robins_2020"
+            ]
+          },
+          {
+            "id": "no_record_linkage",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "no"
+              ]
+            },
+            "message": "Treatment status and outcomes cannot be brought together for the same units, so there is no contrast to estimate. A single outcome series supports an interrupted time series and nothing stronger.",
+            "citations": [
+              "hernan_robins_2020"
+            ]
+          },
+          {
             "id": "no_instrument",
             "test": {
               "==": [
@@ -3315,6 +3754,23 @@
           }
         ],
         "conditions": [
+          {
+            "id": "record_linkage_unchecked",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "unsure"
+              ]
+            },
+            "message": "Whether treatment status and outcomes can be brought together for the same units has not been established. It constrains which designs are available more sharply than most methodological considerations do.",
+            "unlock": "Confirm what identifiers exist across the sources holding treatment and outcome, and whether linking them can be approved under the relevant governance. This can be settled now — it does not need the data themselves.",
+            "citations": [
+              "hernan_robins_2020",
+              "magenta_book"
+            ]
+          },
           {
             "id": "instrument_unproven",
             "test": {
@@ -3394,6 +3850,21 @@
       "did_2x2": {
         "blockers": [
           {
+            "id": "no_record_linkage",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "no"
+              ]
+            },
+            "message": "Treatment status and outcomes cannot be brought together for the same units, so there is no contrast to estimate. A single outcome series supports an interrupted time series and nothing stronger.",
+            "citations": [
+              "hernan_robins_2020"
+            ]
+          },
+          {
             "id": "no_pre_data",
             "test": {
               "==": [
@@ -3459,6 +3930,23 @@
         ],
         "conditions": [
           {
+            "id": "record_linkage_unchecked",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "unsure"
+              ]
+            },
+            "message": "Whether treatment status and outcomes can be brought together for the same units has not been established. It constrains which designs are available more sharply than most methodological considerations do.",
+            "unlock": "Confirm what identifiers exist across the sources holding treatment and outcome, and whether linking them can be approved under the relevant governance. This can be settled now — it does not need the data themselves.",
+            "citations": [
+              "hernan_robins_2020",
+              "magenta_book"
+            ]
+          },
+          {
             "id": "single_pre_period",
             "test": {
               "==": [
@@ -3510,6 +3998,21 @@
       },
       "did_staggered": {
         "blockers": [
+          {
+            "id": "no_record_linkage",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "no"
+              ]
+            },
+            "message": "Treatment status and outcomes cannot be brought together for the same units, so there is no contrast to estimate. A single outcome series supports an interrupted time series and nothing stronger.",
+            "citations": [
+              "hernan_robins_2020"
+            ]
+          },
           {
             "id": "no_pre_data",
             "test": {
@@ -3573,6 +4076,23 @@
         ],
         "conditions": [
           {
+            "id": "record_linkage_unchecked",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "unsure"
+              ]
+            },
+            "message": "Whether treatment status and outcomes can be brought together for the same units has not been established. It constrains which designs are available more sharply than most methodological considerations do.",
+            "unlock": "Confirm what identifiers exist across the sources holding treatment and outcome, and whether linking them can be approved under the relevant governance. This can be settled now — it does not need the data themselves.",
+            "citations": [
+              "hernan_robins_2020",
+              "magenta_book"
+            ]
+          },
+          {
             "id": "trends_untested",
             "test": {
               "==": [
@@ -3632,6 +4152,21 @@
       "synth": {
         "blockers": [
           {
+            "id": "no_record_linkage",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "no"
+              ]
+            },
+            "message": "Treatment status and outcomes cannot be brought together for the same units, so there is no contrast to estimate. A single outcome series supports an interrupted time series and nothing stronger.",
+            "citations": [
+              "hernan_robins_2020"
+            ]
+          },
+          {
             "id": "no_pre_data",
             "test": {
               "in": [
@@ -3666,6 +4201,23 @@
           }
         ],
         "conditions": [
+          {
+            "id": "record_linkage_unchecked",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "unsure"
+              ]
+            },
+            "message": "Whether treatment status and outcomes can be brought together for the same units has not been established. It constrains which designs are available more sharply than most methodological considerations do.",
+            "unlock": "Confirm what identifiers exist across the sources holding treatment and outcome, and whether linking them can be approved under the relevant governance. This can be settled now — it does not need the data themselves.",
+            "citations": [
+              "hernan_robins_2020",
+              "magenta_book"
+            ]
+          },
           {
             "id": "short_pre_period",
             "test": {
@@ -3720,6 +4272,21 @@
       "its_controlled": {
         "blockers": [
           {
+            "id": "no_record_linkage",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "no"
+              ]
+            },
+            "message": "Treatment status and outcomes cannot be brought together for the same units, so there is no contrast to estimate. A single outcome series supports an interrupted time series and nothing stronger.",
+            "citations": [
+              "hernan_robins_2020"
+            ]
+          },
+          {
             "id": "no_control_series",
             "test": {
               "==": [
@@ -3766,6 +4333,23 @@
           }
         ],
         "conditions": [
+          {
+            "id": "record_linkage_unchecked",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "unsure"
+              ]
+            },
+            "message": "Whether treatment status and outcomes can be brought together for the same units has not been established. It constrains which designs are available more sharply than most methodological considerations do.",
+            "unlock": "Confirm what identifiers exist across the sources holding treatment and outcome, and whether linking them can be approved under the relevant governance. This can be settled now — it does not need the data themselves.",
+            "citations": [
+              "hernan_robins_2020",
+              "magenta_book"
+            ]
+          },
           {
             "id": "control_unproven",
             "test": {
@@ -3981,6 +4565,36 @@
       "matching": {
         "blockers": [
           {
+            "id": "individual_records_required",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "group"
+              ]
+            },
+            "message": "Only group-level linkage is available, and this design compares individuals — it needs treatment, covariates and outcomes on the same records.",
+            "citations": [
+              "hernan_robins_2020"
+            ]
+          },
+          {
+            "id": "no_record_linkage",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "no"
+              ]
+            },
+            "message": "Treatment status and outcomes cannot be brought together for the same units, so there is no contrast to estimate. A single outcome series supports an interrupted time series and nothing stronger.",
+            "citations": [
+              "hernan_robins_2020"
+            ]
+          },
+          {
             "id": "sparse_covariates",
             "test": {
               "==": [
@@ -4013,6 +4627,23 @@
           }
         ],
         "conditions": [
+          {
+            "id": "record_linkage_unchecked",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "unsure"
+              ]
+            },
+            "message": "Whether treatment status and outcomes can be brought together for the same units has not been established. It constrains which designs are available more sharply than most methodological considerations do.",
+            "unlock": "Confirm what identifiers exist across the sources holding treatment and outcome, and whether linking them can be approved under the relevant governance. This can be settled now — it does not need the data themselves.",
+            "citations": [
+              "hernan_robins_2020",
+              "magenta_book"
+            ]
+          },
           {
             "id": "limited_overlap",
             "test": {
@@ -4134,6 +4765,36 @@
       "weighting": {
         "blockers": [
           {
+            "id": "individual_records_required",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "group"
+              ]
+            },
+            "message": "Only group-level linkage is available, and this design compares individuals — it needs treatment, covariates and outcomes on the same records.",
+            "citations": [
+              "hernan_robins_2020"
+            ]
+          },
+          {
+            "id": "no_record_linkage",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "no"
+              ]
+            },
+            "message": "Treatment status and outcomes cannot be brought together for the same units, so there is no contrast to estimate. A single outcome series supports an interrupted time series and nothing stronger.",
+            "citations": [
+              "hernan_robins_2020"
+            ]
+          },
+          {
             "id": "sparse_covariates",
             "test": {
               "==": [
@@ -4166,6 +4827,23 @@
           }
         ],
         "conditions": [
+          {
+            "id": "record_linkage_unchecked",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "unsure"
+              ]
+            },
+            "message": "Whether treatment status and outcomes can be brought together for the same units has not been established. It constrains which designs are available more sharply than most methodological considerations do.",
+            "unlock": "Confirm what identifiers exist across the sources holding treatment and outcome, and whether linking them can be approved under the relevant governance. This can be settled now — it does not need the data themselves.",
+            "citations": [
+              "hernan_robins_2020",
+              "magenta_book"
+            ]
+          },
           {
             "id": "limited_overlap",
             "test": {
@@ -4253,6 +4931,36 @@
       "gcomp": {
         "blockers": [
           {
+            "id": "individual_records_required",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "group"
+              ]
+            },
+            "message": "Only group-level linkage is available, and this design compares individuals — it needs treatment, covariates and outcomes on the same records.",
+            "citations": [
+              "hernan_robins_2020"
+            ]
+          },
+          {
+            "id": "no_record_linkage",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "no"
+              ]
+            },
+            "message": "Treatment status and outcomes cannot be brought together for the same units, so there is no contrast to estimate. A single outcome series supports an interrupted time series and nothing stronger.",
+            "citations": [
+              "hernan_robins_2020"
+            ]
+          },
+          {
             "id": "sparse_covariates",
             "test": {
               "==": [
@@ -4284,6 +4992,23 @@
           }
         ],
         "conditions": [
+          {
+            "id": "record_linkage_unchecked",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "unsure"
+              ]
+            },
+            "message": "Whether treatment status and outcomes can be brought together for the same units has not been established. It constrains which designs are available more sharply than most methodological considerations do.",
+            "unlock": "Confirm what identifiers exist across the sources holding treatment and outcome, and whether linking them can be approved under the relevant governance. This can be settled now — it does not need the data themselves.",
+            "citations": [
+              "hernan_robins_2020",
+              "magenta_book"
+            ]
+          },
           {
             "id": "unmeasured_confounding",
             "test": {
@@ -4354,6 +5079,36 @@
       "gmethods": {
         "blockers": [
           {
+            "id": "individual_records_required",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "group"
+              ]
+            },
+            "message": "Only group-level linkage is available, and this design compares individuals — it needs treatment, covariates and outcomes on the same records.",
+            "citations": [
+              "hernan_robins_2020"
+            ]
+          },
+          {
+            "id": "no_record_linkage",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "no"
+              ]
+            },
+            "message": "Treatment status and outcomes cannot be brought together for the same units, so there is no contrast to estimate. A single outcome series supports an interrupted time series and nothing stronger.",
+            "citations": [
+              "hernan_robins_2020"
+            ]
+          },
+          {
             "id": "not_time_varying",
             "test": {
               "==": [
@@ -4400,6 +5155,23 @@
           }
         ],
         "conditions": [
+          {
+            "id": "record_linkage_unchecked",
+            "test": {
+              "==": [
+                {
+                  "var": "record_linkage"
+                },
+                "unsure"
+              ]
+            },
+            "message": "Whether treatment status and outcomes can be brought together for the same units has not been established. It constrains which designs are available more sharply than most methodological considerations do.",
+            "unlock": "Confirm what identifiers exist across the sources holding treatment and outcome, and whether linking them can be approved under the relevant governance. This can be settled now — it does not need the data themselves.",
+            "citations": [
+              "hernan_robins_2020",
+              "magenta_book"
+            ]
+          },
           {
             "id": "feedback_unclear",
             "test": {
@@ -5161,12 +5933,13 @@
     ]
   },
   "statistics": {
-    "spec_version": "1.0.0",
+    "spec_version": "1.2.0",
     "shared_questions": [
       "analysis_approach",
       "outcome_type",
       "outcome_clustered",
       "expected_attrition",
+      "outcome_missingness",
       "sample_fixed"
     ],
     "approaches": {
@@ -5213,6 +5986,26 @@
             "citations": [
               "rob2",
               "magenta_book"
+            ]
+          },
+          {
+            "id": "missing_outcomes_unhandled",
+            "when": {
+              "in": [
+                {
+                  "var": "outcome_missingness"
+                },
+                [
+                  "high",
+                  "unknown"
+                ]
+              ]
+            },
+            "message": "A substantial share of outcomes is expected to be missing, or the share has not been established. A complete-case analysis assumes those missing are unrelated to the outcome, which is rarely true and cannot be tested from the records that are present.",
+            "prompt": "Ask what the analysis will do with missing outcomes — complete cases, multiple imputation, or a model for the missingness — and what the estimate becomes if those missing did worse than those observed.",
+            "citations": [
+              "rob2",
+              "robins_i_v2"
             ]
           },
           {
@@ -5410,6 +6203,26 @@
             "citations": [
               "nichd_strong_prior_2019",
               "wilson_etal_2021_pilot"
+            ]
+          },
+          {
+            "id": "missingness_not_modelled",
+            "when": {
+              "in": [
+                {
+                  "var": "outcome_missingness"
+                },
+                [
+                  "high",
+                  "unknown"
+                ]
+              ]
+            },
+            "message": "A substantial share of outcomes is expected to be missing, or the share has not been established. A prior sharpens the posterior whether or not the missingness is handled, so an informative prior can make an estimate look more precise than the observed records support.",
+            "prompt": "Ask for the missingness mechanism to be stated and modelled alongside the outcome, and for the posterior under an assumption that those missing differ from those observed. Precision bought from the prior is not evidence about the people whose outcomes were never seen.",
+            "citations": [
+              "rob2",
+              "fda_bayesian_2026"
             ]
           },
           {

@@ -19,7 +19,10 @@ const render = answers => buildReport({
   date: '30 October 2026',
 })
 
-const READY = { intervention_defined: 'yes', theory_of_change: 'yes', maturity: 'yes' }
+const READY = {
+  intervention_defined: 'yes', theory_of_change: 'yes', maturity: 'yes',
+  record_linkage: 'individual',
+}
 
 describe('it is a complete, self-contained page', () => {
   it('needs no scripts and no external assets', () => {

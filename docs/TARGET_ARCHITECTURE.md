@@ -242,25 +242,26 @@ evaluation impossible — it changes what the estimand means, from the effect of
 intervention as specified to its effect as delivered. That has to be stated in the protocol
 rather than discovered afterwards, which is a warning's job, not a gate's.
 
-### Still open: the data-sources guide, `p6_linkage` and `p6_missing`
+### Settled: the data-sources guide, `record_linkage` and `outcome_missingness`
 
-**The guide: yes.** A place to map out data sources — names, owners, access routes,
-coverage, dates — is genuinely notes. It produces nothing the engine reads, and it is the
-kind of thing a reviewer wants to see. It belongs with the Ideal Trial and DAG guides.
+**The guide: yes.** A place to map data sources — names, owners, access routes, coverage,
+dates — is genuinely notes. It produces nothing the engine reads and belongs with the Ideal
+Trial and DAG guides.
 
-**But the two questions should not move into it**, for different reasons:
+**But the two questions did not move into it**, for different reasons, and both are now in
+the specification:
 
-- **`p6_linkage`** — whether the exposure and the outcome can be linked at individual
-  level — is a **hard structural constraint, not a note**. If they cannot be linked, every
-  individual-level design is impossible and only aggregate approaches remain. That is a
-  blocker, and a blocker has to be a ladder question. **Recommend: add to the question
-  bank**, with rules.
-- **`p6_missing`** — expected missing data in the primary outcome — sits next to
-  `expected_attrition`, which already lives in the statistics module. Missingness in a
-  measure is not the same as loss to follow-up, so it should not be merged into it, but it
-  belongs in the same place. **Recommend: add to the statistics module.**
+- **`record_linkage`** is a ladder question with rules. Whether treatment and outcome can
+  be brought together is a structural constraint: with no linkage at all only `its` and
+  `rdit` survive, and with group-level linkage only the nine designs that compare
+  individuals by construction are ruled out. That is a blocker, and a blocker has to be a
+  ladder question. 45 rules, pinned by test.
+- **`outcome_missingness`** went into the statistics module beside `expected_attrition`,
+  not merged with it — a unit leaving the study and a record with an empty outcome field
+  are different events. It raises a tension under each approach, and the two say different
+  things.
 
-Both need a rules pass and a spec-version bump, so they are flagged rather than done.
+The guide itself remains to be built, with the inventory table as notes.
 
 ## 8. Sequencing
 
