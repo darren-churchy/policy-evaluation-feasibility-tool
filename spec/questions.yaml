@@ -15,7 +15,7 @@
 # depend on it Unknown. Where not-yet-established is a real answer it appears explicitly
 # (e.g. `untested`), and rules treat it as a condition to discharge, not as a pass.
 
-spec_version: 1.2.0
+spec_version: 1.3.0
 
 questions:
 
@@ -147,12 +147,14 @@ questions:
     establishable: ex_ante
     text: Can the evaluation be planned before the intervention reaches participants?
     hint: >-
-      Randomised designs require allocation to be decided in advance. If the intervention has
-      already rolled out, only observational designs remain available.
+      Randomised designs require allocation to be decided in advance. A rollout already part
+      way through is the common middle case — what matters is whether any component or
+      cohort is still to be delivered, because that part can sometimes still be allocated.
     intake: true
     options:
-      - { value: 'yes', label: Yes — the evaluation can be designed in advance }
-      - { value: 'no',  label: No — the intervention has already been delivered or allocated }
+      - { value: 'yes',  label: Yes — the evaluation can be designed in advance }
+      - { value: maybe, label: 'Partly — some components or cohorts are still to be delivered' }
+      - { value: 'no',   label: No — the intervention has already been delivered or allocated }
     references: [magenta_book]
 
   # ── Tier 1 · Randomised ────────────────────────────────────────────────────

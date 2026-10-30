@@ -117,7 +117,8 @@ spec/                     The methodology, in reviewer-editable files
   rules.yaml               Per design: blockers, conditions, warnings
   stages.yaml              Stage vocabulary, readiness gates, routing
   statistics.yaml          Frequentist and Bayesian question sets
-  guides.yaml              Ideal trial, causal diagram, data inventory — notes, not answers
+  guides.yaml              Project, ideal trial, causal diagram, data inventory — notes
+  migration.yaml           What becomes of every id in the previous tool's vocabularies
   packs/                   Context packs: examples and vocabulary by sector
   references.bib           Every citation, with a confidence note
   schema/                  JSON Schemas for the above
@@ -137,7 +138,7 @@ src/
 
 reviewer-pack/            The specification rendered for a methods reviewer
 scripts/                  Validation, spec bundle, reviewer pack, CSS
-tests/                    349 tests
+tests/                    361 tests
 docs/                     Redesign plan; Bayesian sample-size research
 ```
 

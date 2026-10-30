@@ -1,0 +1,183 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "migration.schema.json",
+ "title": "Id migration",
+ "description": "What becomes of every id in the previous tool's four vocabularies. Not a runtime loader \u2014 the previous tool persisted nothing. The build enforces that it is total.",
+ "type": "object",
+ "required": [
+  "spec_version",
+  "renamed",
+  "split",
+  "to_notes",
+  "dropped"
+ ],
+ "additionalProperties": false,
+ "properties": {
+  "spec_version": {
+   "type": "string",
+   "pattern": "^\\d+\\.\\d+\\.\\d+$"
+  },
+  "renamed": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "from",
+     "to"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "from": {
+      "type": "string",
+      "minLength": 1
+     },
+     "note": {
+      "type": "string"
+     },
+     "to": {
+      "type": "string",
+      "minLength": 1
+     },
+     "values": {
+      "type": "object",
+      "additionalProperties": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "split": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "from",
+     "into",
+     "asked"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "from": {
+      "type": "string",
+      "minLength": 1
+     },
+     "note": {
+      "type": "string"
+     },
+     "into": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+       "type": "string"
+      }
+     },
+     "asked": {
+      "type": "string",
+      "minLength": 1
+     }
+    }
+   }
+  },
+  "to_notes": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "from",
+     "to"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "from": {
+      "type": "string",
+      "minLength": 1
+     },
+     "note": {
+      "type": "string"
+     },
+     "to": {
+      "type": "string",
+      "minLength": 1
+     }
+    }
+   }
+  },
+  "dropped": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "from",
+     "reason"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "from": {
+      "type": "string",
+      "minLength": 1
+     },
+     "note": {
+      "type": "string"
+     },
+     "reason": {
+      "type": "string",
+      "minLength": 20
+     }
+    }
+   }
+  },
+  "collisions": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "target",
+     "from"
+    ],
+    "additionalProperties": false,
+    "properties": {
+     "target": {
+      "type": "string"
+     },
+     "from": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "table": {
+   "type": "object",
+   "required": [
+    "from",
+    "to",
+    "columns"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "from": {
+     "type": "string"
+    },
+    "to": {
+     "type": "string"
+    },
+    "columns": {
+     "type": "object",
+     "additionalProperties": {
+      "type": "string"
+     }
+    },
+    "dropped_columns": {
+     "type": "object",
+     "additionalProperties": {
+      "type": "string"
+     }
+    }
+   }
+  }
+ }
+}

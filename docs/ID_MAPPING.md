@@ -1,6 +1,8 @@
 # Phase 4.1 — the id mapping, for review
 
-**Status: proposed, not implemented.** Nothing in the code has changed. This is the
+**Status: signed off and written into `spec/migration.yaml`.** This document is the audit
+and the reasoning; the specification file is the record the build checks. All ten decisions
+in §9 are settled — see the status column there. This is the
 content audit that phase 4 depends on; everything else in phase 4 is mechanical once it is
 signed off.
 
@@ -207,21 +209,20 @@ module?**
 
 ## 9. What I need from you
 
-| # | Decision | Blocks |
+| # | Decision | Outcome |
 |---|---|---|
-| 1 | Drop the three assumption scores (§5a) | the whole mapping — it is the compensatory-scoring question |
-| 2 | Drop `p7_n` from the store (§5b) | the reckoner's isolation guarantee |
-| 3 | Do not migrate `screen_*` values (§3) | whether old save files carry verdicts forward |
-| 4 | Add `p3_consistent`, `p6_linkage`, `p6_missing` to the spec (§6) | a spec-version bump and a rules pass |
-| 5 | `q_constraint` — add or drop (§5c) | small |
-| 6 | Add `maybe` to `prospective` (§7) | the RCT blockers; a rules pass |
-| 7 | `p1_toc` — annex note or new question (§7) | small |
-| 8 | Collision rule: disagreement leaves it unanswered (§7) | the save-file loader |
-| 9 | Free text as a separate `notes` object (§8) | the save format, and exports |
-| 10 | The DAG module — annex or spec (§8) | the largest of the optional items |
+| 1 | The three assumption scores | **Dropped.** Each has a home: exchangeability in the tier, positivity in `overlap`, consistency in `intervention_defined` + `delivery_consistency`. A causal-assumptions section may be added later as explanation, not scoring |
+| 2 | `p7_n` | **Dropped** from the store; N lives in the ready-reckoner |
+| 3 | `screen_*` values | **Not carried.** Designs go Unknown rather than inherit a verdict |
+| 4 | `p3_consistent`, `p6_linkage`, `p6_missing` | **Added** as `delivery_consistency`, `record_linkage`, `outcome_missingness` |
+| 5 | `q_constraint` | **Added** as `primary_constraint`, advisory only |
+| 6 | `maybe` on `prospective` | **Added**, with a condition on all six randomised designs |
+| 7 | `p1_toc` | **Annex note** — `question_toc_link` in the project guide |
+| 8 | Collision rule | **Moot.** Nothing persisted, so there are no disagreeing files; the collisions are recorded as data instead |
+| 9 | Free text as a `notes` object | **Built** |
+| 10 | The DAG module | **A guide**, producing notes |
 
-Decisions 1, 2 and 3 are the ones that matter. The rest can be settled as the migration
-proceeds.
+All settled. `spec/migration.yaml` is the record; this document is why.
 
 ---
 

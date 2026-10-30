@@ -30,6 +30,7 @@ const TARGETS = [
   { file: 'stages.yaml',     schema: 'stages.schema.json' },
   { file: 'statistics.yaml', schema: 'statistics.schema.json' },
   { file: 'guides.yaml',     schema: 'guides.schema.json' },
+  { file: 'migration.yaml',  schema: 'migration.schema.json' },
 ]
 
 // CSV targets are validated as the array of records parsed from them.
@@ -362,6 +363,81 @@ function checkReferences(parsed, errors) {
           errors.push({ file: 'guides.yaml', line, message: `guide table "${guide.table.id}" is already defined in guide "${seen.get(guide.table.id)}"` })
         }
         seen.set(guide.table.id, guide.id)
+      }
+    })
+  }
+
+  // The migration must be total and unambiguous. An old id appearing twice, or under no
+  // disposition at all, is how a migration quietly loses an answer — so both fail here
+  // rather than surfacing later as a question nobody can account for.
+  const migration = parsed['migration.yaml']?.data
+  if (migration && questions && parsed['migration.yaml'].doc) {
+    const mdoc = parsed['migration.yaml'].doc
+    const msrc = parsed['migration.yaml'].source
+    const questionIds = new Set(questions.map(q => q.id))
+    const noteIds = new Set()
+    for (const guide of guides ?? []) {
+      for (const field of guide.fields ?? []) noteIds.add(field.id)
+      if (guide.table) noteIds.add(guide.table.id)
+    }
+
+    const seen = new Map()
+    const claim = (id, section, line) => {
+      if (seen.has(id)) {
+        errors.push({ file: 'migration.yaml', line, message: `"${id}" appears under both ${seen.get(id)} and ${section} — every old id takes exactly one disposition` })
+      }
+      seen.set(id, section)
+    }
+
+    ;(migration.renamed ?? []).forEach((m, i) => {
+      const line = lineFor(mdoc, msrc, ['renamed', i])
+      claim(m.from, 'renamed', line)
+      const opts = optionsByQuestion.get(m.to)
+      if (!opts) {
+        errors.push({ file: 'migration.yaml', line, message: `${m.from} maps to "${m.to}", which is not a question` })
+        return
+      }
+      for (const [, target] of Object.entries(m.values ?? {})) {
+        if (!opts.has(String(target))) {
+          errors.push({ file: 'migration.yaml', line, message: `${m.from} maps a value to "${target}", which ${m.to} does not offer (${[...opts].join(', ')})` })
+        }
+      }
+    })
+
+    ;(migration.split ?? []).forEach((m, i) => {
+      const line = lineFor(mdoc, msrc, ['split', i])
+      claim(m.from, 'split', line)
+      for (const target of m.into ?? []) {
+        if (!questionIds.has(target)) {
+          errors.push({ file: 'migration.yaml', line, message: `${m.from} splits into "${target}", which is not a question` })
+        }
+      }
+    })
+
+    ;(migration.to_notes ?? []).forEach((m, i) => {
+      const line = lineFor(mdoc, msrc, ['to_notes', i])
+      claim(m.from, 'to_notes', line)
+      if (!noteIds.has(m.to)) {
+        errors.push({ file: 'migration.yaml', line, message: `${m.from} maps to note "${m.to}", which is not a field in any guide` })
+      }
+      if (questionIds.has(m.to)) {
+        errors.push({ file: 'migration.yaml', line, message: `${m.from} maps to "${m.to}", which is a question — a note must never become an answer` })
+      }
+    })
+
+    ;(migration.dropped ?? []).forEach((m, i) => {
+      claim(m.from, 'dropped', lineFor(mdoc, msrc, ['dropped', i]))
+    })
+
+    ;(migration.collisions ?? []).forEach((c, i) => {
+      const line = lineFor(mdoc, msrc, ['collisions', i])
+      if (!questionIds.has(c.target)) {
+        errors.push({ file: 'migration.yaml', line, message: `collision target "${c.target}" is not a question` })
+      }
+      for (const from of c.from ?? []) {
+        if (seen.get(from) !== 'renamed') {
+          errors.push({ file: 'migration.yaml', line, message: `collision lists "${from}", which is not among the renamed ids` })
+        }
       }
     })
   }

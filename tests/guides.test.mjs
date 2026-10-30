@@ -153,8 +153,9 @@ describe('the report carries the notes', () => {
 })
 
 describe('the guides themselves', () => {
-  it('ships the three', () => {
-    expect(guides.map(g => g.id)).toEqual(['ideal_trial', 'causal_diagram', 'data_sources'])
+  it('ships the four', () => {
+    expect(guides.map(g => g.id))
+      .toEqual(['project', 'ideal_trial', 'causal_diagram', 'data_sources'])
   })
 
   it('says what each is for and when to use it', () => {

@@ -18,6 +18,51 @@ spec_version: 1.0.0
 
 guides:
 
+  - id: project
+    title: The evaluation in brief
+    purpose: >-
+      What is being evaluated, what question it answers and what decision it informs. None
+      of it changes which designs are feasible — it is what makes a report readable by
+      someone who was not in the room, and what a reviewer reads first.
+    when: >-
+      At the start, and worth revising once the assessment has sharpened what can actually
+      be estimated. A research question that survives contact with the ladder unchanged is
+      unusual.
+    fields:
+      - id: project_title
+        label: Project title
+        rows: 2
+      - id: project_overview
+        label: What is being evaluated
+        hint: The intervention, who delivers it, who receives it and at what scale.
+        rows: 4
+      - id: research_question
+        label: The research question
+        hint: >-
+          Stated as a question. If it cannot be put as one, that is usually a sign the
+          decision it serves has not been settled either.
+        rows: 3
+      - id: policy_decision
+        label: What decision this will inform
+        hint: >-
+          Who will act on the finding, and what they would do differently depending on the
+          answer. An evaluation that informs no decision is hard to size and harder to
+          defend.
+        rows: 3
+      - id: decision_deadline
+        label: When that decision has to be made
+        hint: >-
+          Dates the evaluation backwards from the decision rather than forwards from the
+          start, which is usually the binding constraint.
+        rows: 2
+      - id: question_toc_link
+        label: How the question relates to the theory of change
+        hint: >-
+          Which step in the chain the question is about. The assessment asks separately
+          whether a theory of change exists; this is the different question of whether this
+          evaluation addresses part of it.
+        rows: 3
+
   - id: ideal_trial
     title: Ideal trial specification
     purpose: >-
@@ -152,6 +197,8 @@ guides:
         - { id: access,      label: How it would be obtained }
         - { id: coverage,    label: Who or what it covers }
         - { id: period,      label: Period available }
+        - { id: holds_exposure, label: Holds treatment status? }
+        - { id: holds_outcome,  label: Holds the outcome? }
         - { id: identifiers, label: Identifiers available for linking }
     fields:
       - id: data_gaps

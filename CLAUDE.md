@@ -425,6 +425,45 @@ rule, so there is nothing to validate it against and nothing downstream can act 
 The report renders notes last, under their own heading, stating that none of it contributed
 to the verdicts.
 
+### The id migration
+
+`spec/migration.yaml` records what becomes of every id in the previous tool's **four**
+vocabularies — 43 `p*_`, 13 `q_*`, 6 `screen_*`, 7 `tte_*`, 69 in all, plus the
+data-source table.
+
+**It is not a runtime loader.** The previous tool persisted nothing — no browser storage,
+no file save — so there are no old files to read. It is the specification the component
+migration is written against, and the record of the decisions behind it.
+
+Four dispositions, and every id takes exactly one:
+
+| | |
+|---|---|
+| `renamed` | Same question, new name. `values` maps the option set where it changed |
+| `split` | One old question bundling two or three conditions. **No value is carried** — a `yes` asserted several things and there is no telling which |
+| `to_notes` | Free text and metadata, to a guide field |
+| `dropped` | With a reason, at length |
+
+The build enforces that the target of a rename is a real question, that every mapped value
+is one the target offers, that a note never maps onto a question id, and that no id
+appears under two dispositions. **Totality is a test rather than a build rule**, because
+the validator reads `spec/` and the old vocabulary lives in `src/`:
+`tests/migration.test.mjs` scans the components still being migrated and fails on an id
+with no disposition. As each component is retired its ids leave the scan.
+
+The decisions it pins: the three assumption scores are **dropped** (they fed the
+compensatory multiplier the ladder replaced — exchangeability now comes from the tier,
+positivity is `overlap`, consistency is `intervention_defined` plus
+`delivery_consistency`); `p7_n` is **dropped** so an illustrative figure cannot reach the
+answer store; `screen_*` values are **not carried**, leaving designs Unknown rather than
+inheriting a verdict nobody gave.
+
+`prospective` gained a third option, `maybe`, for a rollout already part way through. It
+does not block the randomised designs and does not pass silently — it leaves all six
+**conditional**, asking which component or cohort could still be allocated, and noting
+that randomising a component narrows the estimand to that component. A test asserts every
+design blocked by `prospective: no` carries the partial case.
+
 ### The reviewer pack
 
 `reviewer-pack/` is the specification rendered for a methods reviewer who knows evaluation

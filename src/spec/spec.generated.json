@@ -1,6 +1,6 @@
 {
   "tiers": {
-    "spec_version": "1.2.0",
+    "spec_version": "1.3.0",
     "tiers": [
       {
         "id": 1,
@@ -654,12 +654,16 @@
       "id": "prospective",
       "establishable": "ex_ante",
       "text": "Can the evaluation be planned before the intervention reaches participants?",
-      "hint": "Randomised designs require allocation to be decided in advance. If the intervention has already rolled out, only observational designs remain available.",
+      "hint": "Randomised designs require allocation to be decided in advance. A rollout already part way through is the common middle case — what matters is whether any component or cohort is still to be delivered, because that part can sometimes still be allocated.",
       "intake": true,
       "options": [
         {
           "value": "yes",
           "label": "Yes — the evaluation can be designed in advance"
+        },
+        {
+          "value": "maybe",
+          "label": "Partly — some components or cohorts are still to be delivered"
         },
         {
           "value": "no",
@@ -2531,7 +2535,7 @@
     }
   ],
   "rules": {
-    "spec_version": "1.2.0",
+    "spec_version": "1.3.0",
     "designs": {
       "rct_individual": {
         "blockers": [
@@ -2612,6 +2616,23 @@
           }
         ],
         "conditions": [
+          {
+            "id": "partly_prospective",
+            "test": {
+              "==": [
+                {
+                  "var": "prospective"
+                },
+                "maybe"
+              ]
+            },
+            "message": "Only part of the intervention is still to be delivered. A randomised design may remain available for that part, but not for what has already rolled out.",
+            "unlock": "Identify which component or cohort has not yet been delivered, and whether allocation to it could still be set. Randomising a component is a Test-stage evaluation: the estimand narrows to that component rather than the whole programme, which is a different claim and should be stated as one.",
+            "citations": [
+              "magenta_book",
+              "rob2"
+            ]
+          },
           {
             "id": "record_linkage_unchecked",
             "test": {
@@ -2745,6 +2766,23 @@
         ],
         "conditions": [
           {
+            "id": "partly_prospective",
+            "test": {
+              "==": [
+                {
+                  "var": "prospective"
+                },
+                "maybe"
+              ]
+            },
+            "message": "Only part of the intervention is still to be delivered. A randomised design may remain available for that part, but not for what has already rolled out.",
+            "unlock": "Identify which component or cohort has not yet been delivered, and whether allocation to it could still be set. Randomising a component is a Test-stage evaluation: the estimand narrows to that component rather than the whole programme, which is a different claim and should be stated as one.",
+            "citations": [
+              "magenta_book",
+              "rob2"
+            ]
+          },
+          {
             "id": "record_linkage_unchecked",
             "test": {
               "==": [
@@ -2874,6 +2912,23 @@
           }
         ],
         "conditions": [
+          {
+            "id": "partly_prospective",
+            "test": {
+              "==": [
+                {
+                  "var": "prospective"
+                },
+                "maybe"
+              ]
+            },
+            "message": "Only part of the intervention is still to be delivered. A randomised design may remain available for that part, but not for what has already rolled out.",
+            "unlock": "Identify which component or cohort has not yet been delivered, and whether allocation to it could still be set. Randomising a component is a Test-stage evaluation: the estimand narrows to that component rather than the whole programme, which is a different claim and should be stated as one.",
+            "citations": [
+              "magenta_book",
+              "rob2"
+            ]
+          },
           {
             "id": "record_linkage_unchecked",
             "test": {
@@ -3022,6 +3077,23 @@
         ],
         "conditions": [
           {
+            "id": "partly_prospective",
+            "test": {
+              "==": [
+                {
+                  "var": "prospective"
+                },
+                "maybe"
+              ]
+            },
+            "message": "Only part of the intervention is still to be delivered. A randomised design may remain available for that part, but not for what has already rolled out.",
+            "unlock": "Identify which component or cohort has not yet been delivered, and whether allocation to it could still be set. Randomising a component is a Test-stage evaluation: the estimand narrows to that component rather than the whole programme, which is a different claim and should be stated as one.",
+            "citations": [
+              "magenta_book",
+              "rob2"
+            ]
+          },
+          {
             "id": "record_linkage_unchecked",
             "test": {
               "==": [
@@ -3136,6 +3208,23 @@
           }
         ],
         "conditions": [
+          {
+            "id": "partly_prospective",
+            "test": {
+              "==": [
+                {
+                  "var": "prospective"
+                },
+                "maybe"
+              ]
+            },
+            "message": "Only part of the intervention is still to be delivered. A randomised design may remain available for that part, but not for what has already rolled out.",
+            "unlock": "Identify which component or cohort has not yet been delivered, and whether allocation to it could still be set. Randomising a component is a Test-stage evaluation: the estimand narrows to that component rather than the whole programme, which is a different claim and should be stated as one.",
+            "citations": [
+              "magenta_book",
+              "rob2"
+            ]
+          },
           {
             "id": "record_linkage_unchecked",
             "test": {
@@ -3252,6 +3341,23 @@
           }
         ],
         "conditions": [
+          {
+            "id": "partly_prospective",
+            "test": {
+              "==": [
+                {
+                  "var": "prospective"
+                },
+                "maybe"
+              ]
+            },
+            "message": "Only part of the intervention is still to be delivered. A randomised design may remain available for that part, but not for what has already rolled out.",
+            "unlock": "Identify which component or cohort has not yet been delivered, and whether allocation to it could still be set. Randomising a component is a Test-stage evaluation: the estimand narrows to that component rather than the whole programme, which is a different claim and should be stated as one.",
+            "citations": [
+              "magenta_book",
+              "rob2"
+            ]
+          },
           {
             "id": "record_linkage_unchecked",
             "test": {
@@ -6439,6 +6545,49 @@
     "spec_version": "1.0.0",
     "guides": [
       {
+        "id": "project",
+        "title": "The evaluation in brief",
+        "purpose": "What is being evaluated, what question it answers and what decision it informs. None of it changes which designs are feasible — it is what makes a report readable by someone who was not in the room, and what a reviewer reads first.",
+        "when": "At the start, and worth revising once the assessment has sharpened what can actually be estimated. A research question that survives contact with the ladder unchanged is unusual.",
+        "fields": [
+          {
+            "id": "project_title",
+            "label": "Project title",
+            "rows": 2
+          },
+          {
+            "id": "project_overview",
+            "label": "What is being evaluated",
+            "hint": "The intervention, who delivers it, who receives it and at what scale.",
+            "rows": 4
+          },
+          {
+            "id": "research_question",
+            "label": "The research question",
+            "hint": "Stated as a question. If it cannot be put as one, that is usually a sign the decision it serves has not been settled either.",
+            "rows": 3
+          },
+          {
+            "id": "policy_decision",
+            "label": "What decision this will inform",
+            "hint": "Who will act on the finding, and what they would do differently depending on the answer. An evaluation that informs no decision is hard to size and harder to defend.",
+            "rows": 3
+          },
+          {
+            "id": "decision_deadline",
+            "label": "When that decision has to be made",
+            "hint": "Dates the evaluation backwards from the decision rather than forwards from the start, which is usually the binding constraint.",
+            "rows": 2
+          },
+          {
+            "id": "question_toc_link",
+            "label": "How the question relates to the theory of change",
+            "hint": "Which step in the chain the question is about. The assessment asks separately whether a theory of change exists; this is the different question of whether this evaluation addresses part of it.",
+            "rows": 3
+          }
+        ]
+      },
+      {
         "id": "ideal_trial",
         "title": "Ideal trial specification",
         "purpose": "Describing the randomised trial you would run if nothing stood in the way. It is done before choosing a design, not after, because it settles what effect you are trying to estimate — and most disagreements about method turn out to be disagreements about the estimand.",
@@ -6567,6 +6716,14 @@
             {
               "id": "period",
               "label": "Period available"
+            },
+            {
+              "id": "holds_exposure",
+              "label": "Holds treatment status?"
+            },
+            {
+              "id": "holds_outcome",
+              "label": "Holds the outcome?"
             },
             {
               "id": "identifiers",
