@@ -88,7 +88,32 @@ describe('the page defers what it cannot yet usefully ask', () => {
   })
 
   it('keeps the summary in view rather than letting it scroll away', () => {
-    expect(page()).toMatch(/position: 'sticky'/)
+    expect(page(), 'the summary must carry the class the stylesheet sticks')
+      .toMatch(/className="assessment-summary"/)
+    const css = readFileSync(join(ROOT, 'src', 'index.css'), 'utf8')
+    expect(css).toMatch(/\.assessment-summary\s*\{[^}]*position:\s*sticky/)
+  })
+
+  // Five cells wrap to three rows on a small phone; with the app header that was 31% of
+  // an iPhone SE gone before any content. The secondary cells drop out below 40em.
+  it('sheds the secondary cells on a narrow screen', () => {
+    const css = readFileSync(join(ROOT, 'src', 'index.css'), 'utf8')
+    expect(css).toMatch(/@media \(max-width: 40em\)[\s\S]*?assessment-summary__cell--secondary\s*\{\s*display:\s*none/)
+    // The three that remain are what a decision rests on, so they must not be secondary.
+    const source = page()
+    for (const label of ['Highest rung', 'Ruled out', 'Outstanding']) {
+      const at = source.indexOf(`cell('${label}'`)
+      expect(at, `${label} should be in the summary`).toBeGreaterThan(-1)
+      const call = source.slice(at, source.indexOf(')}', at))
+      expect(call, `${label} must survive a narrow screen`).not.toMatch(/secondary: true/)
+    }
+  })
+
+  // GOV.UK Frontend resets scroll-padding-top to 0 at a specificity a plain :root loses
+  // to, so an anchor jump landed its target behind the sticky header.
+  it('reserves the header height when jumping to an anchor', () => {
+    const css = readFileSync(join(ROOT, 'src', 'index.css'), 'utf8')
+    expect(css).toMatch(/govuk-template:not\(:has\(\.govuk-exit-this-page\)\)\s*\{\s*scroll-padding-top:\s*\d+px/)
   })
 
   it('collapses the ladder, which runs to several screens', () => {

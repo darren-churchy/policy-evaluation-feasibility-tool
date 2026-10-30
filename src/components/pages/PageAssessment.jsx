@@ -80,39 +80,33 @@ function SummaryPanel({ result }) {
   const ruledOut = Object.values(designs)
     .filter(d => d.strand === 'counterfactual' && d.state === 'blocked').length
 
-  const cell = (label, value, accent) => (
-    <div style={{ flex: '1 1 120px', minWidth: 0 }}>
-      <div style={{
-        fontSize: '10px', letterSpacing: '.08em', textTransform: 'uppercase',
-        color: T.greyText, marginBottom: '2px',
-      }}>{label}</div>
-      <div style={{
-        fontSize: '14px', fontWeight: 600, color: accent ?? T.ink, lineHeight: 1.3,
-      }}>{value}</div>
+  // `secondary` cells are dropped on a narrow screen. Five cells wrap to three rows on an
+  // iPhone SE, and with the app header that was 319px — 31% of the screen gone before any
+  // content. What survives is what a decision rests on: the rung, what is gone, what is
+  // left. Stage and readiness are a scroll away in the screening panel.
+  const cell = (label, value, { accent, secondary } = {}) => (
+    <div className={`assessment-summary__cell${secondary ? ' assessment-summary__cell--secondary' : ''}`}>
+      <div className="assessment-summary__label">{label}</div>
+      <div className="assessment-summary__value" style={{ color: accent ?? T.ink }}>{value}</div>
     </div>
   )
 
   return (
-    <div style={{
-      position: 'sticky', top: '56px', zIndex: 100,
-      background: '#fff', border: `1px solid ${T.greyLine}`,
-      borderLeft: `4px solid ${T.purple}`,
-      padding: '10px 16px', marginBottom: '24px',
-      display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'flex-start',
-      boxShadow: '0 2px 4px rgba(0,0,0,.06)',
-    }}>
+    <div className="assessment-summary">
       {cell('Stage', stage.stages.length
         ? <span style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
             {stage.stages.map(s => <TlBadge key={s} stage={stageLabel(s)} />)}
           </span>
-        : 'Not yet established')}
-      {cell('Highest rung', rung, highestFeasibleTier !== null ? T.green : undefined)}
+        : 'Not yet established', { secondary: true })}
+      {cell('Highest rung', rung, { accent: highestFeasibleTier !== null ? T.green : undefined })}
       {cell('Ruled out', ruledOut ? `${ruledOut} designs` : 'None yet',
-        ruledOut ? T.magenta25 : undefined)}
+        { accent: ruledOut ? T.magenta25 : undefined })}
       {cell('Outstanding', agenda.length)}
+      {/* Readiness is secondary unless it is the thing standing in the way. */}
       {cell('Readiness', readiness.status === 'passed' ? 'Met'
         : readiness.status === 'failed' ? 'Gate not met' : 'Not yet established',
-        readiness.status === 'failed' ? T.magenta25 : undefined)}
+        { accent: readiness.status === 'failed' ? T.magenta25 : undefined,
+          secondary: readiness.status !== 'failed' })}
     </div>
   )
 }

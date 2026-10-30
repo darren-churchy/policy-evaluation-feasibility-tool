@@ -492,6 +492,22 @@ Four changes, taking it to **3,300px blank and 5,200px after seven answers**:
 change that stopped the agenda shrinking fails there rather than being noticed by whoever
 is scrolling.
 
+**The summary sheds cells on a narrow screen.** Five wrap to three rows on an iPhone SE,
+which with the app header took 319px — 31% of the viewport before any content. Below 40em
+the cells marked `--secondary` are hidden, leaving the rung, what is ruled out and what is
+outstanding: 17% on the same device, 13% on an iPhone 12. Readiness stops being secondary
+when it is the thing standing in the way. The layout is in `index.css` rather than inline
+so the breakpoint is a media query, not a resize listener.
+
+**Anchor jumps clear the header, and the selector matters.** GOV.UK Frontend sets
+`scroll-padding-top` for its "Exit this page" component and then resets it to 0 with
+`.govuk-template:not(:has(.govuk-exit-this-page))` — specificity (0,2,0), which a plain
+`:root` loses to. Setting it there looks right, computes to 0, and the jump still lands
+behind the header: the taxonomy's contents list was putting its target 105px above the
+viewport. `index.css` matches their selector. Note this fixes anchor jumps, `scrollIntoView`
+and keyboard focus scrolling only — ordinary wheel scrolling passes under a sticky element
+by design and there is nothing to correct.
+
 ### The reviewer pack
 
 `reviewer-pack/` is the specification rendered for a methods reviewer who knows evaluation
