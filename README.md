@@ -3,13 +3,15 @@
 A decision-support web application for assessing the feasibility of different impact
 evaluation designs. Built with React and Vite, hosted as a static site on Cloudflare Pages.
 
-> **Status:** Prototype v0.7.1 — for methodological peer review. Not for public release.
+> **Status:** Prototype v0.8.0 — for methodological peer review. Not for public release.
 > A decision-support tool for evaluation design feasibility.
 
-> **Redesign in progress.** The tool is being rebuilt around a robustness ladder, with
-> the methodology moved out of JavaScript into reviewer-editable specification files. See
-> [`docs/REDESIGN_PLAN.md`](docs/REDESIGN_PLAN.md). Work happens on the `redesign` branch;
-> `dev` and `main` continue to serve the current tool.
+> **Redesign complete through phase 7.** The tool has been rebuilt around a robustness
+> ladder, with the methodology moved out of JavaScript into reviewer-editable specification
+> files. The seven scored sections, the ranked results page and the Design Finder are gone.
+> See [`docs/REDESIGN_PLAN.md`](docs/REDESIGN_PLAN.md) and
+> [`docs/TARGET_ARCHITECTURE.md`](docs/TARGET_ARCHITECTURE.md). Work happens on the
+> `redesign` branch; `dev` and `main` still serve the previous tool until it is merged.
 
 ---
 
@@ -48,7 +50,7 @@ assumes familiarity with evaluation methodology but not with any particular fram
 
 ## The redesign
 
-The current tool scores 32 design variants and ranks them. A review of it found three
+The previous tool scored 32 design variants and ranked them. A review of it found three
 problems that scoring could not fix:
 
 - **The score was compensatory.** Data availability and causal validity were weighted
@@ -78,7 +80,8 @@ Each design is **Blocked**, **Conditional**, **Unknown** or **Feasible**, taking
 state across its checks — so no good answer offsets a bad one. An unanswered question
 leaves a design Unknown rather than feasible by default. Nothing is scored.
 
-The new flow is at `/ladder`, running alongside the existing sections while it is reviewed.
+The assessment is at `/assessment`. Old paths — including the hash URLs the app used
+before — redirect to their replacements.
 
 ---
 
@@ -134,11 +137,10 @@ src/
   state/                   The single answer store, and the bridge from the old ids
   components/              Pages and shared UI
     statistics/              The statistics module and the ready-reckoner
-  data/, scoring/          The current tool, until the switchover
 
 reviewer-pack/            The specification rendered for a methods reviewer
 scripts/                  Validation, spec bundle, reviewer pack, CSS
-tests/                    395 tests
+tests/                    374 tests
 docs/                     Redesign plan; Bayesian sample-size research
 ```
 
@@ -284,5 +286,5 @@ See [LICENSE](LICENSE), or <https://www.gnu.org/licenses/gpl-3.0.html>.
 
 ---
 
-*Impact Evaluation Feasibility Tool — Prototype v0.7.1*
+*Impact Evaluation Feasibility Tool — Prototype v0.8.0*
 *This tool should be used to inform — not replace — professional methodological judgement.*

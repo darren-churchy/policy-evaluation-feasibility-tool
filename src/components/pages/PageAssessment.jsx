@@ -168,7 +168,7 @@ function Rung({ rung, isBest }) {
   )
 }
 
-export default function PageLadder() {
+export default function PageAssessment() {
   const navigate = useNavigate()
   const { answers, set, notes, clear, replace, result, spec } = useAnswers()
   const [loadWarnings, setLoadWarnings] = useState([])

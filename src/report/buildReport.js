@@ -16,6 +16,9 @@
 
 import { T } from '../styles/tokens.js'
 
+// Injected from package.json by Vite. Defaulted for Node, where the report is tested.
+const APP_VERSION = typeof __APP_VERSION__ === 'string' ? __APP_VERSION__ : '0.8.0'
+
 const esc = value => String(value ?? '')
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
   .replace(/"/g, '&quot;').replace(/'/g, '&#39;')
@@ -272,7 +275,7 @@ function answersGiven(answers, spec) {
  * @param {string} args.date      rendered as given, so the output is reproducible
  * @param {string} args.appVersion
  */
-export function buildReport({ result, answers, notes = {}, spec, date, appVersion = '0.7.1' }) {
+export function buildReport({ result, answers, notes = {}, spec, date, appVersion = APP_VERSION }) {
   const theory = result.theoryBased
   const questionText = new Map(spec.questions.map(q => [q.id, q.text]))
 

@@ -279,7 +279,7 @@ answers can be given.
    test, which is phase 4's acceptance criterion.
 5. ~~Add the screening checkpoint~~ — **done**, derived from `establishable` and blocker coverage.
 6. ~~Rework the landing page and merge the question-typing tools~~ — **done**. One scope-gate question; `/question-type` replaces three routes.
-7. **Retire the sections**, delete `src/scoring/`, `ResultsPage` and `useAppState`.
-8. **Switch `/ladder` to `/`**, and `BrowserRouter` while touching routing anyway.
+7. ~~Retire the sections, delete `src/scoring/`, `ResultsPage` and `useAppState`~~ — **done**, with the Design Finder and the legacy bridge. 3,518 lines removed.
+8. ~~Switch the assessment route and move to `BrowserRouter`~~ — **done**. `/` stayed the front door and the ladder became `/assessment`, which reads better than putting the assessment at the root behind the scope gate. Old hash URLs are translated on load.
 
 Steps 2 and 3 are independent of the rest and could start now.

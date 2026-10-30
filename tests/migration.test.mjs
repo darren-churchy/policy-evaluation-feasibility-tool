@@ -48,8 +48,23 @@ beforeAll(() => {
 })
 
 describe('the mapping is total', () => {
-  // The failure this prevents: an id that nobody remembers, which simply stops being
-  // asked when its component is deleted.
+  // The components that used the old vocabulary have now been retired, so this scan is
+  // expected to come back empty. It is kept because an empty scan is the assertion: a
+  // component reintroducing one of these ids would be reaching for a vocabulary that no
+  // longer has a store behind it.
+  it('finds no component still using the old vocabulary', () => {
+    const found = new Set()
+    for (const file of legacySources()) {
+      const source = readFileSync(join(ROOT, file), 'utf8')
+      for (const id of source.match(OLD_ID) ?? []) {
+        if (id !== 'tte_components') found.add(id)
+      }
+    }
+    expect([...found].sort(), 'these components were expected to be retired').toEqual([])
+  })
+
+  // Kept for as long as the scan could find anything: any id it does find must still have
+  // a disposition. Vacuous today, and the line of defence if a component comes back.
   it('accounts for every old id still in the source', () => {
     const found = new Set()
     for (const file of legacySources()) {

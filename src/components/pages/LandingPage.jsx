@@ -77,7 +77,7 @@ export default function LandingPage() {
             background: T.purple50, color: '#fff', fontSize: '12px',
             padding: '4px 12px', fontWeight: 600,
           }}>
-            Prototype v0.7.1
+            Prototype v{__APP_VERSION__}
           </span>
         </div>
       </div>
@@ -99,7 +99,7 @@ export default function LandingPage() {
           primary
           title="Yes — I need to establish what effect an intervention or policy caused"
           detail="Start the assessment. A short screen rules most designs in or out before anything design-specific is asked."
-          onClick={() => choose('causal', '/ladder')}
+          onClick={() => choose('causal', '/assessment')}
         />
         <Choice
           title="Not sure — help me work out what kind of question this is"

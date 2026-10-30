@@ -154,7 +154,7 @@ export default function PageGuide({ guideId }) {
         ))}
 
         <NavButtons>
-          <Button variant="moj" onClick={() => navigate('/ladder')}>Back to the assessment</Button>
+          <Button variant="moj" onClick={() => navigate('/assessment')}>Back to the assessment</Button>
           <Button variant="secondary" onClick={() => navigate('/')}>← Home</Button>
         </NavButtons>
 

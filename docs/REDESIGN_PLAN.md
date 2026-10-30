@@ -19,7 +19,7 @@ check for each phase.
 | --- | --- |
 | Sequencing | All seven phases, in order |
 | GOV.UK / MoJ CSS | **Kept.** Phase 6 reduced to wording and examples only |
-| Version | Stay 0.7.x; normalise the existing inconsistency to 0.7.1 and revisit at phase 5 |
+| Version | Stayed 0.7.x through the redesign; **0.8.0** at the switchover, injected from `package.json` |
 | Transition | Long-lived `redesign` branch; `dev` stays stable and deployable throughout |
 
 ### Still open — needed before the phase they block
@@ -138,7 +138,7 @@ worth doing before phase 1.
 
 **Two version numbers, deliberately separate:**
 
-- **App version** — `package.json` and all UI/doc surfaces. Normalised to **0.7.1** now.
+- **App version** — held in `package.json` and injected as `__APP_VERSION__`. **0.8.0** at the switchover; it had been copied into seven places and had already drifted.
   Stays 0.7.x through the redesign. Revisited at phase 5, when the shape is clear enough
   to judge whether the result is 0.8.0 or 1.0.0.
 - **Spec version** — declared in `spec/tiers.yaml`, independent of the app version.
@@ -313,7 +313,7 @@ their source; genuine disagreements are shown rather than resolved silently.
 | 2 Specification and engine | **Done** — six spec files, `evaluate()`, golden scenarios, reviewer pack |
 | 3 Statistics module | **Done** — both branches at equal depth; research pass in `docs/BAYESIAN_SAMPLE_SIZE.md` |
 | 4 Shared intake and tool consistency | **Done.** Every tool reads and writes one store, routed through `spec/migration.yaml`; stage tags come from the engine in all four. `tests/prefill.test.mjs` is the acceptance test. |
-| 5 Flow, layout and results | **Partly done** — the ladder flow, summary panel, ladder results view, save/load, the statistics module and the ready-reckoner all exist at `/ladder`. The existing seven sections remain; the switchover has not happened. |
+| 5 Flow, layout and results | **Done.** The assessment is at `/assessment` with the screening checkpoint, question agenda, ladder, statistics module and ready-reckoner. The seven sections, the scored results page and the Design Finder are retired; `src/scoring/` is gone. |
 | 6 De-branding and context packs | **Done** — institutional identity and justice-specific wording removed, two packs shipped, stylesheets vendored locally |
 | 7 Docs and release | **Docs done.** Release requires a methods reviewer to sign off the reviewer pack, and the `redesign` → `dev` merge. |
 

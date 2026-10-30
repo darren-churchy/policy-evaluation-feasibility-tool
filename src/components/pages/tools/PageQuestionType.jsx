@@ -94,7 +94,7 @@ export default function PageQuestionType() {
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             <Button
               variant="moj"
-              onClick={() => { set('claim_type', 'causal'); navigate('/ladder') }}
+              onClick={() => { set('claim_type', 'causal'); navigate('/assessment') }}
             >
               It is a causal question — start the assessment
             </Button>

@@ -1,19 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { GATE_ENABLED } from '../../scoring/config.js'
 import { T } from '../../styles/tokens.js'
 import PrivacyBanner from '../ui/PrivacyBanner.jsx'
-
-const NAV_ITEMS = [
-  { path: '/research-question', label: '1. Research Question'       },
-  { path: '/causal-readiness',  label: '2. Causal Readiness'        },
-  { path: '/ideal-trial',       label: '3. Ideal Trial'             },
-  { path: '/design-questions',  label: '4. Design Questions'        },
-  { path: '/adjustment',        label: '5. Adjustment & DAG'        },
-  { path: '/data-sources',      label: '6. Data Sources'            },
-  { path: '/statistical',       label: '7. Statistical Feasibility' },
-  { path: '/results',           label: 'Results'                    },
-]
 
 const GUIDE_NAV_ITEMS = [
   { path: '/guide/ideal_trial',   label: 'Ideal trial specification' },
@@ -22,19 +10,13 @@ const GUIDE_NAV_ITEMS = [
 ]
 
 const TOOL_NAV_ITEMS = [
-  { path: '/ladder',             label: 'Ladder assessment (new)'     },
+  { path: '/assessment',         label: 'Feasibility assessment'      },
   { path: '/question-type',      label: 'What kind of question?'      },
-  { path: '/design-finder',      label: 'Evaluation Design Finder'    },
 ]
-
-const LOCKED_PATHS = new Set([
-  '/ideal-trial', '/design-questions', '/adjustment',
-  '/data-sources', '/statistical', '/results',
-])
 
 const MOBILE_BREAKPOINT = 768
 
-export default function AppLayout({ children, gatePassed, completedSections = new Set() }) {
+export default function AppLayout({ children }) {
   const location  = useLocation()
   const navigate  = useNavigate()
   const [open, setOpen] = useState(() => window.innerWidth >= MOBILE_BREAKPOINT)
@@ -76,21 +58,8 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
 
   const currentPath = location.pathname
 
-  const isLocked = (path) => {
-    if (!GATE_ENABLED) return false
-    if (gatePassed) return false
-    return LOCKED_PATHS.has(path)
-  }
-
-  const getState = (path) => {
-    if (path === currentPath)         return 'active'
-    if (isLocked(path))               return 'locked'
-    if (completedSections.has(path))  return 'complete'
-    return 'todo'
-  }
-
   const currentLabel =
-    [...NAV_ITEMS, ...TOOL_NAV_ITEMS, ...GUIDE_NAV_ITEMS].find(i => i.path === currentPath)?.label ?? ''
+    [...TOOL_NAV_ITEMS, ...GUIDE_NAV_ITEMS].find(i => i.path === currentPath)?.label ?? ''
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -280,64 +249,7 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
                 margin: 0, textTransform: 'uppercase', fontSize: '11px',
                 letterSpacing: '.5px', whiteSpace: 'nowrap',
               }}>
-                Assessment sections
-              </p>
-              <ul className="moj-progress-tracker__list">
-                {NAV_ITEMS.map(item => {
-                  const state  = getState(item.path)
-                  const locked = state === 'locked'
-                  return (
-                    <li key={item.path}
-                      className={`moj-progress-tracker__item moj-progress-tracker__item--${state}`}
-                    >
-                      <span
-                        className={`moj-progress-tracker__status-icon moj-progress-tracker__status-icon--${state}`}
-                        aria-hidden="true"
-                      >
-                        {state === 'complete' && '✓'}
-                        {state === 'active'   && '●'}
-                        {state === 'locked'   && '🔒'}
-                        {state === 'todo'     && '○'}
-                      </span>
-                      {locked ? (
-                        <span style={{ fontSize: '14px', whiteSpace: 'nowrap' }}>{item.label}</span>
-                      ) : (
-                        <button
-                          onClick={() => navigate(item.path)}
-                          aria-current={state === 'active' ? 'page' : undefined}
-                          style={{
-                            background: 'none', border: 'none', color: 'inherit',
-                            font: 'inherit', fontSize: '14px', cursor: 'pointer',
-                            padding: 0, textAlign: 'left', whiteSpace: 'nowrap',
-                            textDecoration: state === 'active' ? 'none' : 'underline',
-                            textDecorationColor: T.greyLine,
-                          }}
-                        >
-                          {item.label}
-                        </button>
-                      )}
-                    </li>
-                  )
-                })}
-              </ul>
-              {!gatePassed && (
-                <div style={{
-                  margin: '8px 12px 12px', padding: '8px 12px',
-                  background: T.magentaTint, borderLeft: `3px solid ${T.magenta}`,
-                  fontSize: '12px', color: T.ink,
-                }}>
-                  Sections 3–7 locked. Complete the Causal Readiness assessment to continue.
-                </div>
-              )}
-
-              {/* Companion tools — always available, never gated */}
-              <p style={{
-                color: T.greyText, padding: '16px 16px 4px',
-                margin: 0, textTransform: 'uppercase', fontSize: '11px',
-                letterSpacing: '.5px', whiteSpace: 'nowrap',
-                borderTop: `1px solid ${T.greyLine}`,
-              }}>
-                Tools
+                Assessment
               </p>
               <ul style={{ listStyle: 'none', margin: 0, padding: '0 0 4px' }}>
                 {TOOL_NAV_ITEMS.map(item => {
@@ -442,7 +354,7 @@ export default function AppLayout({ children, gatePassed, completedSections = ne
             </a>
           </div>
           <span className="govuk-body-s" style={{ color: T.greyText }}>
-            Impact Evaluation Feasibility Tool — Prototype v0.7.1. This tool should be used to inform — not replace —
+            Impact Evaluation Feasibility Tool — Prototype v{__APP_VERSION__}. This tool should be used to inform — not replace —
             professional methodological judgement.
           </span>
         </div>

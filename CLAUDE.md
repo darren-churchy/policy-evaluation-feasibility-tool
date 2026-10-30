@@ -4,12 +4,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this project is
 
-A static React/Vite single-page application for assessing the feasibility of impact evaluation designs. It guides government social researchers through a structured seven-section questionnaire and produces a ranked feasibility table for 32 evaluation design variants. There is no backend — all scoring is pure JavaScript computed in the browser.
+A static React/Vite single-page application for assessing which impact evaluation designs
+are feasible given a set of constraints, which are ruled out and why, and where to put the
+effort to establish the rest. Designs are ranked by the assumption that makes their
+comparison valid — the robustness ladder — and **nothing is scored**. There is no backend;
+everything runs in the browser.
 
-Prototype v0.7.1. Not for public release.
+The methodology lives in `spec/`, not in JavaScript, so a rule change appears everywhere at
+once and a methodologist can read it without reading code.
 
-> **Redesign in progress.** See `docs/REDESIGN_PLAN.md`. Redesign work happens on the
-> `redesign` branch; `dev` continues to serve the current tool.
+Prototype v0.8.0. Not for public release.
+
+> **Redesign complete through phase 7.** See `docs/REDESIGN_PLAN.md` and
+> `docs/TARGET_ARCHITECTURE.md`. Work happens on the `redesign` branch; `dev` and `main`
+> still serve the previous tool until this is merged.
 
 ## Commands
 
@@ -36,130 +44,63 @@ every push and pull request. There are no linting scripts.
 
 ### State management
 
-All application state lives in a single custom hook: `src/hooks/useAppState.js`. It holds:
+One store, `src/state/AnswersContext.jsx`, holding two objects kept deliberately apart:
 
-- `inputs` — flat key-value object mapping field IDs to answer values. Every form field writes into this via `set(id, value)`.
-- `dataRows` — array of structured objects for the Section 6 data source inventory.
+- **`answers`** — question id to value, from `spec/questions.yaml`. This is what the engine
+  is passed, and the only thing that can reach a verdict.
+- **`notes`** — guide fields, from `spec/guides.yaml`. Carried into the report, never into
+  a verdict. See *The guides and the notes annex*.
 
-All derived values (gate status, scoring results, flagged next steps, section completion) are `useMemo` computations from `inputs`. No context, no Redux, no external state library.
+`result` is `evaluate(answers, spec)`, recomputed on change. The engine is pure and the
+spec static, so it is the only derived state in the app.
 
 ### Routing
 
-`HashRouter` is used (originally for GitHub Pages compatibility; now on Cloudflare Pages a `_redirects` SPA fallback is in place, so `BrowserRouter` is viable — see `docs/REDESIGN_PLAN.md`). Routes use **semantic paths** (changed in v0.7 — no longer `/page1` through `/page7`):
+`BrowserRouter` with real paths, served by the SPA fallback in `public/_redirects` and, in
+the installed app, by `navigateFallback` in the service worker.
 
-| Route | Component | Section |
-|---|---|---|
-| `/` | `LandingPage` | Landing page |
-| `/research-question` | `PageResearchQuestion` | 1. Research Question |
-| `/causal-readiness` | `PageCausalReadiness` | 2. Causal Readiness (gate) |
-| `/ideal-trial` | `PageIdealTrial` | 3. Ideal Trial Specification |
-| `/design-questions` | `PageDesignQuestions` | 4. Design Questions |
-| `/adjustment` | `PageAdjustment` | 5. Adjustment & DAG |
-| `/data-sources` | `PageDataSources` | 6. Data Sources |
-| `/statistical` | `PageStatistical` | 7. Statistical Feasibility |
-| `/results` | `ResultsPage` | Results |
+| Route | What it is |
+|---|---|
+| `/` | The front door. Asks `claim_type` and routes |
+| `/assessment` | The assessment: screening checkpoint, question agenda, ladder, statistics |
+| `/question-type` | What kind of question is this — trees and taxonomy in one tool |
+| `/guide/:guideId` | A guide from `spec/guides.yaml`, producing notes |
 
-Legacy routes `/page1`–`/page7` redirect automatically to their semantic equivalents.
+Everything the previous tool used — the seven numbered sections, `/results`,
+`/design-finder`, the three question-typing routes, `/page1`–`/page7` — redirects to its
+replacement rather than 404ing. `RETIRED` in `src/App.jsx` is the map.
 
-### Section order change (v0.7)
+**Old hash URLs still work.** The app used `HashRouter` from its GitHub Pages days, so
+every shared link, bookmark and PWA-cached page looks like `/#/ladder`.
+`src/state/LegacyHashRedirect.jsx` translates a leftover `#/...` into the equivalent path
+on first load and replaces it in history. Breaking those silently would have been the worst
+way to break a link.
 
-The section order changed from v0.6. The key structural change is:
+### What was retired, and what replaced it
 
-- **Causal Readiness moved to Section 2** (was Section 3 in v0.6). The gate now fires before the Ideal Trial section — there is no point specifying an ideal trial if the intervention is not ready. Sections 3–7 and Results lock when the gate fails (was Sections 4–7 in v0.6).
-- **TTE renamed to Ideal Trial Specification** (Section 3). The old "Target Trial Emulation" framing was ex post (TTE is a framework for designing observational analyses). The new framing is ex ante — specifying what the ideal trial would look like to clarify the causal estimand before choosing a design.
+The seven numbered sections, the scored results page and the Design Finder are gone, with
+`src/scoring/`, `useAppState`, the legacy bridge and their data — about 3,500 lines.
 
-### Gate logic
+| Retired | Replaced by |
+|---|---|
+| 1. Research Question | The front door, and the project guide |
+| 2. Causal Readiness | The assessment — readiness gates come from `spec/stages.yaml` |
+| 3. Ideal Trial | The ideal trial guide |
+| 4. Design Questions | The assessment's question agenda |
+| 5. Adjustment & DAG | The causal diagram guide |
+| 6. Data Sources | The data source inventory guide |
+| 7. Statistical Feasibility | The statistics module |
+| Results (scored ranking) | The ladder, and the downloadable report |
+| Design Finder | The screening checkpoint |
 
-Gate is controlled by `GATE_ENABLED` in `src/scoring/config.js`. In v0.7, three independent critical conditions are checked separately (not combined as in v0.6):
+**Nothing is scored.** There are no weights, ceilings or thresholds, and no `GATE_ENABLED`
+flag — a readiness gate is a rule in `spec/stages.yaml`, not a switch in code.
 
-- `p3_defined` — intervention clearly defined and documented
-- `p3_toc` — theory of change or logic model exists (**new separate condition in v0.7**)
-- `p3_scale` — intervention at sufficient scale or maturity
+### The app version
 
-If **any** is answered `'no'`, `gatePassed` is `false`. This catches two distinct failure modes: a well-defined intervention without a ToC (common in older services), and a ToC without a clear implementation specification (common in new pilots).
-
-`gateFailures` (from `useAppState`) returns an array of specific failure label strings for targeted messaging on the not-ready screen.
-
-Set `GATE_ENABLED = false` for reviewer walkthroughs.
-
-### Test and Learn framework integration (v0.7)
-
-The Magenta Book Test and Learn (T&L) framework is referenced throughout the app. Key integration points:
-
-- **Landing page** — positions the tool as appropriate for Test and Grow stages
-- **PageCausalReadiness** — infers T&L stage from readiness answers and displays it live; gate failure screen names the T&L stage (Co-design / Explore) and signposts appropriate alternatives
-- **PageStatistical** — T&L context strip noting that Test stage often relies on estimates from similar programmes; Grow stage may have prior data from Test phase
-- **T&L stage inference logic** (in `PageCausalReadiness.jsx`):
-  - All three readiness = yes → Test + Grow
-  - Scale = partial or any readiness = partial → Test only
-  - Any = no → gate fires, Co-design or Explore depending on which failed
-
-### Scoring pipeline
-
-In `src/scoring/scoring.js` — pure functions, no React dependency.
-
-1. `assembleResults(inputs)` called reactively via `useMemo` on every input change
-2. Global `assumptionScore` = mean of `p3_exchangeability`, `p3_positivity`, `p3_consistency` (mapped: yes→1.0, partial→0.7, no→0.0). Applied as multiplier to all quantitative design causal scores.
-3. Per-family data scores from Sections 6 & 7 inputs
-4. Per-design causal validity scores via design-specific functions
-5. `getBlockers(inputs)` returns hard-block reason or `'None'` per design
-6. Raw causal score capped by category ceiling from `CATEGORY_CEILINGS` in `config.js`
-7. `weightedTotal = (dataScore × WEIGHTS.data) + (causalScore × WEIGHTS.causalValidity)`
-8. Blocked designs capped at 0.15
-9. Feasibility: High ≥ `THRESH_HIGH` (0.60), Medium ≥ `THRESH_MEDIUM` (0.35), Low otherwise
-
-### Category ceiling system
-
-Each design in `src/data/designs.js` has a `ceilingKey` mapping to a max causal validity score:
-
-| Key | Ceiling | Designs |
-|---|---|---|
-| A | 1.00 | 6 RCT variants |
-| B | 0.82 | Sharp/Fuzzy RD, RDIT, IV/2SLS, Fuzzy RD as IV, Controlled ITS |
-| C | 0.64 | Standard ITS, Segmented regression ITS |
-| D | 0.44 | All DiD variants, matching/weighting, G-methods |
-| Dp | 0.54 | Synthetic control, Augmented synthetic control |
-| E | 0.24 | Theory-based (no assumption multiplier applied) |
-
-### Prospective filter
-
-If `inputs.p1_prospective === 'no'`, all six RCT variants (`prospectiveOnly: true` in `designs.js`) are shown as N/A in results and hidden from Section 4. Passed as `prospectiveOk` prop to `PageDesignQuestions`.
-
-### Configurable parameters (src/scoring/config.js)
-
-| Constant | Default | Effect |
-|---|---|---|
-| `GATE_ENABLED` | `true` | Set false for reviewer walkthroughs |
-| `WEIGHTS.data` | `0.5` | Weight of data availability in weighted total |
-| `WEIGHTS.causalValidity` | `0.5` | Weight of causal validity in weighted total |
-| `SAMPLE_REFERENCE` | `500` | RCT sample score denominator |
-| `THRESH_HIGH` | `0.60` | Minimum score for "High" feasibility label |
-| `THRESH_MEDIUM` | `0.35` | Minimum score for "Medium" feasibility label |
-
-### Bayesian additions (v0.7)
-
-Bayesian considerations are surfaced in two places:
-
-- **PageStatistical** — purple callout panel when `p7_n < 20` (tiny) or `p7_n < 100` (small). Covers informative priors, adaptive RCT designs, communication of posterior distributions. Separate content for tiny vs small.
-- **PageStatistical** — Bayesian analysis approach option in the analysis section, with sub-questions for prior data source if Bayesian selected
-- **nextSteps.js** — Bayesian notes woven into guidance for power calculation, ITS pre-period, confounder confidence, and synthetic control pre-fit items
-
-### Companion tools
-
-The four companion tools are **React routes**, not standalone HTML. The files in `public/`
-are seven-line redirect stubs kept so old bookmarked URLs still resolve.
-
-| Route | Component | Stub kept for old URLs |
-|---|---|---|
-| `/question-type` | `tools/PageQuestionType.jsx` | the three below redirect here |
-| `/quant-tree`, `/qual-tree`, `/question-framework` | redirect to `/question-type` | their `public/*.html` stubs |
-| `/design-finder` | `tools/PageDesignFinder.jsx` | `public/designFinder.html` |
-
-
-Tool pages share the assessment shell: `PageHeader` > `.page-content.tool-column`, with the
-app sidebar visible (it carries an ungated **Tools** group alongside the assessment sections).
-
----
+Injected from `package.json` by Vite as `__APP_VERSION__`. It had been copied into seven
+places and had already drifted, so there is now one source of it. `buildReport.js` carries
+a Node fallback because the report is tested outside Vite.
 
 ## Specification (`spec/`) — redesign
 
@@ -462,30 +403,23 @@ does not block the randomised designs and does not pass silently — it leaves a
 that randomising a component narrows the estimand to that component. A test asserts every
 design blocked by `prospective: no` carries the partial case.
 
-### The legacy bridge
+### The id migration, after the switchover
 
-Phase 4's acceptance criterion is that an answer given once is prefilled everywhere. Every
-component that needed migrating — the seven sections, the Design Finder, both trees — is
-scheduled for retirement or rewrite at the switchover, so rather than rewriting their
-internals they are re-pointed at the shared store through `spec/migration.yaml`.
+`spec/migration.yaml` remains as the record of what became of every id in the previous
+tool's four vocabularies. The legacy bridge that routed them — `legacyBridge.js`,
+`useLegacyInputs.js` — went with the components it served, and `tests/prefill.test.mjs`
+with it: its subject was the bridge, and phase 4's criterion is now trivially true because
+there is one vocabulary and one store.
 
-`src/state/legacyBridge.js` routes each old id by its disposition: `renamed` to the shared
-answers with values translated both ways, `to_notes` to the notes annex, `split` and
-`dropped` to local state so the page still renders them while nothing downstream reads
-them. `useLegacyInputs()` wraps it, and both `useAppState` and the Design Finder use it, so
-the routing exists once. **No page was rewritten** — `inputs[id]` and `set(id, value)`
-behave exactly as before. The bridge is deleted with the components it serves.
+`tests/migration.test.mjs` survives, with its scan inverted. It used to assert that every
+old id still in the source had a disposition; it now asserts the scan comes back **empty**.
+A component reintroducing one of those ids would be reaching for a vocabulary with no store
+behind it.
 
-`tests/prefill.test.mjs` is the acceptance test, asserting in both directions that the four
-colliding ids collapse to one stored answer, that every translated value is one the target
-question offers and survives the round trip, and that split and dropped ids never reach the
-engine.
-
-**Stage tags now come from the engine in all four tools.** CLAUDE.md previously claimed
-this; it was not true of the two decision trees, which rendered per-node tags from their
-own data — the earlier fix had corrected those values without removing the second source
-of truth. `src/components/ui/StageTags.jsx` resolves it without deleting either, because
-they say different things: the engine infers a stage from what the user has said about the
+**Stage tags come from the engine everywhere.** CLAUDE.md once claimed this when it was
+not true of the two decision trees, which rendered per-node tags from their own data.
+`src/components/ui/StageTags.jsx` resolves it without deleting either, because they say
+different things: the engine infers a stage from what the user has said about the
 intervention, while a tree node's tag is a guess from where you have walked to. The engine
 wins where it has an answer and says so; otherwise the positional tag is shown as a hint.
 
@@ -567,8 +501,8 @@ Numeric thresholds appear only where the literature gives one, carry a `range`, 
 marked `basis: convention` where that is what they are. A `contested: true` threshold must
 carry a range — enforced by test.
 
-**Two separate version numbers.** The app version (`package.json`, UI, docs) is 0.7.1 and
-stays 0.7.x through the redesign. The **spec version** in `tiers.yaml` is independent: it
+**Two separate version numbers.** The app version is 0.8.0, held in `package.json` and
+injected everywhere else. The **spec version** in `tiers.yaml` is independent: it
 is written into every export, and a load with a mismatched version warns. It increments on
 changes to tiers, rules or design identity — not on wording.
 
@@ -591,28 +525,30 @@ a rung.
 
 | Task | File(s) |
 |---|---|
-| Adjust scoring weights or feasibility thresholds | `src/scoring/config.js` |
-| Add/remove/recategorise a design variant | `src/data/designs.js` + scoring function in `src/scoring/scoring.js` |
-| Change question wording or hint text | Relevant `src/components/pages/Page*.jsx` |
-| Edit Ideal Trial component cards (Section 3) | `src/data/tteComponents.js` |
-| Add/edit next steps guidance (Results page) | `src/data/nextSteps.js` |
-| Change category ceilings | `src/scoring/config.js` → `CATEGORY_CEILINGS` |
-| Disable the Section 2 gate | `src/scoring/config.js` → `GATE_ENABLED = false` |
-| Change the base path or PWA manifest | `vite.config.js` (`base` is `/`; there is no `REPO_NAME`) |
-| Add or change a tier, or a contested placement | `spec/tiers.yaml` + the guard test in `tests/validate-spec.test.mjs` |
+| Change a question, its wording or its options | `spec/questions.yaml` |
+| Add, remove or recategorise a design | `spec/designs.csv` + `spec/rules.yaml` + the guard test in `tests/designs.test.mjs` |
+| Change when a design is blocked, conditional or warned about | `spec/rules.yaml`, then `npm run pack` |
+| Change a readiness gate, the stage rule or routing | `spec/stages.yaml` |
+| Change a tier or a contested placement | `spec/tiers.yaml` + the guard test in `tests/validate-spec.test.mjs` |
+| Add or change a guide | `spec/guides.yaml` — no new component needed |
 | Add a citation | `spec/references.bib` (dangling keys fail CI) |
-| Change what the spec validator enforces | `spec/schema/*.schema.json`, `scripts/validate-spec.mjs` |
-| Change how a rule reads to a reviewer | `spec/rules.yaml`, then `npm run pack` |
+| Change what the build enforces | `spec/schema/*.schema.json`, `scripts/validate-spec.mjs` |
+| Change the report | `src/report/buildReport.js` |
 | Change the reviewer pack's layout | `scripts/build-reviewer-pack.mjs`, `scripts/lib/describe.mjs` |
-| Edit landing page tool links | `src/components/pages/LandingPage.jsx` → `TOOL_LINKS` |
+| Change the front door or its routing | `src/components/pages/LandingPage.jsx`, `src/App.jsx` |
+| Change the app version | `package.json` only — it is injected everywhere else |
 
 ---
 
 ## UI components
 
-`src/components/ui/GovukComponents.jsx` exports shared primitives wrapping GOV.UK Frontend CSS (`govuk-*`) and MoJ Frontend classes (`moj-*`). Both CSS frameworks load from CDN in `index.html` — not npm dependencies. Avoid inline styles except where design system classes are insufficient.
+`src/components/ui/GovukComponents.jsx` exports shared primitives wrapping GOV.UK Frontend CSS (`govuk-*`) and MoJ Frontend classes (`moj-*`). Both are npm dependencies compiled locally by `npm run css:vendor`; nothing is fetched at
+runtime. Avoid inline styles except where design system classes are insufficient.
 
-The sidebar is collapsible (v0.7). Hamburger button in the header toggles `open` state. On mobile (<768px) the sidebar overlays content with a backdrop. The sidebar is hidden entirely on the landing page (`/`). The LockedPage component references "Section 2" (Causal Readiness) — update this if section order changes again.
+The sidebar is collapsible. Hamburger button in the header toggles `open` state. On mobile
+(<768px) it overlays content with a backdrop, and it is hidden entirely on the landing page.
+It carries two groups — Assessment and Guides. The section progress tracker, the gate
+locking and `LockedPage` went with the seven sections.
 
 ---
 
@@ -636,7 +572,7 @@ runs on push.
 
 ## PWA
 
-Configured via `vite-plugin-pwa` with `autoUpdate` service worker strategy. All built assets and CDN resources (jsDelivr) are precached for offline use. Manifest defined inline in `vite.config.js`. Icons in `public/icons/`.
+Configured via `vite-plugin-pwa` with `autoUpdate` service worker strategy. All built assets are precached for offline use, and `navigateFallback` serves index.html for real paths offline. Manifest defined inline in `vite.config.js`. Icons in `public/icons/`.
 
 ---
 

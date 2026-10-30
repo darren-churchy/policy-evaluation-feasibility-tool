@@ -1,107 +1,61 @@
+// Routes.
+//
+// The seven numbered sections, the scored results page and the Design Finder are gone.
+// What replaced each:
+//
+//   sections 1          -> the landing page and the project guide
+//   sections 2, 4, 7    -> the assessment, which asks from spec/questions.yaml
+//   sections 3, 5, 6    -> the ideal trial, causal diagram and data source guides
+//   results             -> the assessment, and the report you can download from it
+//   Design Finder       -> the screening checkpoint at the top of the assessment
+//
+// Their old paths redirect rather than 404, because they have been linked to.
+
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { useAppState } from './hooks/useAppState.js'
-import AppLayout        from './components/layout/AppLayout.jsx'
-import LandingPage      from './components/pages/LandingPage.jsx'
-import Page1            from './components/pages/PageResearchQuestion.jsx'
-import PageCausalReadiness from './components/pages/PageCausalReadiness.jsx'
-import PageIdealTrial   from './components/pages/PageIdealTrial.jsx'
-import Page4            from './components/pages/PageDesignQuestions.jsx'
-import Page5            from './components/pages/PageAdjustment.jsx'
-import Page6            from './components/pages/PageDataSources.jsx'
-import Page7            from './components/pages/PageStatistical.jsx'
-import ResultsPage      from './components/pages/ResultsPage.jsx'
-import PageDesignFinder    from './components/pages/tools/PageDesignFinder.jsx'
+import AppLayout from './components/layout/AppLayout.jsx'
+import LandingPage from './components/pages/LandingPage.jsx'
+import PageAssessment from './components/pages/PageAssessment.jsx'
 import PageGuide from './components/guides/PageGuide.jsx'
 import PageQuestionType from './components/pages/tools/PageQuestionType.jsx'
-import PageLadder         from './components/pages/PageLadder.jsx'
+
+/** Paths the previous tool used, and where each now goes. */
+const RETIRED = {
+  '/research-question': '/',
+  '/causal-readiness': '/assessment',
+  '/design-questions': '/assessment',
+  '/statistical': '/assessment',
+  '/results': '/assessment',
+  '/ideal-trial': '/guide/ideal_trial',
+  '/adjustment': '/guide/causal_diagram',
+  '/data-sources': '/guide/data_sources',
+  '/design-finder': '/assessment',
+  '/ladder': '/assessment',
+  '/quant-tree': '/question-type',
+  '/qual-tree': '/question-type',
+  '/question-framework': '/question-type',
+  '/page1': '/',
+  '/page2': '/assessment',
+  '/page3': '/guide/ideal_trial',
+  '/page4': '/assessment',
+  '/page5': '/guide/causal_diagram',
+  '/page6': '/guide/data_sources',
+  '/page7': '/assessment',
+}
 
 export default function App() {
-  const {
-    inputs, set,
-    dataRows, addDataRow, removeDataRow, updateDataRow,
-    gatePassed, gateFailures,
-    prospectiveOk,
-    results, flaggedNextSteps, topDesign,
-    completedSections,
-  } = useAppState()
-
-  const pageProps = { inputs, set }
-
   return (
-    <AppLayout gatePassed={gatePassed} completedSections={completedSections}>
+    <AppLayout>
       <Routes>
-        {/* Landing page — no sidebar, full-width */}
-        <Route path="/"                  element={<LandingPage />} />
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/assessment" element={<PageAssessment />} />
+        <Route path="/question-type" element={<PageQuestionType />} />
+        <Route path="/guide/:guideId" element={<PageGuide />} />
 
-        {/* Assessment sections — sidebar visible */}
-        <Route path="/research-question" element={<Page1 {...pageProps} />} />
-        <Route path="/causal-readiness"  element={
-          <PageCausalReadiness
-            {...pageProps}
-            gatePassed={gatePassed}
-            gateFailures={gateFailures}
-          />
-        } />
-        <Route path="/ideal-trial"       element={
-          <PageIdealTrial {...pageProps} gatePassed={gatePassed} />
-        } />
-        <Route path="/design-questions"  element={
-          <Page4 {...pageProps} gatePassed={gatePassed} prospectiveOk={prospectiveOk} />
-        } />
-        <Route path="/adjustment"        element={
-          <Page5 {...pageProps} gatePassed={gatePassed} />
-        } />
-        <Route path="/data-sources"      element={
-          <Page6
-            {...pageProps}
-            gatePassed={gatePassed}
-            dataRows={dataRows}
-            addDataRow={addDataRow}
-            removeDataRow={removeDataRow}
-            updateDataRow={updateDataRow}
-          />
-        } />
-        <Route path="/statistical"       element={
-          <Page7 {...pageProps} gatePassed={gatePassed} />
-        } />
-        <Route path="/results"           element={
-          <ResultsPage
-            inputs={inputs}
-            results={results}
-            flaggedNextSteps={flaggedNextSteps}
-            topDesign={topDesign}
-          />
-        } />
+        {Object.entries(RETIRED).map(([from, to]) => (
+          <Route key={from} path={from} element={<Navigate to={to} replace />} />
+        ))}
 
-        {/* The redesigned, engine-driven assessment. Runs alongside the existing
-            sections until the switchover in phase 5. */}
-        <Route path="/ladder"            element={<PageLadder />} />
-
-        {/* Guides produce notes, never answers. One component, driven by spec/guides.yaml,
-            so adding a guide is a specification change rather than a new route. The
-            existing /ideal-trial, /adjustment and /data-sources paths still belong to the
-            numbered sections until the switchover. */}
-        <Route path="/guide/:guideId"    element={<PageGuide />} />
-
-        {/* Companion tool pages */}
-        <Route path="/design-finder"       element={<PageDesignFinder />} />
-
-        {/* One question-typing tool, replacing three. The old paths still resolve. */}
-        <Route path="/question-type"       element={<PageQuestionType />} />
-        <Route path="/quant-tree"          element={<Navigate to="/question-type" replace />} />
-        <Route path="/qual-tree"           element={<Navigate to="/question-type" replace />} />
-        <Route path="/question-framework"  element={<Navigate to="/question-type" replace />} />
-
-        {/* Legacy redirects — preserve old page URLs */}
-        <Route path="/page1"   element={<Navigate to="/research-question" replace />} />
-        <Route path="/page2"   element={<Navigate to="/causal-readiness"  replace />} />
-        <Route path="/page3"   element={<Navigate to="/ideal-trial"       replace />} />
-        <Route path="/page4"   element={<Navigate to="/design-questions"  replace />} />
-        <Route path="/page5"   element={<Navigate to="/adjustment"        replace />} />
-        <Route path="/page6"   element={<Navigate to="/data-sources"      replace />} />
-        <Route path="/page7"   element={<Navigate to="/statistical"       replace />} />
-
-        <Route path="*"        element={<Navigate to="/" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AppLayout>
   )

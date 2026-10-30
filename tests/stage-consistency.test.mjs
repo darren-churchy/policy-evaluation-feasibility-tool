@@ -63,7 +63,9 @@ describe('nothing is restricted to Grow', () => {
     }
   })
 
-  it.each(['quantTreeData.js', 'qualTreeData.js', 'designFinderData.js'])(
+  // designFinderData.js was retired with the Design Finder; the screening checkpoint in
+  // the assessment replaced it, and takes its stage from the engine.
+  it.each(['quantTreeData.js', 'qualTreeData.js'])(
     'has no Grow-only tag left in %s',
     file => {
       const source = readFileSync(join(ROOT, 'src', 'data', file), 'utf8')

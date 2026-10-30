@@ -1,8 +1,14 @@
 import { defineConfig } from 'vite'
+import { readFileSync } from 'node:fs'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
+// The app version had been copied into seven places and had already drifted once. It is
+// injected from package.json instead, so there is one source of it.
+const { version } = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8'))
+
 export default defineConfig({
+  define: { __APP_VERSION__: JSON.stringify(version) },
   plugins: [
     react(),
     VitePWA({
@@ -16,6 +22,13 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
         // No runtime caching: GOV.UK and MoJ Frontend are compiled into the bundle,
         // so every asset the app needs is precached and nothing is fetched at runtime.
+        //
+        // Since the switch from hash URLs to real paths, an installed app opening at
+        // /assessment asks the service worker for a document that was never built. Without
+        // this the app works online, where public/_redirects serves the fallback, and
+        // fails offline on every route but the root — which is the hardest version of the
+        // bug to notice.
+        navigateFallback: 'index.html',
       },
 
       // Web app manifest — controls how the app appears when installed
