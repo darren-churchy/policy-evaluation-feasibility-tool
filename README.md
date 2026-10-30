@@ -127,6 +127,7 @@ src/
     evaluate.js              Verdicts, ladder, agenda, statistics
     stage.js                 The one place the app infers a stage
   spec/spec.generated.json Compiled spec the browser imports
+  report/                  The shareable HTML report
   state/                   The single answer store
   components/              Pages and shared UI
     statistics/              The statistics module and the ready-reckoner
@@ -134,7 +135,7 @@ src/
 
 reviewer-pack/            The specification rendered for a methods reviewer
 scripts/                  Validation, spec bundle, reviewer pack, CSS
-tests/                    281 tests
+tests/                    296 tests
 docs/                     Redesign plan; Bayesian sample-size research
 ```
 

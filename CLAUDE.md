@@ -327,6 +327,26 @@ The ladder UI marks a `needs_data` question so it does not read as an invitation
 `tests/prospective-feasibility.test.mjs` pins the classification, so reclassifying a
 question is a deliberate act.
 
+### The shareable report
+
+`src/report/buildReport.js` turns the engine's result into a self-contained HTML page for
+someone who will never open the tool: what looks feasible and why, what else might be,
+what is ruled out and why, and what to establish next. No scripts, no external assets,
+prints cleanly.
+
+Pure — the date is passed in, so the same inputs give the same bytes and the output is
+testable. `downloadReport.js` holds everything touching Blob and the DOM.
+
+What it must get right is **not overclaiming**. Early on, which is most of the time,
+nothing is established as feasible: the report says so plainly and is still useful,
+reporting what is already ruled out and what would change it. Tests assert it never prints
+"Most likely to be feasible" without a recommendation, recommends nothing when a readiness
+gate has fired, never leaks an internal question id to a stakeholder, and escapes
+everything it renders. Both guards are mutation-verified.
+
+It carries the spec version as well as the app version, so a report can be traced to the
+rules that produced it.
+
 ### The reviewer pack
 
 `reviewer-pack/` is the specification rendered for a methods reviewer who knows evaluation

@@ -13,6 +13,7 @@ import {
   PageHeader, Card, SectionTag, Alert, Button, NavButtons, RadioQuestion, TlBadge,
 } from '../ui/GovukComponents.jsx'
 import StatisticsModule from '../statistics/StatisticsModule.jsx'
+import { downloadReport } from '../../report/downloadReport.js'
 
 /** How many questions to reveal at a time. */
 const BATCH = 6
@@ -363,7 +364,13 @@ export default function PageLadder() {
         )}
 
         <NavButtons>
-          <Button variant="moj" onClick={save}>↓ Save answers</Button>
+          <Button
+            variant="moj"
+            onClick={() => downloadReport({ result, answers, spec })}
+          >
+            ↓ Download report
+          </Button>
+          <Button variant="secondary" onClick={save}>↓ Save answers</Button>
           <Button variant="secondary" onClick={() => fileInput.current?.click()}>↑ Load answers</Button>
           <Button variant="secondary" onClick={startAgain}>Start again</Button>
           <Button variant="secondary" onClick={() => navigate('/')}>← Home</Button>
