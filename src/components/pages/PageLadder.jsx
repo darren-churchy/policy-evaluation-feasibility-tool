@@ -13,6 +13,7 @@ import {
   PageHeader, Card, SectionTag, Alert, Button, NavButtons, RadioQuestion, TlBadge,
 } from '../ui/GovukComponents.jsx'
 import StatisticsModule from '../statistics/StatisticsModule.jsx'
+import ScreeningPanel from './ScreeningPanel.jsx'
 import { downloadReport } from '../../report/downloadReport.js'
 
 /** How many questions to reveal at a time. */
@@ -249,6 +250,16 @@ export default function PageLadder() {
         <SummaryPanel result={result} />
 
         {loadWarnings.map((w, i) => <Alert key={i} type="yellow" title="On loading">{w}</Alert>)}
+
+        {/* The screening checkpoint: a short run of questions that rules most designs in
+            or out, so stopping early is a usable outcome rather than an unfinished one. */}
+        <ScreeningPanel
+          onDownload={() => downloadReport({ result, answers, notes, spec })}
+          onContinue={() => setShown(prev => [
+            ...prev,
+            ...agenda.map(a => a.id).filter(id => !prev.includes(id)).slice(0, BATCH),
+          ])}
+        />
 
         {/* Readiness gates come before any design is considered. */}
         {readiness.status === 'failed' && (

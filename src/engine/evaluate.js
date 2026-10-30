@@ -303,6 +303,71 @@ function assessStatistics(answers, statisticsSpec, designsInPlay) {
   }
 }
 
+/**
+ * The screening set: the short run of questions that rules most designs in or out.
+ *
+ * **Derived, never listed.** A hand-kept list drifts — a question added later that rules
+ * out four designs would sit outside the screen and nobody would notice. The rule is:
+ *
+ *   - every intake question, which is asked of everyone anyway; plus
+ *   - every question that can be settled before the data exist (`ex_ante`), is asked
+ *     unconditionally (no `applies_when`), and appears in **two or more blockers**.
+ *
+ * The threshold picks out the structural facts — whether allocation can be randomised,
+ * whether a comparison group exists, how much pre-period data there is — and leaves the
+ * design-specific detail for later. A question gated behind another is excluded because it
+ * may not even be askable yet.
+ */
+export function screeningSet(spec) {
+  const blockerCount = new Map()
+  for (const design of Object.values(spec.rules?.designs ?? {})) {
+    for (const blocker of design.blockers ?? []) {
+      for (const v of variablesIn(blocker.test)) {
+        blockerCount.set(v, (blockerCount.get(v) ?? 0) + 1)
+      }
+    }
+  }
+
+  return spec.questions
+    .filter(q => q.intake || (
+      q.establishable === 'ex_ante' && !q.applies_when && (blockerCount.get(q.id) ?? 0) >= 2
+    ))
+    .map(q => q.id)
+}
+
+/**
+ * How far through the screen the user is, and what it already concludes.
+ *
+ * The screen is a stopping point, not a separate assessment: the same answers carry on
+ * into the rest of the ladder. What it reports is deliberately not a recommendation —
+ * early on there usually is not one. It reports what has been **settled**: which designs
+ * are out, which are still live, and the highest rung still available.
+ */
+function assessScreening(answers, spec, assessed) {
+  const questions = screeningSet(spec)
+  const answered = questions.filter(id => {
+    const v = answers?.[id]
+    return v !== undefined && v !== null && v !== ''
+  })
+  const outstanding = questions.filter(id => !answered.includes(id))
+
+  const counterfactual = assessed.filter(d => d.strand === 'counterfactual')
+  const ruledOut = counterfactual.filter(d => d.state === 'blocked').map(d => d.id)
+  const live = counterfactual.filter(d => d.state !== 'blocked')
+  const tiers = live.map(d => d.tier).filter(t => t !== undefined)
+
+  return {
+    questions,
+    answered,
+    outstanding,
+    complete: outstanding.length === 0,
+    ruledOut,
+    live: live.map(d => d.id),
+    liveTiers: [...new Set(tiers)].sort((a, b) => a - b),
+    highestLiveTier: tiers.length ? Math.min(...tiers) : null,
+  }
+}
+
 export function evaluate(answers = {}, spec) {
   const { tiers: tiersSpec, designs: designRegister, questions, rules, stages: stagesSpec,
     statistics: statisticsSpec } = spec
@@ -386,5 +451,6 @@ export function evaluate(answers = {}, spec) {
     agenda: buildAgenda(answers, questions, assessed, readiness),
     routes: activeRoutes(answers, stagesSpec),
     guidance: activeGuidance(answers, stagesSpec),
+    screening: assessScreening(answers, spec, assessed),
   }
 }

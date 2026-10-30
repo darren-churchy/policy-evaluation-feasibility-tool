@@ -73,12 +73,10 @@ function renderQualResult(key, reset, path) {
   )
 }
 
-export default function PageQualTree() {
-  const navigate = useNavigate()
+/** The tree alone, for the merged question-typing tool to place in a tab. */
+export function QualTreeBody() {
   return (
-    <div>
-      <PageHeader title="What kind of qualitative question is this?" />
-      <div className="page-content tool-column">
+    <>
           <Alert type="blue">
             Answer the questions below to classify your research question, identify appropriate
             qualitative approaches, and locate your work within the Magenta Book Test and Learn
@@ -90,13 +88,9 @@ export default function PageQualTree() {
             accentColor={T.teal}
             renderResult={renderQualResult}
           />
-          <NavButtons>
-            <Button variant="secondary" onClick={() => navigate('/')}>← Home</Button>
-          </NavButtons>
           <p className="govuk-body-s" style={{ color: T.greyText, borderTop: `1px solid ${T.greyLine}`, paddingTop: '1rem', marginTop: '1rem' }}>
             Use alongside the combined Research Question Typology reference document · Ritchie &amp; Lewis (2003) extended · Magenta Book Test and Learn Annex (2026)
           </p>
-      </div>
-    </div>
+    </>
   )
 }

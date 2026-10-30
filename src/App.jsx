@@ -10,11 +10,9 @@ import Page5            from './components/pages/PageAdjustment.jsx'
 import Page6            from './components/pages/PageDataSources.jsx'
 import Page7            from './components/pages/PageStatistical.jsx'
 import ResultsPage      from './components/pages/ResultsPage.jsx'
-import PageQuantTree       from './components/pages/tools/PageQuantTree.jsx'
-import PageQualTree        from './components/pages/tools/PageQualTree.jsx'
 import PageDesignFinder    from './components/pages/tools/PageDesignFinder.jsx'
-import PageQuestionFramework from './components/pages/tools/PageQuestionFramework.jsx'
 import PageGuide from './components/guides/PageGuide.jsx'
+import PageQuestionType from './components/pages/tools/PageQuestionType.jsx'
 import PageLadder         from './components/pages/PageLadder.jsx'
 
 export default function App() {
@@ -86,10 +84,13 @@ export default function App() {
         <Route path="/guide/:guideId"    element={<PageGuide />} />
 
         {/* Companion tool pages */}
-        <Route path="/quant-tree"          element={<PageQuantTree />} />
-        <Route path="/qual-tree"           element={<PageQualTree />} />
         <Route path="/design-finder"       element={<PageDesignFinder />} />
-        <Route path="/question-framework"  element={<PageQuestionFramework />} />
+
+        {/* One question-typing tool, replacing three. The old paths still resolve. */}
+        <Route path="/question-type"       element={<PageQuestionType />} />
+        <Route path="/quant-tree"          element={<Navigate to="/question-type" replace />} />
+        <Route path="/qual-tree"           element={<Navigate to="/question-type" replace />} />
+        <Route path="/question-framework"  element={<Navigate to="/question-type" replace />} />
 
         {/* Legacy redirects — preserve old page URLs */}
         <Route path="/page1"   element={<Navigate to="/research-question" replace />} />

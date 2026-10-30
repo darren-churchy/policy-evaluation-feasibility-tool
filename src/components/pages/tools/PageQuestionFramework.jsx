@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { Fragment, useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { qualData, quantData } from '../../../data/questionFrameworkData.js'
 import { hexToRgba } from '../../../utils/colorUtils.js'
@@ -195,7 +195,8 @@ const SIDEBAR_ITEMS = [
   { target: 'tl-map',            label: 'Stage Mapping',         accent: T.green,     section: 'Test & Learn' },
 ]
 
-export default function PageQuestionFramework() {
+/** The taxonomy alone, for the merged question-typing tool to place in a tab. */
+export function TaxonomyBody() {
   const navigate = useNavigate()
   const [activeSection, setActiveSection] = useState('cover')
   const observerRef = useRef(null)
@@ -217,9 +218,7 @@ export default function PageQuestionFramework() {
   }
 
   return (
-    <div>
-      <PageHeader title="A Typology of Research Questions" />
-      <div className="page-content tool-column tool-column--wide">
+    <>
 
         {/* On this page — replaces the standalone sidebar this page used to
             carry, so the app sidebar stays the only persistent navigation. */}
@@ -294,13 +293,15 @@ export default function PageQuestionFramework() {
                 { label: 'Prediction',      sub: 'What tends to occur?',       bg: T.green   },
                 { label: 'Causal Inference',sub: 'What is the effect of X on Y?', bg: T.purple  },
               ].map((block, i, arr) => (
-                <>
-                  <div key={block.label} style={{ padding: '0.5rem 0.85rem', color: 'white', whiteSpace: 'nowrap', flexShrink: 0, background: block.bg }}>
+                // The key belongs on the array element, which is the fragment — it was on
+                // the inner div, so React saw an unkeyed list.
+                <Fragment key={block.label}>
+                  <div style={{ padding: '0.5rem 0.85rem', color: 'white', whiteSpace: 'nowrap', flexShrink: 0, background: block.bg }}>
                     <div style={{ fontWeight: 600, fontSize: '0.78rem' }}>{block.label}</div>
                     <div style={{ fontSize: '0.65rem', opacity: 0.82, marginTop: '0.1rem' }}>{block.sub}</div>
                   </div>
                   {i < arr.length - 1 && <span style={{ fontSize: '0.9rem', color: T.greyLine, flexShrink: 0, padding: '0 0.1rem' }}>→</span>}
-                </>
+                </Fragment>
               ))}
               <div style={{ fontSize: '0.7rem', color: T.greyText, paddingLeft: '0.75rem', borderLeft: `1px solid ${T.greyLine}`, marginLeft: '0.5rem', lineHeight: 1.5, flexShrink: 0 }}>
                 Each type makes a stronger claim<br />and requires stronger assumptions.
@@ -381,11 +382,7 @@ export default function PageQuestionFramework() {
             <p className="govuk-body-s" style={{ color: T.greyText }}><strong>Policy cycle:</strong> HM Treasury Magenta Book (2020); Test and Learn Annex (2026); Nesta Test and Learn Playbook</p>
           </div>
 
-          <NavButtons>
-            <Button variant="secondary" onClick={() => navigate('/')}>← Home</Button>
-          </NavButtons>
         </div>
-      </div>
-    </div>
+    </>
   )
 }

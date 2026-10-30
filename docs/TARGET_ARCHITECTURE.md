@@ -277,8 +277,8 @@ answers can be given.
 3. ~~Build the notes annex~~ — **done**, along with all three guides.
 4. **Migrate the tools to the shared store** (phase 4.2–4.6), ending with the prefill
    test, which is phase 4's acceptance criterion.
-5. **Add the screening checkpoint** to the ladder.
-6. **Rework the landing page** and merge the question-typing tools.
+5. ~~Add the screening checkpoint~~ — **done**, derived from `establishable` and blocker coverage.
+6. ~~Rework the landing page and merge the question-typing tools~~ — **done**. One scope-gate question; `/question-type` replaces three routes.
 7. **Retire the sections**, delete `src/scoring/`, `ResultsPage` and `useAppState`.
 8. **Switch `/ladder` to `/`**, and `BrowserRouter` while touching routing anyway.
 

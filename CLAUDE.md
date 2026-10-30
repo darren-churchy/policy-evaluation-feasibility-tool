@@ -151,12 +151,10 @@ are seven-line redirect stubs kept so old bookmarked URLs still resolve.
 
 | Route | Component | Stub kept for old URLs |
 |---|---|---|
-| `/question-framework` | `tools/PageQuestionFramework.jsx` | `public/questionFramework.html` |
-| `/quant-tree` | `tools/PageQuantTree.jsx` | `public/quantTree.html` |
-| `/qual-tree` | `tools/PageQualTree.jsx` | `public/qualTree.html` |
+| `/question-type` | `tools/PageQuestionType.jsx` | the three below redirect here |
+| `/quant-tree`, `/qual-tree`, `/question-framework` | redirect to `/question-type` | their `public/*.html` stubs |
 | `/design-finder` | `tools/PageDesignFinder.jsx` | `public/designFinder.html` |
 
-`TOOL_LINKS` at the top of `LandingPage.jsx` holds the hash routes.
 
 Tool pages share the assessment shell: `PageHeader` > `.page-content.tool-column`, with the
 app sidebar visible (it carries an ungated **Tools** group alongside the assessment sections).
@@ -490,6 +488,46 @@ of truth. `src/components/ui/StageTags.jsx` resolves it without deleting either,
 they say different things: the engine infers a stage from what the user has said about the
 intervention, while a tree node's tag is a guess from where you have walked to. The engine
 wins where it has an answer and says so; otherwise the positional tag is shown as a hint.
+
+### The screening checkpoint
+
+The tool has to be useful to someone deciding where to put their effort, not only to
+someone who has already decided everything. `screeningSet(spec)` derives the short run of
+questions that rules most designs in or out, and `evaluate()` returns progress through it
+as `screening`.
+
+**Derived, never listed**, because a list is what drifts: a question added later that rules
+out four designs would sit outside a hand-kept screen unnoticed. The rule is every intake
+question, plus every question that is `ex_ante`, ungated, and appears in **two or more
+blockers**. That currently gives 17 of 67, reaching 74% of all blockers and at least one on
+every counterfactual design.
+
+What it reports is **not a recommendation**. The ladder rules out fast and rules in slowly
+— nine designs of nineteen gone by the ninth answer, none established as feasible by the
+twelfth — so a screen leading on "your design is X" would be silent exactly when it is most
+needed. It reports what is settled: ruled out, still in play, the highest rung not ruled
+out, and where effort goes next. The panel says explicitly that **not ruled out is not the
+same as available**, because an unestablished design counts as in play.
+
+`tests/screening.test.mjs` pins the derivation rule. Two of its checks are deliberately
+independent of that rule — blocker coverage, and reaching every design — because the
+rule-shaped assertions recompute the rule and would agree with themselves if the
+specification quietly weakened the screen.
+
+### The front door and question typing
+
+The landing page asks **one** question: `claim_type`, the scope gate. Yes routes to the
+assessment, No and Not sure to the question-typing tool, which exists to settle exactly
+that. It no longer offers three question-typing tools as equal cards competing with the
+assessment, and no longer describes the tool as scoring 32 variants across seven sections.
+
+`/question-type` is one tool replacing three. The Research Question Framework and the two
+decision trees covered the same ground by different means — a taxonomy you browse, and
+traversal to the same categories — and `questionFrameworkData.js` already held both halves,
+with quantitative types Description, Prediction and Causal Inference: the same three
+distinctions the quantitative tree walks to. The three bodies are extracted as
+`QuantTreeBody`, `QualTreeBody` and `TaxonomyBody` and placed in tabs. `/quant-tree`,
+`/qual-tree` and `/question-framework` redirect, so old links still resolve.
 
 ### The reviewer pack
 
