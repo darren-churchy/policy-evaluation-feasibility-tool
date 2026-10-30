@@ -1,0 +1,234 @@
+# Target architecture
+
+**Status: proposed. No code has changed.** This is the shape the app takes once phases 4
+and 5 complete, and the decisions it needs. Read alongside
+[`REDESIGN_PLAN.md`](REDESIGN_PLAN.md) (what the redesign is doing) and
+[`ID_MAPPING.md`](ID_MAPPING.md) (the question-vocabulary audit it depends on).
+
+The brief it serves: **a tool light enough to screen quickly what could be possible, and
+to say where further effort should go to establish the rest.**
+
+---
+
+## 1. The shape
+
+One assessment, one answer store, one engine. Everything else is a front door or a guide.
+
+| | Now | Target |
+|---|---|---|
+| **Front door** | Landing page: three tool cards, equal weight | Landing page asks **one consequential question** — `claim_type` — and routes |
+| **Assessment** | Seven numbered sections, scored | **The ladder**, with a screening checkpoint partway |
+| **Quick screen** | Design Finder, a separate tool with its own 13 questions | **The ladder's first 14 questions.** No separate tool |
+| **Question typing** | Question Framework + two decision trees, three cards | **One "what kind of question is this?" tool**, reached when `claim_type` is not causal |
+| **Ideal Trial, DAG** | Sections 3 and 5, gated, feeding a score | **Guides** that produce notes, never verdicts |
+| **Results** | Scored ranking at `/results` | The ladder page, plus the **downloadable report** (built) |
+
+The governing rule: **anything that does not change a verdict does not belong in the
+assessment flow.** It belongs on the landing page, in a guide, or in the notes annex.
+
+---
+
+## 2. The router is `claim_type`, not "how early are you?"
+
+A routing question at the front is right. The one to use already exists.
+
+`spec/stages.yaml` has carried a `routing` block since phase 2 that **nothing in the UI
+reads**:
+
+```
+research_question_framework → quant_tree       when claim_type = predict
+research_question_framework → qual_tree        when claim_type = describe
+research_question_framework → design_finder    when claim_type = causal
+design_finder → full_assessment    "keeps every answer already given and asks only
+                                    what the remaining rungs require"
+readiness_gate → qual_tree
+```
+
+The Design Finder route's own note reads: *"runs the same engine over a minimal question
+set as a quick screen."* The architecture below is largely that block, built.
+
+**Why `claim_type` rather than a self-reported stage:**
+
+1. **Self-reported stage does not map onto what the tool needs.** Someone with a fully
+   specified intervention and no data access is late in policy terms and early in
+   evaluation terms. They would route themselves wrongly, and the tool cannot detect it.
+2. **It would recreate two flows** — a short path and a long path that can disagree. That
+   is the defect the redesign exists to remove.
+3. **`claim_type` is the question that actually discriminates.** "Describe" and "predict"
+   do not need a counterfactual, so they should never reach the ladder at all. Routing on
+   it is what lets the trees stop competing for landing-page space: they become
+   destinations for non-causal questions rather than parallel tools.
+
+`claim_type` is already an intake question, already consumed, already validated.
+
+---
+
+## 3. The Design Finder becomes the ladder's screening checkpoint
+
+Not a branch. The first stretch of the one flow, with an explicit stopping point.
+
+### The evidence that this loses nothing
+
+Ranking every question by how many blockers it can fire gives the structural
+discriminators. The set that falls out — intake plus the ungated, `ex_ante`, high-coverage
+questions — is **14 questions**. The Design Finder asks **13**.
+
+**Eleven are the same question.**
+
+| Design Finder | Spec id | In the engine-derived screen |
+|---|---|---|
+| `q_defined`, `q_toc`, `q_scale` | `intervention_defined`, `theory_of_change`, `maturity` | yes |
+| `q_prospective`, `q_randomisation` | `prospective`, `randomisation_barriers` | yes |
+| `q_predata`, `q_comparison`, `q_stagger` | `pre_periods`, `comparison_group`, `staggered_rollout` | yes |
+| `q_threshold`, `q_instrument`, `q_covariates` | `assignment_threshold`, `instrument_available`, `covariate_richness` | yes |
+| `q_sample` | — | superseded by the statistics module |
+| `q_constraint` | — | **open decision, §7** |
+
+The screen adds three the Finder missed: `claim_type` (the router), `allocation_unit`
+(2 blockers) and `policy_date_known` (3 blockers).
+
+The Design Finder was already asking the right questions under the wrong names. Folding it
+in costs one question set to maintain instead of two, and removes the possibility of the
+two disagreeing.
+
+### What the screen produces
+
+Measured on the real engine, three profiles, 13 answers each:
+
+| Profile | Ruled out | Still live | Highest live rung | Outstanding |
+|---|---|---|---|---|
+| Retrospective, admin data, comparison group | 9 of 19 | 10 | Tier 3 | 12 |
+| Prospective pilot, can randomise | 4 | 15 | Tier 1 | 16 |
+| National rollout, no comparison, eligibility cutoff | 9 | 10 | Tier 2 | 13 |
+
+Each gets a distinct, correct, actionable answer, and the right next three questions.
+
+### The thing the UI has to get right
+
+**The ladder is fast at ruling out and slow at ruling in.**
+
+| Questions answered | Ruled out | Feasible |
+|---|---|---|
+| 4 | 6 of 19 | 0 |
+| 9 | 9 | 0 |
+| 12 | 10 | 0 |
+
+Nothing is feasible even at twelve answers. So the screening output cannot be "here is
+your design". It is **"here is what is out, here is what is still live, here is what to go
+and establish"** — which is the brief.
+
+This means the current ladder page is framed wrongly for screening: it leads on "highest
+feasible rung", which stays empty for a long time and reads as failure. The screening
+checkpoint should lead on what has been *settled*, not on what has not.
+
+**Stopping at the checkpoint must be a first-class outcome**, not an unfinished
+assessment: a complete screening report, downloadable, with the open questions listed.
+
+---
+
+## 4. The landing page
+
+Three equal tool cards become one question and a short route.
+
+**Above the fold:** what the tool is for, and `claim_type`.
+
+- **causal** → the ladder (screening checkpoint first)
+- **predict** → the quantitative strand
+- **describe** → the qualitative strand
+
+**Below:** the research-question material — project title, overview, the question itself,
+the policy decision it informs, the deadline. None of it reaches the engine; all of it
+reaches the report. It is an opinionated workflow for defining the question, which is
+what it was always doing.
+
+**Merging the Question Framework and the trees.** `questionFrameworkData.js` exports
+`quantData` whose three top-level types are **Description, Prediction, Causal Inference** —
+the same three values as `claim_type`. The Framework's quantitative half *is* `claim_type`,
+expanded into a taxonomy. The trees reach the same categories by traversal instead of
+browsing.
+
+So: **one tool, two ways in.** Answer a few questions, or browse the taxonomy. One body of
+content (`questionFrameworkData.js` already holds both halves), one destination. That
+replaces three cards and roughly 850 lines across four components with one.
+
+---
+
+## 5. Ideal Trial and the DAG become guides
+
+Both are good practice. Neither produces anything the engine reads. Keeping them as gated,
+numbered sections implied they were part of the verdict, which was a category error.
+
+- **Ideal Trial** — a guide to specifying the estimand before choosing a design. Linked
+  from the ladder, at the point where the estimand starts to matter.
+- **DAG** — a guide to the adjustment set, with the free-text elicitation retained.
+
+Both write to the **notes annex**, not to `answers`.
+
+### The notes annex
+
+`ID_MAPPING.md` §8 proposed this for the seventeen free-text fields; it is the same
+mechanism.
+
+```
+save file
+├── answers   what the engine reads — spec question ids only
+└── notes     project metadata, the research question, the DAG narrative,
+              data-source inventory, free-text rationale
+```
+
+The engine never sees `notes`. The report renders it. That keeps the answer store exactly
+what the engine consumes — the property the whole redesign rests on — without discarding
+the user's reasoning, which is what a reviewer actually reads.
+
+---
+
+## 6. What happens to each existing piece
+
+| Piece | Fate |
+|---|---|
+| `PageLadder` | **Becomes the assessment.** Off the Tools list, onto the landing page |
+| Seven numbered sections | **Retired** once their non-duplicated content has a home (§7) |
+| `ResultsPage`, `src/scoring/`, `useAppState` | **Deleted.** `ResultsPage` imports `WEIGHTS`/`CATEGORY_CEILINGS`, so it goes first |
+| `PageDesignFinder` (602 lines) | **Deleted.** Becomes the screening checkpoint |
+| `PageQuestionFramework` + both trees | **Merged** into one question-typing tool |
+| `questionFrameworkData.js` | **Kept** — it is the taxonomy |
+| `quantTreeData` / `qualTreeData` | Kept as the traversal into the taxonomy |
+| `tteComponents.js` | Kept, as a guide |
+| `exportToolResult.js` | **Deleted** once the tools that use it are gone; the report replaces it |
+| `src/report/` | **Built.** Nothing further needed |
+
+---
+
+## 7. Open decisions
+
+| # | Decision | Why it matters |
+|---|---|---|
+| 1 | **Confirm `claim_type` as the router** rather than a self-reported stage | Everything in §2–4 follows from it |
+| 2 | **`q_constraint`** — time / data / budget / ethics. Add to the spec, or drop? | The only question asking *why* feasibility is limited rather than *whether*. For a tool whose purpose is "where should effort go", the binding constraint seems worth keeping. **Recommend: add** |
+| 3 | **Add `p3_consistent`, `p6_linkage`, `p6_missing`** to the spec (`ID_MAPPING.md` §6) | **Blocks retiring the sections** — these have no home otherwise |
+| 4 | Where does the screening checkpoint fall — after 14 questions, or when the agenda stops containing intake/structural questions? | A fixed list is predictable; a derived one cannot drift. **Recommend: derived, from `establishable` and blocker coverage** |
+| 5 | Does the screening report differ from the full report, or is it the same document with less filled in? | **Recommend: the same document.** It already handles the "nothing feasible yet" case |
+| 6 | App version on switchover | The plan flagged phase 5 as where 0.8.0 vs 1.0.0 becomes answerable. The ladder becoming the main tool is **0.8.0 at minimum** |
+
+Decisions 1 and 3 gate the rest.
+
+---
+
+## 8. Sequencing
+
+Nothing here can start with deletion. The sections are currently the only place some
+answers can be given.
+
+1. **Settle the `ID_MAPPING.md` decisions** — particularly dropping the three assumption
+   scores and not migrating `screen_*` values.
+2. **Add the three missing questions** (decision 3). Useful regardless of what else
+   happens, and it is the hard dependency.
+3. **Build the notes annex** — save format, and the report rendering it.
+4. **Migrate the tools to the shared store** (phase 4.2–4.6), ending with the prefill
+   test, which is phase 4's acceptance criterion.
+5. **Add the screening checkpoint** to the ladder.
+6. **Rework the landing page** and merge the question-typing tools.
+7. **Retire the sections**, delete `src/scoring/`, `ResultsPage` and `useAppState`.
+8. **Switch `/ladder` to `/`**, and `BrowserRouter` while touching routing anyway.
+
+Steps 2 and 3 are independent of the rest and could start now.

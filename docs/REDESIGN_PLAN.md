@@ -335,6 +335,22 @@ their source; genuine disagreements are shown rather than resolved silently.
 4. **Self-host the typeface** — the last runtime third-party fetch.
 5. **Methods review** of the reviewer pack, which is phase 7's acceptance.
 
+## 7b. Target architecture
+
+The shape the app takes once phases 4 and 5 complete — one assessment, one answer store,
+one engine, with everything that does not change a verdict moved to a front door, a guide
+or a notes annex — is set out in [`TARGET_ARCHITECTURE.md`](TARGET_ARCHITECTURE.md).
+
+Its three load-bearing claims, each measured against the engine rather than asserted:
+
+- **The router is `claim_type`**, not a self-reported stage. `stages.yaml` has carried the
+  routing block since phase 2 and nothing reads it.
+- **The Design Finder is the ladder's first fourteen questions.** Ranking questions by
+  blocker coverage produces a set that shares eleven of the Finder's thirteen.
+- **The ladder rules out fast and rules in slowly** — nine of nineteen designs ruled out by
+  the ninth answer, none feasible by the twelfth. So a screening checkpoint must lead on
+  what is settled and what to establish next, never on a recommendation it does not have.
+
 ## 8. Immediate next steps
 
 1. Sign off the two methodological open items (tier placements) — blocks phase 2
