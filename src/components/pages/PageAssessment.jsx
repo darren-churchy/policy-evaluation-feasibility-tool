@@ -58,9 +58,18 @@ function NeedsDataNote({ question }) {
   )
 }
 
-/** Stage, highest feasible rung, open questions. Visible throughout. */
+/**
+ * Stage, verdict and what is outstanding — pinned to the top of the viewport.
+ *
+ * It used to scroll away after one screen, leaving a dozen screens with no orientation.
+ * Worse, the page is long enough that answering a question at 800px moved something at
+ * 5,000px, so the live-updating design — the reason there is no submit button — was
+ * invisible in practice. Sticky, it is where the answer lands.
+ *
+ * `top` clears the app header, which is itself sticky; the z-index sits below it.
+ */
 function SummaryPanel({ result }) {
-  const { stage, highestFeasibleTier, highestConditionalTier, agenda, readiness } = result
+  const { stage, highestFeasibleTier, highestConditionalTier, agenda, readiness, designs } = result
 
   const rung = highestFeasibleTier !== null
     ? `Tier ${highestFeasibleTier}`
@@ -68,31 +77,42 @@ function SummaryPanel({ result }) {
       ? `Tier ${highestConditionalTier}, conditionally`
       : 'None yet established'
 
-  const cell = (label, value) => (
-    <div style={{ flex: '1 1 170px' }}>
+  const ruledOut = Object.values(designs)
+    .filter(d => d.strand === 'counterfactual' && d.state === 'blocked').length
+
+  const cell = (label, value, accent) => (
+    <div style={{ flex: '1 1 120px', minWidth: 0 }}>
       <div style={{
-        fontSize: '11px', letterSpacing: '.08em', textTransform: 'uppercase',
-        color: T.greyText, marginBottom: '4px',
+        fontSize: '10px', letterSpacing: '.08em', textTransform: 'uppercase',
+        color: T.greyText, marginBottom: '2px',
       }}>{label}</div>
-      <div style={{ fontSize: '15px', fontWeight: 600, color: T.ink }}>{value}</div>
+      <div style={{
+        fontSize: '14px', fontWeight: 600, color: accent ?? T.ink, lineHeight: 1.3,
+      }}>{value}</div>
     </div>
   )
 
   return (
     <div style={{
-      background: '#fff', border: `1px solid ${T.greyLine}`, borderLeft: `4px solid ${T.purple}`,
-      padding: '14px 18px', marginBottom: '24px',
-      display: 'flex', gap: '20px', flexWrap: 'wrap', alignItems: 'flex-start',
+      position: 'sticky', top: '56px', zIndex: 100,
+      background: '#fff', border: `1px solid ${T.greyLine}`,
+      borderLeft: `4px solid ${T.purple}`,
+      padding: '10px 16px', marginBottom: '24px',
+      display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'flex-start',
+      boxShadow: '0 2px 4px rgba(0,0,0,.06)',
     }}>
       {cell('Stage', stage.stages.length
         ? <span style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
             {stage.stages.map(s => <TlBadge key={s} stage={stageLabel(s)} />)}
           </span>
         : 'Not yet established')}
-      {cell('Highest rung available', rung)}
-      {cell('Questions outstanding', agenda.length)}
+      {cell('Highest rung', rung, highestFeasibleTier !== null ? T.green : undefined)}
+      {cell('Ruled out', ruledOut ? `${ruledOut} designs` : 'None yet',
+        ruledOut ? T.magenta25 : undefined)}
+      {cell('Outstanding', agenda.length)}
       {cell('Readiness', readiness.status === 'passed' ? 'Met'
-        : readiness.status === 'failed' ? 'Gate not met' : 'Not yet established')}
+        : readiness.status === 'failed' ? 'Gate not met' : 'Not yet established',
+        readiness.status === 'failed' ? T.magenta25 : undefined)}
     </div>
   )
 }
@@ -184,6 +204,10 @@ export default function PageAssessment() {
   // all — the questions were answered, so they were never on the agenda, so they were
   // never added. The answers counted; the user simply could not see that they had.
   const [shown, setShown] = useState([])
+  // Open state is held rather than left to the <details> element so the ladder can be
+  // opened from elsewhere on the page — the screening panel's "carry on" does it.
+  const [ladderOpen, setLadderOpen] = useState(false)
+  const [statisticsOpen, setStatisticsOpen] = useState(false)
   const askedHere = useMemo(() => {
     const statistics = new Set([
       ...(spec.statistics?.shared_questions ?? []),
@@ -214,6 +238,16 @@ export default function PageAssessment() {
 
   const questionsById = new Map(spec.questions.map(q => [q.id, q]))
   const answeredCount = shown.filter(id => answers[id] !== undefined).length
+
+  // A question leaves the agenda when every design that depended on it has been ruled
+  // out. The page used to carry on rendering it, so the user answered questions that
+  // could no longer change anything — and when they did notice the list shrinking,
+  // nothing said why. Both halves are fixed here: inapplicable questions stop being
+  // asked, and the fact that they have is stated.
+  const onAgenda = new Set(result.agenda.map(a => a.id))
+  const stillApplies = id => answers[id] !== undefined || onAgenda.has(id)
+  const asking = shown.filter(stillApplies)
+  const noLongerApply = shown.filter(id => !stillApplies(id))
   const { readiness, stage, agenda, recommendation, nextRungUp, theoryBased, ladder } = result
 
   function save() {
@@ -294,7 +328,7 @@ export default function PageAssessment() {
               Only questions whose answer could change a verdict are shown, highest rung
               first. {answeredCount} answered, {agenda.length} still outstanding.
             </p>
-            {shown.map(id => {
+            {asking.map(id => {
               const question = questionsById.get(id)
               if (!question) return null
               return (
@@ -310,7 +344,30 @@ export default function PageAssessment() {
                 />
               )
             })}
-            {agenda.length > shown.filter(id => answers[id] === undefined).length && (
+            {noLongerApply.length > 0 && (
+              <details className="govuk-details" style={{ marginTop: '4px' }}>
+                <summary className="govuk-details__summary">
+                  <span className="govuk-details__summary-text">
+                    {noLongerApply.length} question{noLongerApply.length === 1 ? '' : 's'} no
+                    longer {noLongerApply.length === 1 ? 'applies' : 'apply'}
+                  </span>
+                </summary>
+                <div className="govuk-details__text">
+                  <p className="govuk-body-s">
+                    Your answers ruled out every design these would have informed, so
+                    answering them could no longer change anything. The ladder below says
+                    which designs went and why.
+                  </p>
+                  <ul className="govuk-list govuk-list--bullet govuk-body-s" style={{ marginBottom: 0 }}>
+                    {noLongerApply.map(id => (
+                      <li key={id}>{questionsById.get(id)?.text ?? id}</li>
+                    ))}
+                  </ul>
+                </div>
+              </details>
+            )}
+
+            {agenda.length > asking.filter(id => answers[id] === undefined).length && (
               <Button
                 variant="secondary"
                 onClick={() => setShown(prev => [
@@ -349,15 +406,31 @@ export default function PageAssessment() {
           </Alert>
         )}
 
-        {/* The ladder itself, highest rung first. */}
-        <h2 className="govuk-heading-m" style={{ marginTop: '28px' }}>The ladder</h2>
-        <p className="govuk-body-s" style={{ color: T.greyText }}>
-          Designs are ranked by the assumption that makes their comparison valid, not by how
-          sophisticated the estimator is. Nothing here is scored.
-        </p>
-        {ladder.map(rung => (
-          <Rung key={rung.tier} rung={rung} isBest={rung.tier === recommendation?.tier} />
-        ))}
+        {/* The ladder, collapsed by default.
+            Every design on every rung, with its reasoning, runs to several screens — which
+            put the questions and their consequences too far apart to see together. The
+            summary above carries the verdict; this is the detail behind it, one click
+            away. */}
+        <details className="govuk-details" style={{ marginTop: '28px' }} open={ladderOpen}>
+          <summary
+            className="govuk-details__summary"
+            onClick={() => setLadderOpen(o => !o)}
+          >
+            <span className="govuk-details__summary-text">
+              The ladder — all {Object.values(result.designs).filter(d => d.strand === 'counterfactual').length} designs,
+              rung by rung, with the reasoning
+            </span>
+          </summary>
+          <div className="govuk-details__text">
+            <p className="govuk-body-s" style={{ color: T.greyText }}>
+              Designs are ranked by the assumption that makes their comparison valid, not by
+              how sophisticated the estimator is. Nothing here is scored.
+            </p>
+            {ladder.map(rung => (
+              <Rung key={rung.tier} rung={rung} isBest={rung.tier === recommendation?.tier} />
+            ))}
+          </div>
+        </details>
 
         {/* The theory-based strand, beside the ladder rather than on it. */}
         <Card style={{ borderLeft: `5px solid ${T.teal}` }}>
@@ -374,10 +447,37 @@ export default function PageAssessment() {
           </p>
         </Card>
 
-        {/* Statistical feasibility. After the ladder, because what counts as the sample
-            depends on which designs are still in play — and withheld when a readiness gate
-            has fired, since no design is in play at all. */}
-        {readiness.status !== 'failed' && <StatisticsModule />}
+        {/* Statistical feasibility.
+            Withheld until the screen is complete. It is four screens of questions about
+            analysis approach, priors and multiplicity, and asking them while the user is
+            still establishing whether any design works at all put the longest section of
+            the page in front of the shortest useful one. Also withheld when a readiness
+            gate has fired, since no design is in play at all. */}
+        {readiness.status !== 'failed' && (
+          result.screening.complete ? (
+            <details className="govuk-details" open={statisticsOpen}>
+              <summary
+                className="govuk-details__summary"
+                onClick={() => setStatisticsOpen(o => !o)}
+              >
+                <span className="govuk-details__summary-text">
+                  Statistical feasibility — what the sample has to support
+                </span>
+              </summary>
+              <div className="govuk-details__text">
+                <StatisticsModule />
+              </div>
+            </details>
+          ) : (
+            <p className="govuk-body-s" style={{
+              color: T.greyText, borderTop: `1px solid ${T.greyLine}`, paddingTop: '14px',
+            }}>
+              <strong>Statistical feasibility</strong> opens once the screening questions are
+              answered. What the sample has to support depends on which designs are still in
+              play, so it is worth settling that first.
+            </p>
+          )
+        )}
 
         {stage.stages.length > 0 && (
           <Alert type="blue" title="Test and Learn stage">

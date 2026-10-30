@@ -463,6 +463,35 @@ distinctions the quantitative tree walks to. The three bodies are extracted as
 `QuantTreeBody`, `QualTreeBody` and `TaxonomyBody` and placed in tabs. `/quant-tree`,
 `/qual-tree` and `/question-framework` redirect, so old links still resolve.
 
+### The shape of the assessment page
+
+Measured before changing it: 8,700px blank, 11,700px after seven answers — ten to thirteen
+screens, with 22 question fieldsets rendered at once. The summary sat at 207px and the
+ladder at 5,365px, so answering a question moved something six screens away. The
+live-updating design, which is the reason there is no submit button, was invisible.
+
+Four changes, taking it to **3,300px blank and 5,200px after seven answers**:
+
+- **The summary is sticky**, below the app header, and carries the verdict — highest rung
+  and designs ruled out — not just a count of what is outstanding. It is where the answer
+  lands.
+- **The ladder is collapsed by default.** Every design on every rung with its reasoning is
+  several screens; the summary carries the verdict and this is the detail behind it.
+- **The statistics module is withheld until the screen is complete.** Four screens of
+  questions about priors and multiplicity, in front of someone still establishing whether
+  any design works, put the longest section before the shortest useful one.
+- **Questions that can no longer matter stop being asked**, and the page says so. A
+  question leaves the agenda when every design depending on it is ruled out — the engine
+  has always done this — but the page carried on rendering it, so people answered
+  questions that could change nothing. `asking` and `noLongerApply` split `shown` on
+  whether the question is still on the agenda; the drop-outs are listed under a disclosure
+  rather than vanishing silently. Answering `prospective: no` drops four; `pre_periods:
+  none` halves the agenda, 16 questions to 8.
+
+`tests/assessment-flow.test.mjs` asserts the engine-side facts this rests on, so a rules
+change that stopped the agenda shrinking fails there rather than being noticed by whoever
+is scrolling.
+
 ### The reviewer pack
 
 `reviewer-pack/` is the specification rendered for a methods reviewer who knows evaluation

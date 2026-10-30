@@ -140,7 +140,7 @@ src/
 
 reviewer-pack/            The specification rendered for a methods reviewer
 scripts/                  Validation, spec bundle, reviewer pack, CSS
-tests/                    374 tests
+tests/                    383 tests
 docs/                     Redesign plan; Bayesian sample-size research
 ```
 
