@@ -140,7 +140,7 @@ src/
 
 reviewer-pack/            The specification rendered for a methods reviewer
 scripts/                  Validation, spec bundle, reviewer pack, CSS
-tests/                    395 tests
+tests/                    405 tests
 docs/                     Redesign plan; Bayesian sample-size research
 ```
 
@@ -186,6 +186,10 @@ sentence a reviewer reads. `npm run pack:check` fails if it has drifted.
 
 Open `reviewer-pack/REVIEWER_PACK.md` to read it end to end, or the CSVs to filter and
 annotate in a spreadsheet.
+
+`reviewer-pack/REVIEW_FORM.html` is the same material as a form. Send it to a reviewer;
+they answer what they have a view on, press Copy, and paste the result back. Nothing they
+leave blank is recorded as agreement.
 
 ---
 
