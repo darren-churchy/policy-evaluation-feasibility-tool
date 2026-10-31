@@ -3,5 +3,15 @@
 //
 // The load path is the project root rather than node_modules, because MoJ Frontend's
 // own SCSS imports GOV.UK via a hardcoded `node_modules/...` path.
+// GDS Transport is licensed for use on gov.uk only — the font files are not in the npm
+// package and we are not permitted to host them. GOV.UK Frontend still emits an
+// @font-face for it, so the browser was requesting /assets/fonts/*.woff2 and 404ing on
+// every page load: two failed requests, and two font faces stuck in `error` state.
+//
+// Switching this off removes those declarations. The app has never rendered in GDS
+// Transport — src/index.css sets the family and src/styles/fonts.css self-hosts it — so
+// nothing changes visually.
+$govuk-include-default-font-face: false;
+
 @import "node_modules/govuk-frontend/dist/govuk/index";
 @import "node_modules/@ministryofjustice/frontend/moj/all";

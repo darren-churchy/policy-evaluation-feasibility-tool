@@ -1,5 +1,6 @@
 /* GOV.UK + MoJ Frontend, compiled locally. See index.html. */
 @import "./styles/vendor/govuk-moj.css";
+@import "./styles/fonts.css";
 
 /*
  * Global stylesheet — house-style restyle (purple brand, Source Sans 3).
@@ -100,7 +101,7 @@ button,
 input,
 select,
 textarea {
-  font-family: "Source Sans 3", "Segoe UI", Arial, sans-serif !important;
+  font-family: "Source Sans 3 Variable", "Source Sans 3", "Segoe UI", Arial, sans-serif !important;
 }
 
 /* ── Link colours ───────────────────────────────────────────────────────────── */

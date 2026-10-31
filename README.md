@@ -140,7 +140,7 @@ src/
 
 reviewer-pack/            The specification rendered for a methods reviewer
 scripts/                  Validation, spec bundle, reviewer pack, CSS
-tests/                    385 tests
+tests/                    395 tests
 docs/                     Redesign plan; Bayesian sample-size research
 ```
 
@@ -202,9 +202,15 @@ Cloudflare Pages, built from this repository.
 Cloudflare runs `npm run build` and serves `dist/`. `public/_redirects` provides the SPA
 fallback; `public/_headers` sets security headers.
 
-GOV.UK and MoJ Frontend are compiled locally from npm dependencies, so no stylesheet is
-fetched at runtime. The typeface is still loaded from Google Fonts and degrades to a system
-fallback if unavailable.
+**Nothing is fetched at runtime.** GOV.UK and MoJ Frontend are compiled locally from npm
+dependencies, and the typeface — Source Sans 3, under the SIL Open Font License 1.1 — is
+self-hosted from `@fontsource-variable/source-sans-3`. The installed app renders
+identically with no network, and no third party is told who is reading. The font licence
+ships at `/fonts/OFL.txt`, as the OFL requires.
+
+GDS Transport is deliberately **not** included: GOV.UK licenses it for use on gov.uk only.
+`$govuk-include-default-font-face: false` stops GOV.UK Frontend emitting an `@font-face`
+for a file we are not permitted to host and were previously 404ing on.
 
 ---
 
@@ -283,6 +289,7 @@ See [LICENSE](LICENSE), or <https://www.gnu.org/licenses/gpl-3.0.html>.
 | [Ajv](https://ajv.js.org) | MIT |
 | [yaml](https://eemeli.org/yaml/) | ISC |
 | [Sass](https://sass-lang.com) | MIT |
+| [Source Sans 3](https://github.com/adobe-fonts/source-sans) (via [Fontsource](https://fontsource.org)) | SIL Open Font License 1.1 |
 
 ---
 

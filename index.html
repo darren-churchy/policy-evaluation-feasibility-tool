@@ -13,16 +13,10 @@
     <title>Impact Evaluation Feasibility Tool</title>
 
     <!-- GOV.UK and MoJ Frontend are compiled locally from npm dependencies into
-         src/styles/vendor/govuk-moj.css and imported by src/index.css, so no stylesheet
-         is fetched at runtime. Regenerate with `npm run css:vendor`.
-
-         The typeface is the one remaining third-party fetch. It degrades gracefully —
-         offline or blocked, the stack falls back to Segoe UI and Arial and the app is
-         fully usable. Self-hosting it would remove the last runtime dependency; it is
-         left for a follow-up because it needs the font files committed to the repo. -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+         src/styles/vendor/govuk-moj.css, and the typeface is self-hosted from
+         @fontsource-variable/source-sans-3 via src/styles/fonts.css. Nothing is fetched
+         at runtime: the installed app renders identically with no network, and no third
+         party is told who is reading. Regenerate the CSS with `npm run css:vendor`. -->
 
     <!-- PWA icons -->
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />

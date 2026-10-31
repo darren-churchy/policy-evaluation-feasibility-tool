@@ -508,6 +508,36 @@ viewport. `index.css` matches their selector. Note this fixes anchor jumps, `scr
 and keyboard focus scrolling only — ordinary wheel scrolling passes under a sticky element
 by design and there is nothing to correct.
 
+### The typeface
+
+Self-hosted from `@fontsource-variable/source-sans-3`, under the SIL Open Font License
+1.1. It was the last thing fetched at runtime: a Google Fonts stylesheet, which meant the
+installed app degraded to a system fallback offline and every page view told a third party
+who was reading. GOV.UK and MoJ Frontend were vendored in phase 6 for the same reasons.
+
+`src/styles/fonts.css` declares **two subsets of the eleven the package ships**. Latin is
+29KB and covers the interface; latin-ext is 60KB and covers the Welsh, Irish and European
+diacritics that turn up in UK place and personal names. Cyrillic, Greek and Vietnamese
+would be ~100KB of precache for text this tool does not produce, and a reader who pastes
+them still gets a system fallback rather than nothing. The variable axis
+(`font-weight: 200 900`) means one file serves every weight, which is why this costs less
+than the three static files it replaced.
+
+The family is `Source Sans 3 Variable` — Fontsource's variable packages append the word,
+so the font stack in `index.css` names it before the plain `Source Sans 3`.
+
+**GDS Transport is deliberately absent.** GOV.UK licenses it for use on gov.uk only and
+the files are not in the npm package, but GOV.UK Frontend still emitted an `@font-face`
+for it — so the browser was requesting `/assets/fonts/*.woff2` and 404ing on every page
+load, with two font faces stuck in `error` state. `$govuk-include-default-font-face: false`
+in `scripts/vendor-css.scss` stops the declarations being compiled. Nothing changes
+visually, because the app has never rendered in it.
+
+Verified offline: with the network cut, the heading renders in the same family at the same
+width as online. `tests/fonts.test.mjs` guards both ways this could come back — a CDN link
+in the page, and the GDS Transport declarations returning on a recompile — and both are
+mutation-verified. The licence ships at `public/fonts/OFL.txt`, as the OFL requires.
+
 ### The reviewer pack
 
 `reviewer-pack/` is the specification rendered for a methods reviewer who knows evaluation
@@ -617,7 +647,7 @@ runs on push.
 
 ## PWA
 
-Configured via `vite-plugin-pwa` with `autoUpdate` service worker strategy. All built assets are precached for offline use, and `navigateFallback` serves index.html for real paths offline. Manifest defined inline in `vite.config.js`. Icons in `public/icons/`.
+Configured via `vite-plugin-pwa` with `autoUpdate` service worker strategy. All built assets are precached for offline use — including the self-hosted typeface — and `navigateFallback` serves index.html for real paths offline. Nothing is fetched at runtime. Manifest defined inline in `vite.config.js`. Icons in `public/icons/`.
 
 ---
 
