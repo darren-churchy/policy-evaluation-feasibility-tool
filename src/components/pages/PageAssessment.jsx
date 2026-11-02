@@ -210,18 +210,31 @@ export default function PageAssessment() {
     return spec.questions.filter(q => !statistics.has(q.id)).map(q => q.id)
   }, [spec])
 
+  // Intake questions are asked of everyone, and some of them — the scope gate, the
+  // practical constraint — are read by no design rule, so they never reach the agenda.
+  // Without this they could not be answered here at all: anyone who opened the assessment
+  // directly, or loaded a saved file, was left with a screen that could never complete
+  // and a statistics section that could never open.
+  const intakeIds = useMemo(
+    () => new Set(spec.questions.filter(q => q.intake).map(q => q.id)),
+    [spec],
+  )
+
   useEffect(() => {
     setShown(prev => {
       const next = [...prev]
       for (const id of askedHere) {
         if (answers[id] !== undefined && !next.includes(id)) next.push(id)
       }
+      for (const id of intakeIds) {
+        if (!next.includes(id)) next.push(id)
+      }
       for (const item of result.agenda.slice(0, BATCH)) {
         if (!next.includes(item.id)) next.push(item.id)
       }
       return next.length === prev.length ? prev : next
     })
-  }, [result.agenda, answers, askedHere])
+  }, [result.agenda, answers, askedHere, intakeIds])
 
   // Starting again clears the answers, so the displayed set must reset with them.
   function startAgain() {
@@ -239,7 +252,8 @@ export default function PageAssessment() {
   // nothing said why. Both halves are fixed here: inapplicable questions stop being
   // asked, and the fact that they have is stated.
   const onAgenda = new Set(result.agenda.map(a => a.id))
-  const stillApplies = id => answers[id] !== undefined || onAgenda.has(id)
+  const stillApplies = id =>
+    answers[id] !== undefined || onAgenda.has(id) || intakeIds.has(id)
   const asking = shown.filter(stillApplies)
   const noLongerApply = shown.filter(id => !stillApplies(id))
   const { readiness, stage, agenda, recommendation, nextRungUp, theoryBased, ladder } = result
@@ -315,12 +329,17 @@ export default function PageAssessment() {
         ))}
 
         {/* The question agenda — only what could change a verdict. */}
-        {agenda.length > 0 && (
+        {/* Rendered whenever there is anything to show, not only while questions remain.
+            Gating this on the agenda meant that answering the last one removed every
+            answer from the page at once, so the only way to change a response was to
+            start again. */}
+        {asking.length > 0 && (
           <Card>
-            <SectionTag>Next questions</SectionTag>
+            <SectionTag>{agenda.length > 0 ? 'Next questions' : 'Your answers'}</SectionTag>
             <p className="govuk-body-s" style={{ color: T.greyText }}>
-              Only questions whose answer could change a verdict are shown, highest rung
-              first. {answeredCount} answered, {agenda.length} still outstanding.
+              {agenda.length > 0
+                ? `Only questions whose answer could change a verdict are shown, highest rung first. ${answeredCount} answered, ${agenda.length} still outstanding.`
+                : `${answeredCount} answered, and nothing further to ask. Change any of them here — the verdicts above update as you do.`}
             </p>
             {asking.map(id => {
               const question = questionsById.get(id)

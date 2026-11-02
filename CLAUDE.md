@@ -443,6 +443,22 @@ needed. It reports what is settled: ruled out, still in play, the highest rung n
 out, and where effort goes next. The panel says explicitly that **not ruled out is not the
 same as available**, because an unestablished design counts as in play.
 
+**A screening question can go moot.** Every design that read it may be ruled out before
+it is answered, at which point it leaves the agenda and no answer could change anything.
+Counting it as outstanding deadlocked the screen — reported from use, with the agenda at
+zero and the screen stuck at 14 of 17, so the statistics section never opened. `moot` now
+holds those and `complete` ignores them, and the panel counts against what can actually be
+answered.
+
+**Every screening question must be reachable.** `claim_type` and `primary_constraint` are
+read by no design rule, so they never reach the agenda — and the assessment did not ask
+them, which meant anyone opening it directly or loading a saved file could not complete the
+screen at all. The page now seeds every intake question regardless of the agenda. A test
+asserts each screening question is either read by a rule or asked as intake, which is the
+general form of the fault.
+
+`tests/screening-deadlock.test.mjs` keeps the reported answers as a fixture.
+
 `tests/screening.test.mjs` pins the derivation rule. Two of its checks are deliberately
 independent of that rule — blocker coverage, and reaching every design — because the
 rule-shaped assertions recompute the rule and would agree with themselves if the
@@ -480,6 +496,9 @@ Four changes, taking it to **3,300px blank and 5,200px after seven answers**:
 - **The statistics module is withheld until the screen is complete.** Four screens of
   questions about priors and multiplicity, in front of someone still establishing whether
   any design works, put the longest section before the shortest useful one.
+- **Answers stay editable.** The question card renders on whether there is anything to
+  show, not on whether questions remain. Gating it on the agenda meant answering the last
+  one removed every answer from the page, so changing a response meant starting again.
 - **Questions that can no longer matter stop being asked**, and the page says so. A
   question leaves the agenda when every design depending on it is ruled out — the engine
   has always done this — but the page carried on rendering it, so people answered

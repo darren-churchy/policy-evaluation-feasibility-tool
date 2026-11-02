@@ -18,9 +18,12 @@ export default function ScreeningPanel({ onContinue, onDownload }) {
   const { result } = useAnswers()
   const { screening, designs, agenda, readiness } = result
 
+  // Counted against what can actually be answered. A screening question whose designs
+  // have all been ruled out is moot — no answer could change anything — so including it
+  // in the total shows a figure the user can never reach.
   const done = screening.answered.length
-  const total = screening.questions.length
-  const pct = Math.round((done / total) * 100)
+  const total = screening.questions.length - screening.moot.length
+  const pct = total ? Math.round((done / total) * 100) : 100
 
   const stat = (value, label) => (
     <div style={{ flex: '1 1 130px' }}>
@@ -38,6 +41,11 @@ export default function ScreeningPanel({ onContinue, onDownload }) {
           <p className="govuk-body">
             {done} of {total} screening questions answered. These are the ones that rule
             designs in or out — the rest narrow down what is already available.
+            {screening.moot.length > 0 && (
+              <> {screening.moot.length} more no longer {screening.moot.length === 1 ? 'applies' : 'apply'},
+              because the designs {screening.moot.length === 1 ? 'it' : 'they'} would have
+              informed are already ruled out.</>
+            )}
           </p>
           <div style={{ background: T.greyBg, height: '8px', marginBottom: '14px' }}>
             <div style={{ background: T.purple, height: '8px', width: `${pct}%` }} />

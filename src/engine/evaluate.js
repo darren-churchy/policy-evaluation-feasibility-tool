@@ -343,13 +343,35 @@ export function screeningSet(spec) {
  * early on there usually is not one. It reports what has been **settled**: which designs
  * are out, which are still live, and the highest rung still available.
  */
-function assessScreening(answers, spec, assessed) {
+function assessScreening(answers, spec, assessed, agenda) {
   const questions = screeningSet(spec)
   const answered = questions.filter(id => {
     const v = answers?.[id]
     return v !== undefined && v !== null && v !== ''
   })
-  const outstanding = questions.filter(id => !answered.includes(id))
+
+  // A screening question can stop mattering before it is answered: every design that read
+  // it has already been ruled out, so it leaves the agenda and no answer could change
+  // anything. Counting it as outstanding deadlocks the screen — it never completes, and
+  // whatever is gated on completion never opens.
+  //
+  // Only a question some design rule reads can go moot this way. An intake question no
+  // rule reads — the scope gate, the practical constraint — is asked of everyone and
+  // stays outstanding until answered.
+  const readByRules = new Set()
+  for (const design of Object.values(spec.rules?.designs ?? {})) {
+    for (const group of ['blockers', 'conditions', 'warnings']) {
+      for (const check of design[group] ?? []) {
+        for (const v of variablesIn(check.test)) readByRules.add(v)
+      }
+    }
+  }
+  const onAgenda = new Set((agenda ?? []).map(a => a.id))
+  const isMoot = id => readByRules.has(id) && !onAgenda.has(id)
+
+  const unanswered = questions.filter(id => !answered.includes(id))
+  const moot = unanswered.filter(isMoot)
+  const outstanding = unanswered.filter(id => !isMoot(id))
 
   const counterfactual = assessed.filter(d => d.strand === 'counterfactual')
   const ruledOut = counterfactual.filter(d => d.state === 'blocked').map(d => d.id)
@@ -360,6 +382,7 @@ function assessScreening(answers, spec, assessed) {
     questions,
     answered,
     outstanding,
+    moot,
     complete: outstanding.length === 0,
     ruledOut,
     live: live.map(d => d.id),
@@ -380,6 +403,10 @@ export function evaluate(answers = {}, spec) {
 
   const counterfactual = assessed.filter(d => d.strand === 'counterfactual')
   const theoryBased = assessed.filter(d => d.strand === 'theory_based')
+
+  // Computed before the screen, which needs it to tell an unanswered question that still
+  // matters from one that has stopped mattering.
+  const agenda = buildAgenda(answers, questions, assessed, readiness)
 
   // Tier 1 is the highest rung, so the best tier is the lowest number.
   const tierOf = state => {
@@ -448,9 +475,9 @@ export function evaluate(answers = {}, spec) {
       statisticsSpec && { ...statisticsSpec, _questionsById: new Map(questions.map(q => [q.id, q])) },
       new Set(counterfactual.filter(d => d.state === 'feasible' || d.state === 'conditional').map(d => d.id)),
     ),
-    agenda: buildAgenda(answers, questions, assessed, readiness),
+    agenda,
     routes: activeRoutes(answers, stagesSpec),
     guidance: activeGuidance(answers, stagesSpec),
-    screening: assessScreening(answers, spec, assessed),
+    screening: assessScreening(answers, spec, assessed, agenda),
   }
 }

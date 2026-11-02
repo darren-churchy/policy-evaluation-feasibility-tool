@@ -1,0 +1,31 @@
+{
+  "format": "impact-evaluation-feasibility/answers",
+  "specVersion": "1.3.0",
+  "savedAt": "2026-11-02T16:11:51.365Z",
+  "answers": {
+    "theory_of_change": "yes",
+    "intervention_defined": "yes",
+    "maturity": "yes",
+    "delivery_consistency": "yes",
+    "record_linkage": "individual",
+    "prospective": "yes",
+    "randomisation_barriers": "none",
+    "allocation_unit": "either",
+    "rollout_order_controllable": "yes",
+    "delay_acceptable": "yes",
+    "outcome_reversible": "no",
+    "assignment_threshold": "no",
+    "instrument_available": "no",
+    "pre_periods": "few",
+    "policy_date_known": "yes",
+    "cointerventions": "possible",
+    "encouragement_lever": "no",
+    "equipoise": "yes",
+    "cluster_count": "moderate",
+    "comparison_group": "no",
+    "covariate_richness": "sparse",
+    "documentary_evidence": "yes",
+    "stakeholder_access": "yes"
+  },
+  "notes": {}
+}
